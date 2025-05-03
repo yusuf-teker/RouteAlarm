@@ -7,12 +7,18 @@ sealed interface Routes {
 
     // Giriş akışı
     @Serializable
+    data object OnboardingGraph : Routes
+
+    @Serializable
     data object WelcomeScreen : Routes
 
     @Serializable
     data object AuthScreen : Routes // Sign Up / Login (şimdilik kullanılmayacak)
 
     // Ana ekran ve yönlendirmeler
+    @Serializable
+    data object MainGraph : Routes
+
     @Serializable
     data object HomeScreen : Routes
 
