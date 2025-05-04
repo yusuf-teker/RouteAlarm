@@ -6,13 +6,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,23 +67,28 @@ fun WelcomeScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             // Devam Buton
             Button(
-                onClick = onContinue, colors = ButtonDefaults.buttonColors(
-                    backgroundColor = AppColors.buttonBackground
-                )
-
-            ) {
+                modifier = Modifier.width(360.dp).padding(bottom = 72.dp),
+                onClick = onContinue,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.buttonBackground,
+                    contentColor = AppColors.buttonText
+                ),
+            ){
                 Text(
-                    modifier = Modifier.padding(horizontal = 48.dp),
-                    text = "Get Started",
+                    text = "Get started.",
                     style = TextStyle.Default.copy(
-                        color = AppColors.buttonText, fontSize = 36.sp
+                        fontSize = 24.sp,
+                        color = AppColors.buttonText
                     )
+
                 )
             }
+
+
         }
     }
 }
