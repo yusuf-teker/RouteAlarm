@@ -26,5 +26,8 @@ object AppColors {
 
     // Button Text Color
     val buttonText = Color(0xFFFFFFFF) // Buton metin rengi beyaz.
+
+    val activeAlarmBarBackground = Color(0xFF122736)
+
 }
 

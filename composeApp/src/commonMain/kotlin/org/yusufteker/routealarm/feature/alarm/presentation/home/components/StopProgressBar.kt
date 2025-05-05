@@ -32,46 +32,47 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.yusufteker.routealarm.core.presentation.AppColors
+import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import routealarm.composeapp.generated.resources.Res
 import routealarm.composeapp.generated.resources.map_pin
 
 @Composable
 fun StopProgressBar(
-    title: String? = null,
-    passedStops: Int,
-    stopNames: List<String> = listOf(),
+    alarm: Alarm,
     modifier: Modifier = Modifier
 ) {
-    val segmentCount = stopNames.size
+    val stops = alarm.stops
+    val passedStops = stops.count { it.isPassed }
+    val segmentCount = stops.size
 
     Column(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().background(
+            AppColors.activeAlarmBarBackground
+        ).padding(16.dp),
     ) {
 
 
-        title?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.textPrimary,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
+        Text(
+            text = alarm.title,
+            style = MaterialTheme.typography.bodyMedium,
+            color = AppColors.textPrimary,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
         Row(
             modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            stopNames.forEachIndexed { index, text ->
+            stops.forEachIndexed { index, stop ->
                 Box(
                     modifier = Modifier.weight(1f), contentAlignment = when (index) {
                         0 -> Alignment.CenterStart // İlk eleman sola
-                        stopNames.lastIndex -> Alignment.CenterEnd // Son eleman sağa
+                        stops.lastIndex -> Alignment.CenterEnd // Son eleman sağa
                         else -> Alignment.Center // Diğerleri ortada
                     }
                 ) {
                     Text(
-                        text = text,
+                        text = stop.name,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColors.textPrimary,

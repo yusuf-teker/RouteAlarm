@@ -1,18 +1,29 @@
 package org.yusufteker.routealarm.app
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
+import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
 
 
 @Composable
@@ -20,66 +31,112 @@ fun AppNavHost(
     navController: NavHostController,
     startDestination: Routes.OnboardingGraph = Routes.OnboardingGraph
 ) {
-    NavHost(navController = navController, startDestination = startDestination) {
 
-        // Onboarding Graph
-        navigation<Routes.OnboardingGraph>(
-            startDestination = Routes.WelcomeScreen
-        ) {
-            composable<Routes.WelcomeScreen> {
-                WelcomeScreen(onContinue = {
-                    // Onboarding'den sonra ana ekrana geçiş
-                    navController.navigate(Routes.MainGraph) {
-                        popUpTo(Routes.OnboardingGraph) { inclusive = true }
-                        launchSingleTop = true
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route?.substringAfterLast(".")
+    val systemBars = WindowInsets.systemBars
+    val bottomPadding = with(LocalDensity.current) { systemBars.getBottom(this).toDp() }
+    val showBottomBar = currentRoute in listOf(
+        Routes.MainGraph.toString(),
+        Routes.HomeScreen.toString(),
+        Routes.AddAlarmScreen.toString(),
+        Routes.SettingsScreen.toString()
+    )
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+
+                BottomNavigationBar(
+                    modifier = Modifier.padding(bottom = bottomPadding),
+                    currentRoute = currentRoute ?: "",
+                    onItemSelected = { route ->
+                        if (route.toString() != currentRoute) {
+                            navController.navigate(route) {
+                                popUpTo(Routes.HomeScreen.toString()) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     }
-                })
+                )
             }
-
-            // Eğer AuthScreen eklenirse buraya gelecek
-            // composable(Routes.AuthScreen::class.simpleName!!) {
-            //     AuthScreen(onContinue = { navController.navigate(Routes.HomeScreen::class.simpleName!!) })
-            // }
         }
+    ) { innerPadding ->
+        NavHost(navController = navController, startDestination = startDestination) {
 
-        // Main Graph (Ana ekran ve yönlendirmeler)
-        navigation<Routes.MainGraph>(
-            startDestination = Routes.HomeScreen
-        ) {
-            composable<Routes.HomeScreen> {
+            // Onboarding Graph
+            navigation<Routes.OnboardingGraph>(
+                startDestination = Routes.WelcomeScreen
+            ) {
+                composable<Routes.WelcomeScreen> {
+                    WelcomeScreen(onContinue = {
+                        // Onboarding'den sonra ana ekrana geçiş
+                        navController.navigate(Routes.MainGraph) {
+                            popUpTo(Routes.OnboardingGraph) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    })
+                }
 
-                HomeScreen(
-                    onAddAlarm = { navController.navigate(Routes.AddAlarmScreen) },
-                    onAlarmClick = { alarmId ->
-                        navController.navigate(Routes.AlarmDetailScreen(alarmId = alarmId))
-                    },
-                    onSettingsClick = { navController.navigate(Routes.SettingsScreen) })
-
+                // Eğer AuthScreen eklenirse buraya gelecek
+                // composable(Routes.AuthScreen::class.simpleName!!) {
+                //     AuthScreen(onContinue = { navController.navigate(Routes.HomeScreen::class.simpleName!!) })
+                // }
             }
 
-            composable<Routes.AddAlarmScreen> {
-                //AddAlarmScreen(onStopSelect = { navController.navigate(Routes.StopPickerScreen::class.simpleName!!) })
-            }
+            // Main Graph (Ana ekran ve yönlendirmeler)
+            navigation<Routes.MainGraph>(
+                startDestination = Routes.HomeScreen
+            ) {
 
-            composable<Routes.StopPickerScreen> {
-                //StopPickerScreen(onBack = { navController.popBackStack() })
-            }
+                composable<Routes.HomeScreen> {
 
-            composable<Routes.AlarmDetailScreen> { backStackEntry ->
-                val args = backStackEntry.toRoute<Routes.AlarmDetailScreen>()
-                val alarmId = args.alarmId
-                //AlarmDetailScreen(alarmId = alarmId)
-            }
+                        HomeScreen(
+                            contentPadding = innerPadding,
+                            onAddAlarm = {
+                                navController.navigate(Routes.AddAlarmScreen)
+                                         },
+                            onAlarmClick = { alarmId ->
+                                navController.navigate(Routes.AlarmDetailScreen(alarmId = alarmId))
+                            },
+                            onSettingsClick = {
+                                navController.navigate(Routes.SettingsScreen)
+                            }
+                        )
 
-            composable<Routes.ActiveAlarmScreen> {
-                //ActiveAlarmScreen()
-            }
+                }
 
-            composable<Routes.SettingsScreen> {
-                //SettingsScreen()
+                composable<Routes.AddAlarmScreen> {
+                   Text("Add Alarm")
+                        // AddAlarmScreen(modifier = Modifier.padding(padding))
+                }
+
+                composable<Routes.StopPickerScreen> {
+                    Text("Stop Picker")
+                    //StopPickerScreen(onBack = { navController.popBackStack() })
+                }
+
+                composable<Routes.AlarmDetailScreen> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Routes.AlarmDetailScreen>()
+                    val alarmId = args.alarmId
+                    //AlarmDetailScreen(alarmId = alarmId)
+                }
+
+                composable<Routes.ActiveAlarmScreen> {
+                    Text("Active Alarm")
+                    //ActiveAlarmScreen()
+                }
+
+                composable<Routes.SettingsScreen> {
+
+                    Text("Settings")
+                        // SettingsScreen(modifier = Modifier.padding(padding))
+
+                }
             }
         }
     }
+
 }
 
 
