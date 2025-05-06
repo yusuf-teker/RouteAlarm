@@ -10,9 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.yusufteker.routealarm.core.data.dummy.fakeAlarms
 import org.yusufteker.routealarm.core.presentation.AppColors
-import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.ActiveAlarm
-import org.yusufteker.routealarm.feature.alarm.presentation.home.components.StopProgressBar
 
 @Composable
 fun HomeScreen(
