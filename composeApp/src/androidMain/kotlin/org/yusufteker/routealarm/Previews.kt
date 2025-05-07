@@ -15,6 +15,7 @@ import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.data.dummy.fakeAlarms
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
+import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.StopProgressBar
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
@@ -29,7 +30,7 @@ fun WelcomeScreenPreview() {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onAddAlarm = {}, onAlarmClick = {}, onSettingsClick = {})
+    HomeScreen(state = HomeState(), {})
 }
 
 

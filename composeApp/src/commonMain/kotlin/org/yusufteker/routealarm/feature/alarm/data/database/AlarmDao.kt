@@ -22,5 +22,8 @@ interface AlarmDao {
     @Query("DELETE FROM alarms WHERE id = :id")
     suspend fun deleteAlarmById(id: Int)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlarms(alarms: List<AlarmEntity>)
+
 
 }

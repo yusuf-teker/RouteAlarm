@@ -1,0 +1,8 @@
+package org.yusufteker.routealarm.feature.alarm.presentation.home
+
+import org.yusufteker.routealarm.feature.alarm.domain.Alarm
+
+sealed interface HomeAction {
+    data class OnAlarmCheckedChange(val alarm: Alarm, val isChecked: Boolean) : HomeAction
+    data class OnAlarmClick(val alarm: Alarm) : HomeAction
+}

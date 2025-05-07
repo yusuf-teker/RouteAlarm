@@ -19,11 +19,49 @@ class HomeViewModel(
 
     private var observeJob: Job? = null
 
-    private val _uiState = MutableStateFlow(HomeState())
+    private val _uiState = MutableStateFlow(
+        HomeState()
+    )
     val uiState: StateFlow<HomeState> = _uiState .onStart {
-        //observeAlarms()
+        addFakeAlarmsIfEmpty()
+        observeAlarms()
     }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _uiState.value)
 
+    private fun addFakeAlarmsIfEmpty() {
+        viewModelScope.launch {
+            alarmRepository.getAlarms().collect { alarms ->
+                if (alarms.isEmpty()) {
+                    val fakeAlarms = listOf(
+                        Alarm(id = 1, title = "Evden Okula", isActive = false, stops = listOf(/* dummy stops */)),
+                        Alarm(id = 2, title = "Okuldan Eve", isActive = false, stops = listOf(/* dummy stops */)),
+                        Alarm(id = 3, title = "Antrenmana Gidiş", isActive = false, stops = listOf(/* dummy stops */))
+                    )
+                    alarmRepository.insertAlarms(fakeAlarms)
+                }
+            }
+        }
+    }
 
+    private fun observeAlarms() {
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
+            alarmRepository.getAlarms().collect { alarms ->
+                _uiState.update { it.copy(alarms = alarms) }
+            }
+        }
+    }
+    fun onAction(action: HomeAction){
+        when(action) {
+            is HomeAction.OnAlarmCheckedChange -> {
+                viewModelScope.launch {
+                    val updated = action.alarm.copy(isActive = action.isChecked)
+                    alarmRepository.updateAlarm(updated)
+                }
+            }
+            is HomeAction.OnAlarmClick -> {
+
+            }
+        }
+    }
 }

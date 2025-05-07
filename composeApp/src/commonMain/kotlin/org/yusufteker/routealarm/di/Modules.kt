@@ -30,11 +30,12 @@ val sharedModule = module {
             .setDriver(BundledSQLiteDriver())
             .build()
     }
+
+    singleOf(constructor = ::InMemoryAlarmRepository).bind<AlarmRepository>()
+
     single { // Create FavoriteBookDao
         get<AlarmDatabase>().alarmDao
     }
-    singleOf(constructor = ::InMemoryAlarmRepository).bind<AlarmRepository>()
-
-    viewModel { HomeViewModel(get<AlarmRepository>()) }
+    viewModel { HomeViewModel(get()) }
 
 }

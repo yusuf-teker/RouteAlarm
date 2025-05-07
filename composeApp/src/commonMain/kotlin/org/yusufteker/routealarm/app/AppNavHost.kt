@@ -23,6 +23,7 @@ import androidx.navigation.toRoute
 import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
+import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreenRoot
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
 
 
@@ -91,18 +92,13 @@ fun AppNavHost(
 
                 composable<Routes.HomeScreen> {
 
-                        HomeScreen(
-                            contentPadding = innerPadding,
-                            onAddAlarm = {
-                                navController.navigate(Routes.AddAlarmScreen)
-                                         },
-                            onAlarmClick = { alarmId ->
-                                navController.navigate(Routes.AlarmDetailScreen(alarmId = alarmId))
-                            },
-                            onSettingsClick = {
-                                navController.navigate(Routes.SettingsScreen)
-                            }
-                        )
+
+                    HomeScreenRoot(
+                        contentPadding = innerPadding,
+                        onNavigateToAlarmDetail = { alarm ->
+                            navController.navigate(Routes.AlarmDetailScreen(alarmId = alarm.id))
+                        }
+                    )
 
                 }
 

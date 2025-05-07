@@ -37,4 +37,12 @@ class InMemoryAlarmRepository(
         return Result.Success(alarm?.toAlarm())
 
     }
+
+    override suspend fun updateAlarm(alarm: Alarm){
+        localAlarmDataSource.upsert(alarm.toAlarmEntity())
+    }
+
+    override suspend fun insertAlarms(alarms: List<Alarm>){
+        localAlarmDataSource.insertAlarms(alarms.map { it.toAlarmEntity() })
+    }
 }

@@ -23,16 +23,16 @@ sealed interface Routes {
     data object HomeScreen : Routes
 
     @Serializable
-    data class AlarmDetailScreen(val alarmId: String) : Routes
+    data class AlarmDetailScreen(val alarmId: Int) : Routes
 
     @Serializable
     data object AddAlarmScreen : Routes
 
     @Serializable
-    data class StopPickerScreen(val alarmId: String) : Routes
+    data class StopPickerScreen(val alarmId: Int) : Routes
 
     @Serializable
-    data class ActiveAlarmScreen(val alarmId: String) : Routes
+    data class ActiveAlarmScreen(val alarmId: Int) : Routes
 
     @Serializable
     data object SettingsScreen : Routes
