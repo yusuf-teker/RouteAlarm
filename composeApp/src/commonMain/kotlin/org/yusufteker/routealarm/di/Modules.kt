@@ -7,6 +7,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.yusufteker.routealarm.core.data.HttpClientFactory
+import org.yusufteker.routealarm.core.popup.PopupManager
 import org.yusufteker.routealarm.feature.alarm.data.database.AlarmDatabase
 import org.yusufteker.routealarm.feature.alarm.data.repository.InMemoryAlarmRepository
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
@@ -18,6 +19,8 @@ import org.yusufteker.routealarm.feature.alarm.data.database.DatabaseFactory
 expect val platformModule: Module
 
 val sharedModule = module {
+
+    single { PopupManager() }
 
     single {
         // engine platforma gore degisiyor bu yüzde
@@ -36,6 +39,6 @@ val sharedModule = module {
     single { // Create FavoriteBookDao
         get<AlarmDatabase>().alarmDao
     }
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
 
 }

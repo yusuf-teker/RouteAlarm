@@ -25,5 +25,8 @@ interface AlarmDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlarms(alarms: List<AlarmEntity>)
 
+    @Query("SELECT * FROM alarms WHERE isActive = 1")
+    suspend fun isAnyAlarmActive(): List<AlarmEntity>
+
 
 }

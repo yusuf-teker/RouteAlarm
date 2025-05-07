@@ -1,7 +1,6 @@
 package org.yusufteker.routealarm.feature.alarm.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,11 +9,13 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.yusufteker.routealarm.core.popup.PopupManager
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 
 class HomeViewModel(
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
+    private val popupManager: PopupManager
 ) : ViewModel() {
 
     private var observeJob: Job? = null
@@ -55,8 +56,13 @@ class HomeViewModel(
         when(action) {
             is HomeAction.OnAlarmCheckedChange -> {
                 viewModelScope.launch {
-                    val updated = action.alarm.copy(isActive = action.isChecked)
-                    alarmRepository.updateAlarm(updated)
+                    if (alarmRepository.isAnyActiveAlarm() && action.isChecked) {
+                        popupManager.showInfo("Hata", "Sadece bir alarm aktif olamaz")
+                    }else{
+                        val updated = action.alarm.copy(isActive = action.isChecked)
+                        alarmRepository.updateAlarm(updated)
+                    }
+
                 }
             }
             is HomeAction.OnAlarmClick -> {

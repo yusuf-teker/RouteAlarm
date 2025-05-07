@@ -45,4 +45,8 @@ class InMemoryAlarmRepository(
     override suspend fun insertAlarms(alarms: List<Alarm>){
         localAlarmDataSource.insertAlarms(alarms.map { it.toAlarmEntity() })
     }
+
+    override suspend fun isAnyActiveAlarm(): Boolean {
+        return localAlarmDataSource.isAnyAlarmActive().isNotEmpty()
+    }
 }

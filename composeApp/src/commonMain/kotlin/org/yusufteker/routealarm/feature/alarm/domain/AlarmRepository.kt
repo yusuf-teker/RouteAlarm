@@ -11,4 +11,5 @@ interface AlarmRepository {
     suspend fun getAlarmById(id: Int): Result<Alarm?, DataError>
     suspend fun updateAlarm(alarm: Alarm)
     suspend fun insertAlarms(alarms: List<Alarm>)
+    suspend fun isAnyActiveAlarm(): Boolean
 }
