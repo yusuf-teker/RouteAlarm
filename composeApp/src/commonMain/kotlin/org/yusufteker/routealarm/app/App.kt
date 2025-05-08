@@ -4,9 +4,9 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
-import org.yusufteker.routealarm.core.popup.GlobalPopupHost
-import org.yusufteker.routealarm.core.popup.LocalPopupManager
-import org.yusufteker.routealarm.core.popup.PopupManager
+import org.yusufteker.routealarm.core.presentation.popup.GlobalPopupHost
+import org.yusufteker.routealarm.core.presentation.popup.LocalPopupManager
+import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 
 @Composable
 @Preview

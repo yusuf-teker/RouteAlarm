@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -18,11 +20,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.koin.compose.viewmodel.koinViewModel
+import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
+import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmAction
+import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreenRoot
+import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmViewModel
+import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerScreenRoot
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
-import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreenRoot
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
 
@@ -102,14 +107,38 @@ fun AppNavHost(
 
                 }
 
-                composable<Routes.AddAlarmScreen> {
-                   Text("Add Alarm")
-                        // AddAlarmScreen(modifier = Modifier.padding(padding))
+                composable<Routes.AddAlarmScreen> { entry ->
+
+                    val viewModel = koinViewModel<AddAlarmViewModel>()
+                    val sharedViewModel = entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
+
+                    val stops by sharedViewModel.stops.collectAsStateWithLifecycle()
+                    LaunchedEffect(stops){
+                        stops.let {
+                            viewModel.onAction(AddAlarmAction.OnStopsChange(it))
+                        }
+                    }
+
+                    AddAlarmScreenRoot(
+                        viewModel = viewModel,
+                        contentPadding = innerPadding,
+                        onAddStopClick = {
+                            navController.navigate(Routes.StopPickerScreen)
+                        }
+                    )
                 }
 
-                composable<Routes.StopPickerScreen> {
-                    Text("Stop Picker")
-                    //StopPickerScreen(onBack = { navController.popBackStack() })
+                composable<Routes.StopPickerScreen> { entry ->
+
+                    val sharedViewModel = entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
+
+                    StopPickerScreenRoot(
+                        contentPadding = innerPadding,
+                        onAddStopClick = {
+                            sharedViewModel.addStop(it)
+                            navController.popBackStack()
+                        }
+                    )
                 }
 
                 composable<Routes.AlarmDetailScreen> { backStackEntry ->

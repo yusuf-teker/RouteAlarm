@@ -19,7 +19,7 @@ object AppColors {
     val textSecondary = Color(0xFFB0B0B0) // Metinler için daha soluk gri tonlar.
 
     // Card Arka Planı (Koyu tonlar)
-    val cardBackground = Color(0xFF1E3C54) // Kartlar için koyu mavi-yeşil tonları.
+    val cardBackground = Color(0xFF204865) // Kartlar için koyu mavi-yeşil tonları.
 
     // Border Rengi
     val border = Color(0xFF37474F) // Daha koyu gri tonlarında bir border.
@@ -28,6 +28,11 @@ object AppColors {
     val buttonText = Color(0xFFFFFFFF) // Buton metin rengi beyaz.
 
     val activeAlarmBarBackground = Color(0xFF122736)
+
+    val textAlarmCard = Color(0xFFB0BEC5) // Açık mavi-gri ton
+
+    val green = Color.Green
+
 
 }
 

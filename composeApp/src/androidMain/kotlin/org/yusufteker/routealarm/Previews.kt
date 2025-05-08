@@ -2,6 +2,7 @@ package org.yusufteker.routealarm
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -10,10 +11,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.data.dummy.fakeAlarms
+import org.yusufteker.routealarm.core.data.dummy.fakeStops
 import org.yusufteker.routealarm.core.presentation.AppColors
+import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
+import org.yusufteker.routealarm.core.presentation.card.CardContent
+import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreen
+import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
@@ -67,5 +75,46 @@ fun BottomNavigationBarPreview() {
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+fun AddAlarmScreenPreview() {
+
+    val sampleState = AddAlarmState(
+        title = "İşe Gidiş Alarmı",
+        stops = fakeStops
+    )
+
+    AddAlarmScreen(
+        state = sampleState,
+        onAction = {},
+        contentPadding = PaddingValues()
+    )
+}
 
 
+
+
+@Preview(showBackground = true)
+@Composable
+fun AdaptiveCardPrev(){
+    var text by remember { mutableStateOf("Deneme") }
+
+    Column(Modifier.background(Color.Transparent)) {
+        AdaptiveCard(
+            content = CardContent.EditableTextContent(
+                value = text,
+                onValueChange = { text = it },
+                placeholder = "Enter your text"
+            )
+        )
+        AdaptiveCard(
+            content = CardContent.TextContent(
+                text = "Text",
+
+                )
+        )
+    }
+
+
+
+}

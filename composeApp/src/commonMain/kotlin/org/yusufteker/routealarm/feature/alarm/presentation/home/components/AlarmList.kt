@@ -1,6 +1,7 @@
 package org.yusufteker.routealarm.feature.alarm.presentation.home.components
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,7 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 
@@ -33,6 +36,7 @@ fun AlarmList(
                     AlarmItem(alarm = alarm, onCheckedChange = {
                         onAlarmCheckedChange(alarm, it)
                     })
+                    Spacer(Modifier.height(16.dp))
                 }
             }
 
@@ -44,25 +48,41 @@ fun AlarmItem(
     alarm: Alarm,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+
+    Card(
+        modifier = Modifier.background(Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors()
     ) {
-        Column {
-            Text(
-                text = alarm.title,
-                style = AppTypography.titleMedium
-            )
-            Text(
-                text = "Durak sayısı: ${alarm.stops.size}",
-                style = AppTypography.bodyRegular
-            )
+        Box(modifier = Modifier.fillMaxWidth().background(AppColors.cardBackground).padding(16.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AppColors.cardBackground)
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = alarm.title,
+                        style = AppTypography.titleMedium
+                    )
+                    Text(
+                        text = "Durak sayısı: ${alarm.stops.size}",
+                        style = AppTypography.bodyRegular
+                    )
+                }
+                Switch(
+                    checked = alarm.isActive,
+                    onCheckedChange = onCheckedChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = AppColors.green,
+                        checkedTrackColor = AppColors.background,
+                    )
+                )
+            }
         }
-        Switch(
-            checked = alarm.isActive,
-            onCheckedChange = onCheckedChange
-        )
     }
+
 }

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.yusufteker.routealarm.core.popup.PopupManager
+import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 

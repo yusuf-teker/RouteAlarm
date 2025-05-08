@@ -1,4 +1,4 @@
-package org.yusufteker.routealarm.core.popup
+package org.yusufteker.routealarm.core.presentation.popup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.AlertDialog
