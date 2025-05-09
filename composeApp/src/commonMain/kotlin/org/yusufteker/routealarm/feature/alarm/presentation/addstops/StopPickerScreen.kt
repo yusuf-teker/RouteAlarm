@@ -50,7 +50,8 @@ fun StopPickerScreen(
         Text("Durak Seçme Ekranı")
 
         Button(onClick = {
-            val newStop = Stop(id = -1, name = "Otogar", latitude = 0.0, longitude = 0.0)
+            // todo alarm eklenecek alarm id  elimizde olacak sonra
+            val newStop = Stop(id = -1, name = "Otogar", latitude = 0.0, longitude = 0.0, alarmId = -1)
             sharedViewModel.addStop(newStop)
 
             onAction(StopPickerAction.AddStop(newStop)) // AddAlarmScreen’e geri dön

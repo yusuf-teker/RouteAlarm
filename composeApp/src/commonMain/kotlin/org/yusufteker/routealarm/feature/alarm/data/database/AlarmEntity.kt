@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 data class AlarmEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
-    val locationName: String,
-    val latitude: Double,
-    val longitude: Double,
     val isActive: Boolean,
-    val timeInMillis: Long
+    val timeInMillis: Long,
+    val soundUri: String = "",
+    val isVibration: Boolean = true
+
 )

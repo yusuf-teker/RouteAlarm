@@ -39,6 +39,7 @@ val sharedModule = module {
     singleOf(constructor = ::InMemoryAlarmRepository).bind<AlarmRepository>()
 
     single { get<AlarmDatabase>().alarmDao } // Create AlarmDataBase
+    single { get<AlarmDatabase>().stopDao } // Create AlarmDataBase
 
     viewModel { HomeViewModel(get(), get()) }
 

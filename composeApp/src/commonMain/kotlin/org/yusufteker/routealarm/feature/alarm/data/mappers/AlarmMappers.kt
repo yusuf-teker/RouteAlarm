@@ -1,37 +1,66 @@
 package org.yusufteker.routealarm.feature.alarm.data.mappers
 
 import org.yusufteker.routealarm.feature.alarm.data.database.AlarmEntity
+import org.yusufteker.routealarm.feature.alarm.data.database.AlarmWithStops
+import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopEntity
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 
-//TODO ENTITY STOP ILISKISI KURULACAK SONRA
-fun AlarmEntity.toAlarm(): Alarm {
+fun AlarmEntity.toDomain(stops: List<Stop> = emptyList()): Alarm {
     return Alarm(
-        id = id,
-        title = title,
-        stops = listOf(
-            Stop(
-                id = 0,
-                name = locationName,
-                latitude = latitude,
-                longitude = longitude,
-                isPassed = false
-            )
-        ),
-        isActive = isActive,
-        passedStops = 0
+        id = this.id,
+        title = this.title,
+        isActive = this.isActive,
+        timeInMillis = this.timeInMillis,
+        soundUri = this.soundUri,
+        isVibration = this.isVibration,
+        stops = stops
     )
 }
 
-fun Alarm.toAlarmEntity(): AlarmEntity {
-    val firstStop = stops.firstOrNull() ?: Stop(0,"", 0.0, 0.0)
+fun Alarm.toEntity(): AlarmEntity {
     return AlarmEntity(
-        id = id,
-        title = title,
-        locationName = firstStop.name,
-        latitude = firstStop.latitude,
-        longitude = firstStop.longitude,
-        isActive = isActive,
-        timeInMillis = 0L
+        id = this.id,
+        title = this.title,
+        isActive = this.isActive,
+        timeInMillis = this.timeInMillis,
+        soundUri = this.soundUri,
+        isVibration = this.isVibration
+    )
+}
+
+// feature/alarm/data/mapper/StopMapper.kt
+fun StopEntity.toDomain(): Stop {
+    return Stop(
+        id = this.id,
+        alarmId = this.alarmId,
+        name = this.name,
+        latitude = this.latitude,
+        longitude = this.longitude,
+        address = this.address,
+        orderIndex = this.orderIndex,
+        radius = this.radius
+    )
+}
+
+fun Stop.toEntity(): StopEntity {
+    return StopEntity(
+        id = this.id,
+        alarmId = this.alarmId,
+        name = this.name,
+        latitude = this.latitude,
+        longitude = this.longitude,
+        address = this.address,
+        orderIndex = this.orderIndex,
+        radius = this.radius
+    )
+}
+
+fun AlarmWithStops.toDomain(): Alarm {
+    return Alarm(
+        id = alarm.id,
+        title = alarm.title,
+        isActive = alarm.isActive,
+        stops = stops.map { it.toDomain() }
     )
 }

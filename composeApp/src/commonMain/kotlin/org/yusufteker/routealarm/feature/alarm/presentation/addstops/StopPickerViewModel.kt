@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import org.yusufteker.routealarm.feature.alarm.domain.Stop
 
 class StopPickerViewModel(
 
@@ -32,10 +31,5 @@ class StopPickerViewModel(
         }
     }
 
-    // Dummy veri (örnek amaçlı)
-    private val dummyStops = listOf(
-        Stop(-1,"Otogar", 39.9, 32.8),
-        Stop(-1,"Kızılay", 39.92, 32.85),
-        Stop(-2,"Tandoğan", 39.93, 32.83)
-    )
+
 }

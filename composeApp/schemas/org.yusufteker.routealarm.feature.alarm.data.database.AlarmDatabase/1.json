@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "686064d0fb1a00dc84982314c547a85a",
+    "identityHash": "454cbc05b7209d9b1ba60ce48c354b8b",
     "entities": [
       {
         "tableName": "alarms",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `locationName` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `isActive` INTEGER NOT NULL, `timeInMillis` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `locationName` TEXT NOT NULL, `isActive` INTEGER NOT NULL, `timeInMillis` INTEGER NOT NULL, `soundUri` TEXT NOT NULL, `isVibration` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -27,18 +27,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "latitude",
-            "columnName": "latitude",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "longitude",
-            "columnName": "longitude",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
             "fieldPath": "isActive",
             "columnName": "isActive",
             "affinity": "INTEGER",
@@ -47,6 +35,18 @@
           {
             "fieldPath": "timeInMillis",
             "columnName": "timeInMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "soundUri",
+            "columnName": "soundUri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isVibration",
+            "columnName": "isVibration",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -61,7 +61,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '686064d0fb1a00dc84982314c547a85a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '454cbc05b7209d9b1ba60ce48c354b8b')"
     ]
   }
 }

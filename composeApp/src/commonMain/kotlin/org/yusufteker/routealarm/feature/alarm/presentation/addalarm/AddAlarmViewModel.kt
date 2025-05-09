@@ -56,13 +56,16 @@ class AddAlarmViewModel(
         viewModelScope.launch {
             _state.value = currentState.copy(isSaving = true)
             try {
-                repository.addAlarm(
+                repository.saveAlarmWithStops(
                     Alarm(
                         id = 0, // Auto-ID or dummy
                         title = currentState.title,
-                        stops = currentState.stops
-                    )
+                        isActive = false,
+                    ),
+                    stops = currentState.stops
+
                 )
+
                 _state.value = AddAlarmState() // reset state
             } catch (e: Exception) {
                 _state.value = currentState.copy(isSaving = false, errorMessage = "Alarm kaydedilemedi.")

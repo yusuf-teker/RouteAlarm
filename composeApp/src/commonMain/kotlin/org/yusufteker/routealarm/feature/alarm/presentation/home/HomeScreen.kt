@@ -62,7 +62,10 @@ fun HomeScreen(
                 onAction(action)
             }
         )
-        ActiveAlarm(fakeAlarms.first())
+
+        if (state.activeAlarm != null){
+            ActiveAlarm(fakeAlarms.first())
+        }
     }
 
 }

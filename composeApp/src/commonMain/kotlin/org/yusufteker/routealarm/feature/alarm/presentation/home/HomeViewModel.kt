@@ -29,7 +29,7 @@ class HomeViewModel(
     }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _uiState.value)
 
-    private fun addFakeAlarmsIfEmpty() {
+    private fun addFakeAlarmsIfEmpty() { // todo fake alarm kaldırılacak
         viewModelScope.launch {
             alarmRepository.getAlarms().collect { alarms ->
                 if (alarms.isEmpty()) {
@@ -47,16 +47,27 @@ class HomeViewModel(
     private fun observeAlarms() {
         observeJob?.cancel()
         observeJob = viewModelScope.launch {
-            alarmRepository.getAlarms().collect { alarms ->
-                _uiState.update { it.copy(alarms = alarms) }
+
+            alarmRepository.getAlarmsWithStops().collect { alarms ->
+                val active = alarms.find { it.isActive }
+
+                _uiState.update {
+                    it.copy(
+                        alarms = alarms,
+                        activeAlarm = active
+                    )
+                }
             }
+
         }
     }
     fun onAction(action: HomeAction){
         when(action) {
             is HomeAction.OnAlarmCheckedChange -> {
                 viewModelScope.launch {
-                    if (alarmRepository.isAnyActiveAlarm() && action.isChecked) {
+                    val alreadyActive = uiState.value.alarms.any { it.isActive }
+                    val tryingToActivate = action.isChecked
+                    if (alreadyActive && tryingToActivate ) {
                         popupManager.showInfo("Hata", "Sadece bir alarm aktif olamaz")
                     }else{
                         val updated = action.alarm.copy(isActive = action.isChecked)

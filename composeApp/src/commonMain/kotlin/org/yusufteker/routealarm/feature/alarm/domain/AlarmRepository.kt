@@ -3,6 +3,7 @@ package org.yusufteker.routealarm.feature.alarm.domain
 import kotlinx.coroutines.flow.Flow
 import org.yusufteker.routealarm.core.domain.DataError
 import org.yusufteker.routealarm.core.domain.Result
+import org.yusufteker.routealarm.feature.alarm.data.database.AlarmWithStops
 
 interface AlarmRepository {
     fun getAlarms(): Flow<List<Alarm>>
@@ -11,5 +12,7 @@ interface AlarmRepository {
     suspend fun getAlarmById(id: Int): Result<Alarm?, DataError>
     suspend fun updateAlarm(alarm: Alarm)
     suspend fun insertAlarms(alarms: List<Alarm>)
-    suspend fun isAnyActiveAlarm(): Boolean
+    suspend fun getActiveAlarmWithStops(): AlarmWithStops?
+    suspend fun saveAlarmWithStops(alarm: Alarm, stops: List<Stop>): Int
+    suspend fun getAlarmsWithStops(): Flow<List<Alarm>>
 }
