@@ -1,12 +1,12 @@
 package org.yusufteker.routealarm.feature.alarm.presentation
 
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 
-class SharedAlarmViewModel : ViewModel() {
+class SharedAlarmViewModel : BaseViewModel() {
     private val _stops = MutableStateFlow<List<Stop>>(emptyList())
     val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 

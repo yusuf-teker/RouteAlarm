@@ -29,7 +29,7 @@ sealed interface Routes {
     data object AddAlarmScreen : Routes
 
     @Serializable
-    data class StopPickerScreen(val alarmId: Int) : Routes
+    object StopPickerScreen : Routes
 
     @Serializable
     data class ActiveAlarmScreen(val alarmId: Int) : Routes

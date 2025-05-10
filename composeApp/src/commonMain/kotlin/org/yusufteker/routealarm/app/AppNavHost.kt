@@ -63,11 +63,9 @@ fun AppNavHost(
                                 restoreState = true
                             }
                         }
-                    }
-                )
+                    })
             }
-        }
-    ) { innerPadding ->
+        }) { innerPadding ->
         NavHost(navController = navController, startDestination = startDestination) {
 
             // Onboarding Graph
@@ -99,21 +97,20 @@ fun AppNavHost(
 
 
                     HomeScreenRoot(
-                        contentPadding = innerPadding,
-                        onNavigateToAlarmDetail = { alarm ->
+                        contentPadding = innerPadding, onNavigateToAlarmDetail = { alarm ->
                             navController.navigate(Routes.AlarmDetailScreen(alarmId = alarm.id))
-                        }
-                    )
+                        })
 
                 }
 
                 composable<Routes.AddAlarmScreen> { entry ->
 
                     val viewModel = koinViewModel<AddAlarmViewModel>()
-                    val sharedViewModel = entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
+                    val sharedViewModel =
+                        entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
 
                     val stops by sharedViewModel.stops.collectAsStateWithLifecycle()
-                    LaunchedEffect(stops){
+                    LaunchedEffect(stops) {
                         stops.let {
                             viewModel.onAction(AddAlarmAction.OnStopsChange(it))
                         }
@@ -124,21 +121,23 @@ fun AppNavHost(
                         contentPadding = innerPadding,
                         onAddStopClick = {
                             navController.navigate(Routes.StopPickerScreen)
-                        }
-                    )
+                        },
+                        onSaveAlarmClick = {
+                            sharedViewModel.clearStops()
+                            navController.navigate(Routes.HomeScreen)
+                        })
                 }
 
                 composable<Routes.StopPickerScreen> { entry ->
 
-                    val sharedViewModel = entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
+                    val sharedViewModel =
+                        entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
 
                     StopPickerScreenRoot(
-                        contentPadding = innerPadding,
-                        onAddStopClick = {
+                        contentPadding = innerPadding, onAddStopClick = {
                             sharedViewModel.addStop(it)
                             navController.popBackStack()
-                        }
-                    )
+                        })
                 }
 
                 composable<Routes.AlarmDetailScreen> { backStackEntry ->
@@ -155,7 +154,7 @@ fun AppNavHost(
                 composable<Routes.SettingsScreen> {
 
                     Text("Settings")
-                        // SettingsScreen(modifier = Modifier.padding(padding))
+                    // SettingsScreen(modifier = Modifier.padding(padding))
 
                 }
             }

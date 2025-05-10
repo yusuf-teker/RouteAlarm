@@ -20,9 +20,7 @@ import org.yusufteker.routealarm.core.presentation.AppTypography
 sealed class CardContent {
     data class TextContent(val text: String) : CardContent()
     data class EditableTextContent(
-        val value: String,
-        val onValueChange: (String) -> Unit,
-        val placeholder: String = ""
+        val value: String, val onValueChange: (String) -> Unit, val placeholder: String = ""
     ) : CardContent()
 
     data class ImageContent(
@@ -32,8 +30,7 @@ sealed class CardContent {
     ) : CardContent()
 
     data class CombinedContent(
-        val items: List<CardContent>,
-        val spacing: Dp = 8.dp
+        val items: List<CardContent>, val spacing: Dp = 8.dp
     ) : CardContent()
 }
 
@@ -44,31 +41,27 @@ fun AdaptiveCard(
     elevation: CardElevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     shape: Shape = MaterialTheme.shapes.medium,
     colors: CardColors = CardDefaults.cardColors(),
-    padding: PaddingValues = PaddingValues(16.dp)
+    padding: PaddingValues = PaddingValues()
 ) {
     Card(
-        modifier = modifier,
-        elevation = elevation,
-        shape = shape,
-        colors = colors
+        modifier = modifier, elevation = elevation, shape = shape, colors = colors
     ) {
-        Box(modifier = Modifier.fillMaxWidth().background(AppColors.cardBackground).padding(padding)) {
+        Box(
+            modifier = Modifier.fillMaxWidth().background(AppColors.cardBackground).padding(padding)
+        ) {
             when (content) {
-                is CardContent.TextContent ->
-                    TextContent(content)
+                is CardContent.TextContent -> TextContent(content)
 
-                is CardContent.EditableTextContent ->
-                    EditableTextContent(content)
+                is CardContent.EditableTextContent -> EditableTextContent(content)
 
-                is CardContent.ImageContent ->
-                    ImageContent(content)
+                is CardContent.ImageContent -> ImageContent(content)
 
-                is CardContent.CombinedContent ->
-                    CombinedContent(content)
+                is CardContent.CombinedContent -> CombinedContent(content)
             }
         }
     }
 }
+
 
 @Composable
 private fun TextContent(content: CardContent.TextContent) {
@@ -76,7 +69,7 @@ private fun TextContent(content: CardContent.TextContent) {
         modifier = Modifier.background(AppColors.cardBackground).fillMaxWidth(),
         text = content.text,
         style = AppTypography.bodyRegular.copy()
-        
+
 
     )
 }
@@ -84,9 +77,7 @@ private fun TextContent(content: CardContent.TextContent) {
 @Composable
 private fun EditableTextContent(content: CardContent.EditableTextContent) {
     TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(AppColors.cardBackground),
+        modifier = Modifier.fillMaxWidth().background(AppColors.cardBackground),
         value = content.value,
         onValueChange = content.onValueChange,
         placeholder = {
@@ -99,7 +90,7 @@ private fun EditableTextContent(content: CardContent.EditableTextContent) {
         colors = TextFieldDefaults.colors(
             focusedTextColor = AppColors.textPrimary,
             unfocusedTextColor = AppColors.textPrimary,
-            cursorColor = AppColors.background,
+            cursorColor = AppColors.green,
             focusedContainerColor = AppColors.cardBackground,
             unfocusedContainerColor = AppColors.cardBackground,
             focusedIndicatorColor = AppColors.cardBackground,

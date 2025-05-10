@@ -6,15 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.WelcomeBackgroundColor
+import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import routealarm.composeapp.generated.resources.Res
 import routealarm.composeapp.generated.resources.welcomeNoBackground
 
@@ -70,25 +66,10 @@ fun WelcomeScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             // Devam Buton
-            Button(
-                modifier = Modifier.width(360.dp).padding(bottom = 72.dp),
-                onClick = onContinue,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.buttonBackground,
-                    contentColor = AppColors.buttonText
-                ),
-            ){
-                Text(
-                    text = "Get started.",
-                    style = TextStyle.Default.copy(
-                        fontSize = 24.sp,
-                        color = AppColors.buttonText
-                    )
+            PrimaryButton(
+                modifier = Modifier.width(360.dp), text = "Get started.", onClick = onContinue
 
-                )
-            }
-
-
+            )
         }
     }
 }

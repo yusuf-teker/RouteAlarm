@@ -12,12 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.data.dummy.fakeAlarms
 import org.yusufteker.routealarm.core.data.dummy.fakeStops
 import org.yusufteker.routealarm.core.presentation.AppColors
+import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreen
@@ -47,13 +47,11 @@ fun HomeScreenPreview() {
 fun StopProgressBarPreview() {
     MaterialTheme {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
 
             StopProgressBar(
-                fakeAlarms.get(0),
-                modifier = Modifier.background(
+                fakeAlarms.get(0), modifier = Modifier.background(
                     AppColors.cardBackground
                 )
             )
@@ -64,15 +62,14 @@ fun StopProgressBarPreview() {
     }
 
 }
+
 @Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarPreview() {
     var selectedRoute by remember { mutableStateOf(Routes.HomeScreen.toString()) }
 
     BottomNavigationBar(
-        currentRoute = selectedRoute,
-        onItemSelected = { selectedRoute = it.toString() }
-    )
+        currentRoute = selectedRoute, onItemSelected = { selectedRoute = it.toString() })
 }
 
 @Preview(showBackground = true)
@@ -80,31 +77,24 @@ fun BottomNavigationBarPreview() {
 fun AddAlarmScreenPreview() {
 
     val sampleState = AddAlarmState(
-        title = "İşe Gidiş Alarmı",
-        stops = fakeStops
+        title = "İşe Gidiş Alarmı", stops = fakeStops
     )
 
     AddAlarmScreen(
-        state = sampleState,
-        onAction = {},
-        contentPadding = PaddingValues()
+        state = sampleState, onAction = {}, contentPadding = PaddingValues()
     )
 }
 
 
-
-
 @Preview(showBackground = true)
 @Composable
-fun AdaptiveCardPrev(){
+fun AdaptiveCardPrev() {
     var text by remember { mutableStateOf("Deneme") }
 
     Column(Modifier.background(Color.Transparent)) {
         AdaptiveCard(
             content = CardContent.EditableTextContent(
-                value = text,
-                onValueChange = { text = it },
-                placeholder = "Enter your text"
+                value = text, onValueChange = { text = it }, placeholder = "Enter your text"
             )
         )
         AdaptiveCard(
@@ -114,7 +104,11 @@ fun AdaptiveCardPrev(){
                 )
         )
     }
+}
 
-
-
+@Preview(showBackground = true)
+@Composable
+fun PrimaryButtonPrev() {
+    PrimaryButton(
+        text = "Get started", onClick = { /* Handle click */ })
 }

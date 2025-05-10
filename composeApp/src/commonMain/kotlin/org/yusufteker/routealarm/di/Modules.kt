@@ -7,6 +7,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.yusufteker.routealarm.core.data.HttpClientFactory
+import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 import org.yusufteker.routealarm.feature.alarm.data.database.AlarmDatabase
 import org.yusufteker.routealarm.feature.alarm.data.repository.InMemoryAlarmRepository
@@ -41,11 +42,13 @@ val sharedModule = module {
     single { get<AlarmDatabase>().alarmDao } // Create AlarmDataBase
     single { get<AlarmDatabase>().stopDao } // Create AlarmDataBase
 
-    viewModel { HomeViewModel(get(), get()) }
+
+
+    viewModel { HomeViewModel(get()) }
 
     viewModel { AddAlarmViewModel(get ()) }
 
-    viewModel { StopPickerViewModel() }
+    viewModel { StopPickerViewModel( ) }
 
     viewModel { SharedAlarmViewModel() }
 }

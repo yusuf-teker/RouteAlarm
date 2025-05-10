@@ -5,11 +5,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 
 class AddAlarmViewModel(
-    private val repository: AlarmRepository
+    private val repository: AlarmRepository,
+
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddAlarmState())
@@ -68,7 +70,10 @@ class AddAlarmViewModel(
 
                 _state.value = AddAlarmState() // reset state
             } catch (e: Exception) {
-                _state.value = currentState.copy(isSaving = false, errorMessage = "Alarm kaydedilemedi.")
+                _state.value =
+                    currentState.copy(isSaving = false, errorMessage = "Alarm kaydedilemedi.")
+            } finally {
+
             }
         }
     }
