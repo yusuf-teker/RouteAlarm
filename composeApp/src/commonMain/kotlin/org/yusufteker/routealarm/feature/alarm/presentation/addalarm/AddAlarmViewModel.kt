@@ -94,8 +94,10 @@ class AddAlarmViewModel(
             override fun onPermissionGranted() {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    isLocationPermissionGranted = true
+                    isLocationPermissionGranted = true,
+                    canNavigateStopPicker = true
                 )
+
             }
 
             override fun onPermissionDenied(isPermanentDenied: Boolean) {

@@ -47,7 +47,7 @@ fun AddAlarmScreenRoot(
     LaunchedEffect(state.value.canNavigateStopPicker){ // todo kotu yontem degis
         if (state.value.canNavigateStopPicker){
             navigateToStopPicker()
-           viewModel.clearNavigateState()
+            viewModel.clearNavigateState()
         }
     }
     AddAlarmScreen(
