@@ -40,6 +40,7 @@ fun StopPickerScreenRoot(
         }
     }
     StopPickerScreen(
+
         state = state.value, onAction = { action ->
             viewModel.onAction(action = action)
             when (action) {
@@ -47,7 +48,7 @@ fun StopPickerScreenRoot(
                 is StopPickerAction.AddStop -> {
                     /*
                      if (state.value.canAddAndNavigate){
-                                onAddStopClick(state.value.stop)
+                                onAddStopClick(state.value.stop) // izin sonrasına eklendi
                             }
                     * */
                 }
@@ -63,7 +64,11 @@ fun StopPickerScreen(
     onAction: (StopPickerAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
-    val sharedViewModel: SharedAlarmViewModel = koinViewModel()
+
+    /*PlatformLocationPermissionHandler{ isGranted ->
+        onAction(StopPickerAction.LocationPermissionResult(isGranted))
+    }*/
+
 
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.background).padding(contentPadding)

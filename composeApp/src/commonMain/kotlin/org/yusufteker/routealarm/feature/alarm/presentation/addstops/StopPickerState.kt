@@ -7,5 +7,5 @@ data class StopPickerState(
     val query: String = "",
     val stop: Stop = Stop(name = "", latitude = 0.0, longitude = 0.0, alarmId = -1),
     val selectedTransportType: TransportType = TransportType.BUS,
-    val canAddAndNavigate: Boolean = false // todo kötü yontem
+    val canAddAndNavigate: Boolean = false, // todo kötü yontem
 )

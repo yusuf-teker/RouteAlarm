@@ -9,4 +9,6 @@ sealed class AddAlarmAction {
     object SaveAlarm : AddAlarmAction()
     object ClearError : AddAlarmAction()
     data class OnStopsChange(val stops: List<Stop>) : AddAlarmAction()
+    object RequestLocationPermission: AddAlarmAction()
+    object CheckLocationPermission: AddAlarmAction()
 }

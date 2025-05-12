@@ -20,6 +20,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,18 +39,25 @@ import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.
 @Composable
 fun AddAlarmScreenRoot(
     viewModel: AddAlarmViewModel = koinViewModel(),
-    onAddStopClick: () -> Unit,
+    navigateToStopPicker: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
     onSaveAlarmClick: () -> Unit
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
-
+    LaunchedEffect(state.value.canNavigateStopPicker){ // todo kotu yontem degis
+        if (state.value.canNavigateStopPicker){
+            navigateToStopPicker()
+           viewModel.clearNavigateState()
+        }
+    }
     AddAlarmScreen(
         state = state.value, onAction = { action ->
             when (action) {
                 //Diğer ekranlarla ilgili olanlar bu kısımda diğerleri viewmodelde
-                is AddAlarmAction.AddStop -> onAddStopClick()
-                is AddAlarmAction.SaveAlarm -> onSaveAlarmClick()
+                is AddAlarmAction.AddStop -> Unit // Launcheffecte alındı
+                is AddAlarmAction.SaveAlarm -> {
+                    onSaveAlarmClick()
+                }
                 else -> Unit
             }
             viewModel.onAction(action = action)
@@ -63,6 +71,7 @@ fun AddAlarmScreen(
     onAction: (AddAlarmAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
+
     Column(
         modifier = Modifier.fillMaxSize().background(AppColors.background).padding(contentPadding)
             .padding(16.dp)
@@ -80,14 +89,21 @@ fun AddAlarmScreen(
         StopList(
             stops = state.stops,
             onRemove = { stop -> onAction(AddAlarmAction.RemoveStop(stop)) },
-            onAddClick = { onAction(AddAlarmAction.AddStop) })
+            onAddClick = {
+                //onAction(AddAlarmAction.AddStop)
+                onAction(AddAlarmAction.CheckLocationPermission)
+            })
 
         Spacer(modifier = Modifier.weight(1f))
 
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
             text = "Kaydet",
-            onClick = { onAction(AddAlarmAction.SaveAlarm) })
+            onClick = {
+                onAction(AddAlarmAction.SaveAlarm)
+            }
+
+        )
 
         if (state.errorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))

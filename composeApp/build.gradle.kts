@@ -41,6 +41,8 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.play.services.location)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)

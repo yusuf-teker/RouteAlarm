@@ -17,6 +17,7 @@ import org.yusufteker.routealarm.feature.alarm.data.database.DatabaseFactory
 import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerViewModel
+import org.yusufteker.routealarm.permissions.PermissionBridge
 
 
 expect val platformModule: Module
@@ -24,6 +25,7 @@ expect val platformModule: Module
 val sharedModule = module {
 
     single { PopupManager() }
+    single { PermissionBridge() }
 
     single {
         // engine platforma gore degisiyor bu yüzde
@@ -46,9 +48,9 @@ val sharedModule = module {
 
     viewModel { HomeViewModel(get()) }
 
-    viewModel { AddAlarmViewModel(get ()) }
+    viewModel { AddAlarmViewModel(get (),get()) }
 
-    viewModel { StopPickerViewModel( ) }
+    viewModel { StopPickerViewModel() }
 
     viewModel { SharedAlarmViewModel() }
 }

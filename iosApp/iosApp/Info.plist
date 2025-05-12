@@ -46,5 +46,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Lokasyon izni lazım durak eklemek için</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Lokasyn izni verir misin lütfen</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Arka plandada konumun lazım.</string>
 </dict>
 </plist>

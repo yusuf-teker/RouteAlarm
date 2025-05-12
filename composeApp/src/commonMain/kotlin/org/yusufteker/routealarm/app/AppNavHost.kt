@@ -119,13 +119,14 @@ fun AppNavHost(
                     AddAlarmScreenRoot(
                         viewModel = viewModel,
                         contentPadding = innerPadding,
-                        onAddStopClick = {
+                        navigateToStopPicker = {
                             navController.navigate(Routes.StopPickerScreen)
                         },
                         onSaveAlarmClick = {
                             sharedViewModel.clearStops()
                             navController.navigate(Routes.HomeScreen)
-                        })
+                        }
+                    )
                 }
 
                 composable<Routes.StopPickerScreen> { entry ->

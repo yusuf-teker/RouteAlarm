@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
-import org.yusufteker.routealarm.core.presentation.popup.PopupType
 
 class StopPickerViewModel() : BaseViewModel() {
 
@@ -25,15 +24,15 @@ class StopPickerViewModel() : BaseViewModel() {
             is StopPickerAction.AddStop -> {
                 val currentStop = _state.value.stop
                 if (currentStop.name.isBlank()) {
-                    popupManager.showPopup(
-                        PopupType.Error("Durak adı boş olamaz")
-                    )
+
+                    showErrorPopup("Durak adı boş olamaz")
+
                     _state.value = _state.value.copy(canAddAndNavigate = false)
                     return
-                }else{
+                } else {
                     _state.value = _state.value.copy(canAddAndNavigate = true)
                 }
-                //NavHostta shared view modele eklendi
+
 
             }
 
@@ -45,8 +44,16 @@ class StopPickerViewModel() : BaseViewModel() {
                 _state.value =
                     _state.value.copy(stop = _state.value.stop.copy(name = action.newTitle))
             }
+
         }
     }
+
+
+
+
+
+
+
 
 
 }
