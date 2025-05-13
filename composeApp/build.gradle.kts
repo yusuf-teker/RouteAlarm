@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -42,6 +43,9 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.play.services.location)
+            implementation(libs.google.maps)
+            implementation(libs.maps.compose)
+
 
         }
         commonMain.dependencies {
@@ -77,6 +81,12 @@ kotlin {
         }
     }
 }
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+val googleMapsApiKey = localProperties.getProperty("googleMapsApiKey") ?: ""
 
 android {
     namespace = "org.yusufteker.routealarm"
@@ -88,6 +98,19 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        // Manifest için placeholder tanımlayın
+        manifestPlaceholders["MAPS_API_KEY"] = googleMapsApiKey
+
+        // BuildConfig içinde kullanılacak alan
+        buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"$googleMapsApiKey\"")
+
+
+
+
+    }
+    buildFeatures {
+        buildConfig = true  // BuildConfig sınıfı oluşturmayı etkinleştirir
     }
     packaging {
         resources {

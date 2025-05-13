@@ -22,8 +22,8 @@ import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
-import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.components.TransportTypeDropdownSelector
+import org.yusufteker.routealarm.feature.location.presentation.PlatformMap
 
 
 @Composable
@@ -94,8 +94,11 @@ fun StopPickerScreen(
                 })
         }
 
-
-        Spacer(Modifier.weight(1f))
+        PlatformMap(
+            modifier = Modifier.weight(1f),
+            selectedLocation = state.locationUiModel,
+            onLocationSelected = {}
+        )
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(), text = "Durak Ekle", onClick = {
                 onAction(StopPickerAction.AddStop(state.stop)) // AddAlarmScreen’e geri dön
