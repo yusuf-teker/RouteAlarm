@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 
+//todo singleton yap
 class SharedAlarmViewModel : BaseViewModel() {
     private val _stops = MutableStateFlow<List<Stop>>(emptyList())
     val stops: StateFlow<List<Stop>> = _stops.asStateFlow()

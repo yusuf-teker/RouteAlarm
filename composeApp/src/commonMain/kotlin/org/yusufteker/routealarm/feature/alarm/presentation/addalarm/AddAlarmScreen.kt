@@ -17,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,11 +26,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
+import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.AppColors
+import org.yusufteker.routealarm.core.presentation.UiEvent
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
+import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.AddStopCard
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopCard
 
@@ -41,25 +43,27 @@ fun AddAlarmScreenRoot(
     viewModel: AddAlarmViewModel = koinViewModel(),
     navigateToStopPicker: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
-    onSaveAlarmClick: () -> Unit
+    navigateToHome: () -> Unit
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(state.value.canNavigateStopPicker){ // todo kotu yontem degis
-        if (state.value.canNavigateStopPicker){
-            navigateToStopPicker()
-            viewModel.clearNavigateState()
-        }
-    }
-    AddAlarmScreen(
-        state = state.value, onAction = { action ->
-            when (action) {
-                //Diğer ekranlarla ilgili olanlar bu kısımda diğerleri viewmodelde
-                is AddAlarmAction.AddStop -> Unit // Launcheffecte alındı
-                is AddAlarmAction.SaveAlarm -> {
-                    onSaveAlarmClick()
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when(event){
+                is UiEvent.NavigateTo -> {
+                    if (event.route == Routes.StopPickerScreen) {
+                        navigateToStopPicker()
+                    }else if (event.route == Routes.HomeScreen){
+                        navigateToHome()
+                    }
                 }
                 else -> Unit
             }
+        }
+    }
+
+    AddAlarmScreen(
+        state = state.value, onAction = { action ->
             viewModel.onAction(action = action)
         }, contentPadding = contentPadding
     )
@@ -104,11 +108,6 @@ fun AddAlarmScreen(
             }
 
         )
-
-        if (state.errorMessage != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = state.errorMessage, color = Color.Red)
-        }
     }
 }
 

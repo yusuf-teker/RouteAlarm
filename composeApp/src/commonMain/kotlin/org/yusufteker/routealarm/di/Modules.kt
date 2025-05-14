@@ -49,7 +49,7 @@ val sharedModule = module {
 
     viewModel { AddAlarmViewModel(get (),get()) }
 
-    viewModel { StopPickerViewModel(get()) }
+    viewModel { StopPickerViewModel(get(),get() ) }
 
     viewModel { SharedAlarmViewModel() }
 }

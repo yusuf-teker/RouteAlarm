@@ -4,7 +4,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
+import org.yusufteker.routealarm.core.presentation.UiEvent
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.permissions.PermissionBridge
@@ -13,7 +15,7 @@ import org.yusufteker.routealarm.permissions.openAppSettings
 
 class AddAlarmViewModel(
     private val repository: AlarmRepository,
-    private val permissionBridge: PermissionBridge
+    private val permissionBridge: PermissionBridge,
 ) : BaseViewModel() {
 
     private val _state = MutableStateFlow(AddAlarmState())
@@ -25,10 +27,6 @@ class AddAlarmViewModel(
                 _state.value = _state.value.copy(title = action.newTitle)
             }
 
-            is AddAlarmAction.AddStop -> {
-
-            }
-
             is AddAlarmAction.RemoveStop -> {
                 val updatedStops = _state.value.stops - action.stop
                 _state.value = _state.value.copy(stops = updatedStops)
@@ -36,10 +34,6 @@ class AddAlarmViewModel(
 
             is AddAlarmAction.SaveAlarm -> {
                 saveAlarm()
-            }
-
-            is AddAlarmAction.ClearError -> {
-                _state.value = _state.value.copy(errorMessage = null)
             }
 
             is AddAlarmAction.OnStopsChange -> {
@@ -56,14 +50,11 @@ class AddAlarmViewModel(
     private fun saveAlarm() {
         val currentState = _state.value
         if (currentState.title.isBlank() || currentState.stops.isEmpty()) {
-            _state.value = currentState.copy(errorMessage = "Başlık ve en az bir durak girin.")
-            //showErrorPopup("Başlık ve en az bir durak girin.")
-            //_state.value = currentState.copy(canAddAndNavigate = false)
+            showErrorPopup(message = "Başlık ve en az bir durak girin.")
             return
         }
 
         viewModelScope.launch {
-            _state.value = currentState.copy(isSaving = true)
             try {
                 repository.saveAlarmWithStops(
                     Alarm(
@@ -75,10 +66,10 @@ class AddAlarmViewModel(
 
                 )
                 //_state.value = _state.value.copy(canAddAndNavigate = true)
+                sendUiEvent(UiEvent.NavigateTo(Routes.HomeScreen))
                 _state.value = AddAlarmState() // reset state
             } catch (e: Exception) {
-                _state.value =
-                    currentState.copy(isSaving = false, errorMessage = "Alarm kaydedilemedi.")
+                showErrorPopup( message = "Alarm kaydedilemedi.")
             } finally {
 
             }
@@ -95,8 +86,8 @@ class AddAlarmViewModel(
                 _state.value = _state.value.copy(
                     isLoading = false,
                     isLocationPermissionGranted = true,
-                    canNavigateStopPicker = true
                 )
+                sendUiEventSafe(UiEvent.NavigateTo(Routes.StopPickerScreen))
 
             }
 
@@ -122,17 +113,11 @@ class AddAlarmViewModel(
             isLocationPermissionGranted = isLocationPermissionGranted
         )
         if (isLocationPermissionGranted){
-            _state.value = _state.value.copy(
-                canNavigateStopPicker = true
-            )
+            sendUiEventSafe(UiEvent.NavigateTo(Routes.StopPickerScreen))
         }else{
             requestLocationPermission()
         }
 
-    }
-
-    fun clearNavigateState(){ // todo sonradan düşünülecek
-        _state.value = _state.value.copy(canNavigateStopPicker = false)
     }
 
 }

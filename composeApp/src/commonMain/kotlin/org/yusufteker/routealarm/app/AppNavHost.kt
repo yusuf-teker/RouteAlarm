@@ -125,7 +125,7 @@ fun AppNavHost(
                         navigateToStopPicker = {
                             navController.navigate(Routes.StopPickerScreen)
                         },
-                        onSaveAlarmClick = {
+                        navigateToHome = {
                             sharedViewModel.clearStops()
                             navController.navigate(Routes.HomeScreen)
                         }
@@ -138,12 +138,13 @@ fun AppNavHost(
                             entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
 
                         StopPickerScreenRoot(
-                            contentPadding = innerPadding, onAddStopClick = {
-                                sharedViewModel.addStop(it)
-                                navController.popBackStack()
-                            },
+                            contentPadding = innerPadding,
                             onBackClick = {
                                 navController.popBackStack()
+                            },
+                            navigateToAddAlarm = {
+                                sharedViewModel.addStop(it)
+                                navController.navigate(Routes.AddAlarmScreen)
                             }
                         )
 

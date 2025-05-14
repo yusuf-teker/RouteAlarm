@@ -13,14 +13,18 @@ import platform.MapKit.MKMapView
 @Composable
 actual fun PlatformMap(
     modifier: Modifier,
-    selectedLocation: Location,
-    onLocationSelected: (Location) -> Unit
+    selectedLocation: Location?,
+    currentLocation: Location,
+    onLocationSelected: (Location) -> Unit,
+    centerToCurrentLocation: Boolean,
+    onCenterLocationConsumed: () -> Unit
+
 ) {
 
-    val clLocation = remember(selectedLocation) {
+    val clLocation = remember(currentLocation) {
         CLLocationCoordinate2DMake(
-            selectedLocation.lat,
-            selectedLocation.lng
+            currentLocation.lat,
+            currentLocation.lng
         )
     }
     UIKitView(

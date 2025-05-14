@@ -1,4 +1,4 @@
-package org.yusufteker.routealarm.feature.location.domain
+package org.yusufteker.routealarm.feature.location.data
 
 import android.content.Context
 import com.google.android.libraries.places.api.Places
@@ -7,7 +7,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.yusufteker.routealarm.BuildConfig
-import com.google.android.libraries.places.api.model.Place.Field
+import org.yusufteker.routealarm.feature.location.domain.Place
 
 // androidMain
 actual class PlaceSuggestionService(private val context: Context) {
@@ -46,7 +46,7 @@ actual class PlaceSuggestionService(private val context: Context) {
     actual suspend fun getPlaceDetails(placeId: String): Place? {
         val request = FetchPlaceRequest.newInstance(
             placeId,
-            listOf(Field.ID, Field.NAME, Field.ADDRESS, Field.LAT_LNG)
+            listOf(com.google.android.libraries.places.api.model.Place.Field.ID, com.google.android.libraries.places.api.model.Place.Field.NAME, com.google.android.libraries.places.api.model.Place.Field.ADDRESS, com.google.android.libraries.places.api.model.Place.Field.LAT_LNG)
         )
 
         return suspendCancellableCoroutine { cont ->

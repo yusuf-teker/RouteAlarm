@@ -12,6 +12,7 @@ sealed interface StopPickerAction {
     data class SelectTransportType(val type: TransportType) : StopPickerAction
     data class TitleChanged(val newTitle: String) : StopPickerAction
     data class SuggestionSelected(val suggestionPlace: Place) : StopPickerAction
-
     object NavigateBack : StopPickerAction
+    object CenterMapOnCurrentLocation: StopPickerAction
+    object OnCenterMapLocationConsumed: StopPickerAction
 }

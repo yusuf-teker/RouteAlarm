@@ -7,6 +7,10 @@ import org.yusufteker.routealarm.feature.location.domain.Location
 @Composable
 expect fun PlatformMap(
     modifier: Modifier,
-    selectedLocation: Location,
-    onLocationSelected: (Location) -> Unit
+    selectedLocation: Location? = null,
+    currentLocation: Location,
+    onLocationSelected: (Location) -> Unit,
+    centerToCurrentLocation: Boolean,
+    onCenterLocationConsumed: () -> Unit
+
 )

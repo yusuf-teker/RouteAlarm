@@ -18,31 +18,33 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
+import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
+import org.yusufteker.routealarm.core.presentation.UiEvent
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
 import org.yusufteker.routealarm.core.presentation.card.LayoutOrientation
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
+import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.components.TransportTypeDropdownSelector
 import org.yusufteker.routealarm.feature.location.presentation.LocationSearchBar
 import org.yusufteker.routealarm.feature.location.presentation.PlatformMap
@@ -51,15 +53,25 @@ import org.yusufteker.routealarm.feature.location.presentation.PlatformMap
 @Composable
 fun StopPickerScreenRoot(
     viewModel: StopPickerViewModel = koinViewModel(),
-    onAddStopClick: (Stop) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navigateToAddAlarm: (Stop) -> Unit
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(state.value.canAddAndNavigate) { // todo kotu yontem degis
-        if (state.value.canAddAndNavigate) {
-            onAddStopClick(state.value.stop)
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when(event){
+                is UiEvent.NavigateBack -> {
+                    onBackClick()
+                }
+                is UiEvent.NavigateWithData<*> -> {
+                    if (event.route == Routes.AddAlarmScreen){
+                        navigateToAddAlarm(event.data as Stop)
+                    }
+                }
+                else -> Unit
+            }
         }
     }
 
@@ -67,18 +79,6 @@ fun StopPickerScreenRoot(
 
         state = state.value, onAction = { action ->
             viewModel.onAction(action = action)
-            when (action) {
-                //Diğer ekranlarla ilgili olanlar bu kısımda diğerleri viewmodelde
-                is StopPickerAction.AddStop -> {/*
-                     if (state.value.canAddAndNavigate){
-                                onAddStopClick(state.value.stop) // izin sonrasına eklendi
-                            }
-                    * */
-                }
-                is StopPickerAction.NavigateBack -> onBackClick
-
-                else -> Unit
-            }
         }, contentPadding = contentPadding
     )
 }
@@ -90,30 +90,32 @@ fun StopPickerScreen(
     contentPadding: PaddingValues = PaddingValues()
 ) {
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
     val bottomPadding = systemBarsPadding.calculateBottomPadding()
     val topPadding = systemBarsPadding.calculateTopPadding()
 
 
-    var animateBottom by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        animateBottom = true
-    }
 
     Box(
         modifier = Modifier.fillMaxSize().background(AppColors.cardBackground)
     ) {
 
-
-
-
             PlatformMap(
+                currentLocation = state.currentLocation,
                 modifier = Modifier.fillMaxSize(),
                 selectedLocation = state.location,
                 onLocationSelected = { selectedLocation ->
                     onAction(StopPickerAction.LocationSelected(selectedLocation))
-                })
+                },
+                onCenterLocationConsumed = {
+                    onAction(StopPickerAction.OnCenterMapLocationConsumed)
+                },
+                centerToCurrentLocation = state.centerToCurrentLocation,
+
+            )
 
 
         Column(
@@ -143,16 +145,33 @@ fun StopPickerScreen(
                     onAction(StopPickerAction.QueryChanged(query))
                 }, suggestions = state.suggestions, onSuggestionClicked = { suggestion ->
                     onAction(StopPickerAction.SuggestionSelected(suggestion))
+                    keyboardController?.hide()
                 })
             }
 
             Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = {
+                    // Haritayı mevcut konuma odaklayın
+                    onAction(StopPickerAction.CenterMapOnCurrentLocation)
+                },
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(16.dp)
+                    .background(AppColors.cardBackground , shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Place,
+                    contentDescription = "Current Location",
+                    tint = AppColors.iconTint
+                )
+            }
             AnimatedVisibility(
-                visible = animateBottom, // Her zaman görünür, ama animasyonlu gelir
+                visible = state.showBottom, // Her zaman görünür, ama animasyonlu gelir
                 enter = slideInVertically(
                     initialOffsetY = { fullHeight -> fullHeight }, // Alttan gir
-                    animationSpec = tween(durationMillis = 400)
-                ) + fadeIn(animationSpec = tween(400))
+                    animationSpec = tween(durationMillis = 1000)
+                ) + fadeIn(animationSpec = tween(1000))
             ) {
                 AdaptiveCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -203,6 +222,7 @@ fun StopPickerScreen(
 
 
         }
+
     }
 
 

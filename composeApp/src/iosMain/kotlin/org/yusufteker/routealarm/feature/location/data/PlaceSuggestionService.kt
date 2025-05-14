@@ -1,4 +1,4 @@
-package org.yusufteker.routealarm.feature.location.domain
+package org.yusufteker.routealarm.feature.location.data
 
 // iosMain
 actual class PlaceSuggestionService {
