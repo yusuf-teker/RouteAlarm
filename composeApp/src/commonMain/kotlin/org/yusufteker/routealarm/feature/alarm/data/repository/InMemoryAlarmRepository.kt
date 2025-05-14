@@ -8,6 +8,7 @@ import org.yusufteker.routealarm.core.domain.Result
 import org.yusufteker.routealarm.feature.alarm.data.database.AlarmDao
 import org.yusufteker.routealarm.feature.alarm.data.database.AlarmWithStops
 import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopDao
+import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopEntity
 import org.yusufteker.routealarm.feature.alarm.data.mappers.toDomain
 import org.yusufteker.routealarm.feature.alarm.data.mappers.toEntity
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
@@ -76,6 +77,10 @@ class InMemoryAlarmRepository(
     override suspend fun getAlarmsWithStops(): Flow<List<Alarm>> {
         return localAlarmDataSource.getAlarmsWithStops()
             .map { list -> list.map { it.toDomain() } }
+    }
+
+    override suspend fun insertStop(stop: StopEntity) {
+        stopDao.insert(stop)
     }
 
 

@@ -26,7 +26,6 @@ val sharedModule = module {
 
     single { PopupManager() }
     single { PermissionBridge() }
-
     single {
         // engine platforma gore degisiyor bu yüzde
         // expect val platformModule: Module tanımlamlı ve tüm platformlar için implemente (actual) etmeliyiz
@@ -50,7 +49,7 @@ val sharedModule = module {
 
     viewModel { AddAlarmViewModel(get (),get()) }
 
-    viewModel { StopPickerViewModel() }
+    viewModel { StopPickerViewModel(get()) }
 
     viewModel { SharedAlarmViewModel() }
 }

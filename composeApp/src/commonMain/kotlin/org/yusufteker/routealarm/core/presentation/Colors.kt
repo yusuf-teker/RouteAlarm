@@ -33,6 +33,8 @@ object AppColors {
 
     val green = Color.Green
 
+    val iconTint = Color.White
+
 
 }
 

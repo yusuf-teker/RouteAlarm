@@ -1,11 +1,19 @@
 package org.yusufteker.routealarm.feature.alarm.presentation.addstops
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
+import org.yusufteker.routealarm.feature.location.domain.PlaceSuggestionService
+import org.yusufteker.routealarm.feature.location.domain.emptyLocation
+import org.yusufteker.routealarm.feature.location.domain.toLocation
 
-class StopPickerViewModel() : BaseViewModel() {
+class StopPickerViewModel(
+    private val placeSuggestionService: PlaceSuggestionService
+
+) : BaseViewModel() {
 
     private val _state = MutableStateFlow(StopPickerState())
     val state: StateFlow<StopPickerState> = _state.asStateFlow()
@@ -15,10 +23,13 @@ class StopPickerViewModel() : BaseViewModel() {
             is StopPickerAction.QueryChanged -> {
                 val query = action.value
                 _state.value = _state.value.copy(query = query)
+                searchPlaces(query)
             }
 
             is StopPickerAction.LocationSelected -> {
-                // Todo Location yapisi eklenecek
+                _state.value = _state.value.copy(
+                    location = action.location
+                )
             }
 
             is StopPickerAction.AddStop -> {
@@ -45,15 +56,42 @@ class StopPickerViewModel() : BaseViewModel() {
                     _state.value.copy(stop = _state.value.stop.copy(name = action.newTitle))
             }
 
+            is StopPickerAction.SuggestionSelected -> {
+                _state.value = _state.value.copy(selectedPlace = null)
+                selectPlace(action.suggestionPlace.id)
+                _state.value = _state.value.copy(
+                    query = action.suggestionPlace.name,
+                    suggestions = emptyList(),
+                )
+
+            }
+
+            StopPickerAction.NavigateBack -> {
+                // handled in the screen
+            }
         }
     }
 
 
+    fun searchPlaces(query: String) {
+        viewModelScope.launch {
+            val results = placeSuggestionService.getSuggestions(query)
+            _state.value = _state.value.copy(suggestions = results)
 
+        }
+    }
 
+    // Bir yer seçildiğinde, yerin detaylarını al
+    fun selectPlace(placeId: String) {
+        viewModelScope.launch {
+            val placeDetails = placeSuggestionService.getPlaceDetails(placeId)
+            _state.value = _state.value.copy(
+                selectedPlace = placeDetails,
+                location = placeDetails?.toLocation() ?: emptyLocation,
+            )
 
-
-
+        }
+    }
 
 
 }

@@ -45,6 +45,8 @@ kotlin {
             implementation(libs.play.services.location)
             implementation(libs.google.maps)
             implementation(libs.maps.compose)
+            implementation(libs.google.places)
+            implementation(libs.accompanist.systemuicontroller)
 
 
         }

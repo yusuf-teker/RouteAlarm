@@ -26,6 +26,8 @@ import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.StopProgressBar
+import org.yusufteker.routealarm.feature.location.domain.Place
+import org.yusufteker.routealarm.feature.location.presentation.LocationSearchBar
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
 
 @Preview
@@ -111,4 +113,22 @@ fun AdaptiveCardPrev() {
 fun PrimaryButtonPrev() {
     PrimaryButton(
         text = "Get started", onClick = { /* Handle click */ })
+}
+
+@Preview
+@Composable
+fun LocationSearchBarPreview() {
+    LocationSearchBar(
+        query = "Search location...",
+        onQueryChanged = {},
+        suggestions = listOf(
+            Place("1", "Suggestion 1", "", 1.1, 1.1),
+            Place("2", "Suggestion 2", "", 1.1, 1.1),
+            Place("3", "Suggestion 3", "", 1.1, 1.1),
+            Place("4", "Suggestion 4", "", 1.1, 1.1),
+            Place("5", "Suggestion 5", "", 1.1, 1.1)
+        ),
+        onSuggestionClicked = {}
+    )
+
 }

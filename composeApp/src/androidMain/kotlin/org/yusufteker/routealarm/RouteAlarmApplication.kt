@@ -2,6 +2,7 @@ package org.yusufteker.routealarm
 
 import android.app.Application
 import android.content.Context
+import com.google.android.libraries.places.api.Places
 import org.koin.android.ext.koin.androidContext
 import org.yusufteker.routealarm.di.initKoin
 
@@ -12,7 +13,9 @@ class RouteAlarmApplication: Application() {
             androidContext(this@RouteAlarmApplication)
         }
         AndroidApplicationContext.init(this)
-
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, BuildConfig.GOOGLE_MAPS_API_KEY)
+        }
     }
 }
 

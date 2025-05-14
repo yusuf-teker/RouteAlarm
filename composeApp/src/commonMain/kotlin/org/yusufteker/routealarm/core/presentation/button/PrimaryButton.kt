@@ -2,6 +2,7 @@ package org.yusufteker.routealarm.core.presentation.button
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,12 +21,13 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     fontSize: TextUnit = 24.sp,
+    colors: ButtonColors = ButtonDefaults.buttonColors()
 ) {
     Button(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier,
         onClick = onClick,
         enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
+        colors = colors.copy(
             containerColor = AppColors.buttonBackground,
             contentColor = AppColors.buttonText,
             disabledContainerColor = AppColors.buttonBackground.copy(alpha = 0.5f),

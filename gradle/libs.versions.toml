@@ -26,7 +26,8 @@ room = "2.7.0-alpha11"
 play-services-location = "21.0.1"
 google-maps = "18.2.0"
 maps-compose = "2.11.4"
-
+places = "3.3.0"
+accompanist = "0.36.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -72,6 +73,8 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "play-services-location" }
 google-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "google-maps" }
 maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "maps-compose" }
+google-places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 
 
 

@@ -6,9 +6,12 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.yusufteker.routealarm.feature.alarm.data.database.DatabaseFactory
+import org.yusufteker.routealarm.feature.location.domain.PlaceSuggestionService
 
 actual val platformModule: Module
     get() = module {
         single<HttpClientEngine> { OkHttp.create() } // Platform spesifik dependency
         single { DatabaseFactory(androidApplication()) }
+        single { PlaceSuggestionService(get()) }
+
     }

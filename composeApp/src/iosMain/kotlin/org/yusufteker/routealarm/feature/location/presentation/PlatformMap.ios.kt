@@ -5,7 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
-import org.yusufteker.routealarm.feature.location.domain.LocationUiModel
+import org.yusufteker.routealarm.feature.location.domain.Location
 import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKMapView
 
@@ -13,13 +13,13 @@ import platform.MapKit.MKMapView
 @Composable
 actual fun PlatformMap(
     modifier: Modifier,
-    selectedLocation: LocationUiModel?,
-    onLocationSelected: (LocationUiModel) -> Unit
+    selectedLocation: Location,
+    onLocationSelected: (Location) -> Unit
 ) {
 
     val clLocation = remember(selectedLocation) {
         CLLocationCoordinate2DMake(
-            selectedLocation!!.lat,
+            selectedLocation.lat,
             selectedLocation.lng
         )
     }

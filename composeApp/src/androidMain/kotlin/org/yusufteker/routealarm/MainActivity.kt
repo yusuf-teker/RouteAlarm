@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import org.yusufteker.routealarm.app.App
 import org.koin.android.ext.android.getKoin
 import org.yusufteker.routealarm.permissions.AndroidLocationPermissionsHandler

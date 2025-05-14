@@ -1,5 +1,6 @@
 package org.yusufteker.routealarm.app
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -22,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import org.koin.compose.viewmodel.koinViewModel
+import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmAction
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreenRoot
@@ -49,6 +51,7 @@ fun AppNavHost(
         Routes.SettingsScreen.toString()
     )
     Scaffold(
+        modifier = Modifier.background(AppColors.cardBackground),
         bottomBar = {
             if (showBottomBar) {
 
@@ -129,17 +132,22 @@ fun AppNavHost(
                     )
                 }
 
-                composable<Routes.StopPickerScreen> { entry ->
+                    composable<Routes.StopPickerScreen> { entry ->
 
-                    val sharedViewModel =
-                        entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
+                        val sharedViewModel =
+                            entry.sharedKoinViewModel<SharedAlarmViewModel>(navController = navController)
 
-                    StopPickerScreenRoot(
-                        contentPadding = innerPadding, onAddStopClick = {
-                            sharedViewModel.addStop(it)
-                            navController.popBackStack()
-                        })
-                }
+                        StopPickerScreenRoot(
+                            contentPadding = innerPadding, onAddStopClick = {
+                                sharedViewModel.addStop(it)
+                                navController.popBackStack()
+                            },
+                            onBackClick = {
+                                navController.popBackStack()
+                            }
+                        )
+
+                    }
 
                 composable<Routes.AlarmDetailScreen> { backStackEntry ->
                     val args = backStackEntry.toRoute<Routes.AlarmDetailScreen>()
