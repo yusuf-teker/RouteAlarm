@@ -82,6 +82,11 @@ class InMemoryAlarmRepository(
     override suspend fun insertStop(stop: StopEntity) {
         stopDao.insert(stop)
     }
+    override suspend fun setAlarmActive(alarmId: Int, isActive: Boolean) {
+        localAlarmDataSource.updateIsActive(alarmId, isActive)
+    }
+
+
 
 
 }

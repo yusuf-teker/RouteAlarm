@@ -24,8 +24,8 @@ import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScr
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeState
+import org.yusufteker.routealarm.feature.alarm.presentation.home.components.ActiveAlarm
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
-import org.yusufteker.routealarm.feature.alarm.presentation.home.components.StopProgressBar
 import org.yusufteker.routealarm.feature.location.domain.Place
 import org.yusufteker.routealarm.feature.location.presentation.LocationSearchBar
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
@@ -52,10 +52,8 @@ fun StopProgressBarPreview() {
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            StopProgressBar(
-                fakeAlarms.get(0), modifier = Modifier.background(
-                    AppColors.cardBackground
-                )
+            ActiveAlarm(
+                fakeAlarms.get(0)
             )
 
 

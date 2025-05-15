@@ -13,6 +13,7 @@ import org.yusufteker.routealarm.core.data.dummy.fakeAlarms
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.ActiveAlarm
+import org.yusufteker.routealarm.feature.alarm.presentation.home.components.ActiveAlarmMax2Stop
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.AlarmList
 
 @Composable
@@ -54,15 +55,18 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth().weight(1f).padding(16.dp),
             alarms = state.alarms,
             onAlarmCheckedChange = { alarm, isChecked ->
-                val action = HomeAction.OnAlarmCheckedChange(alarm, isChecked)
-                onAction(action)
+                onAction(HomeAction.OnAlarmCheckedChange(alarm, isChecked))
             },
             onDeleteAlarm = { alarm ->
                 onAction(HomeAction.OnDeleteAlarm(alarm.id))
             })
 
         if (state.activeAlarm != null) {
-            ActiveAlarm(fakeAlarms.first())
+            if (state.activeAlarm.stops.size>2){
+                ActiveAlarm(state.activeAlarm )
+            }else{
+                ActiveAlarmMax2Stop(alarm = state.activeAlarm )
+            }
         }
     }
 

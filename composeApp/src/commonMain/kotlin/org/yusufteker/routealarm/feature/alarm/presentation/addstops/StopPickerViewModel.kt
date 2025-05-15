@@ -48,6 +48,7 @@ class StopPickerViewModel(
                     location = action.location,
                     showBottom = true
                 )
+                clearQueryAndSuggestions()
             }
 
             is StopPickerAction.AddStop -> {
@@ -133,6 +134,13 @@ class StopPickerViewModel(
             )
 
         }
+    }
+
+    fun clearQueryAndSuggestions(){
+        _state.value = _state.value.copy(
+            query = "",
+            suggestions = emptyList(),
+        )
     }
 
 }

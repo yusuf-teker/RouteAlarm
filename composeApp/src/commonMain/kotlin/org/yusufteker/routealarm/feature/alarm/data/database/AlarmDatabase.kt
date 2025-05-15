@@ -8,7 +8,7 @@ import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopEntity
 
 @Database(
     entities = [AlarmEntity::class, StopEntity::class],
-    version = 3,
+    version = 1,
     exportSchema = false
 )
 

@@ -40,7 +40,7 @@ fun SwipeToDeleteAlarmItem(
     SwipeToDismissBox(state = state, enableDismissFromStartToEnd = false, backgroundContent = {
         // Silme arka planı
         Box(
-            modifier = Modifier.fillMaxSize().background(Color.Red).padding(end = 24.dp),
+            modifier = Modifier.fillMaxSize().background(Color.Red, shape = MaterialTheme.shapes.medium).padding(end = 24.dp),
             contentAlignment = Alignment.CenterEnd
         ) {
             Icon(
@@ -53,7 +53,7 @@ fun SwipeToDeleteAlarmItem(
         AlarmItemContent(
             alarm = alarm,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.background(AppColors.cardBackground)
+            modifier = Modifier.background(AppColors.cardBackground, shape = MaterialTheme.shapes.medium)
         )
     })
 }
@@ -107,7 +107,7 @@ fun AlarmList(
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp)
+            modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
             items(alarms, key = { it.id }) { alarm ->
                 SwipeToDeleteAlarmItem(

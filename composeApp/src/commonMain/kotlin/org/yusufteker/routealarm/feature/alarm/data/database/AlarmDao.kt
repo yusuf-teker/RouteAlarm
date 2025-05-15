@@ -38,5 +38,7 @@ interface AlarmDao {
     @Query("SELECT * FROM alarms WHERE isActive = 1 LIMIT 1")
     suspend fun getActiveAlarmWithStops(): AlarmWithStops?
 
+    @Query("UPDATE alarms SET isActive = :isActive WHERE id = :alarmId")
+    suspend fun updateIsActive(alarmId: Int, isActive: Boolean)
 
 }

@@ -19,4 +19,8 @@ interface AlarmRepository {
 
     // Stop
     suspend fun insertStop(stop: StopEntity)
+
+    suspend fun setAlarmActive(alarmId: Int, isActive: Boolean)
+
+
 }

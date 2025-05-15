@@ -81,8 +81,8 @@ class HomeViewModel(
                     if (alreadyActive && tryingToActivate) {
                         showInfoPopup("Hata","Sadece bir alarm aktif olamaz")
                     } else {
-                        val updated = action.alarm.copy(isActive = action.isChecked)
-                        alarmRepository.updateAlarm(updated)
+                        alarmRepository.setAlarmActive( action.alarm.id, action.isChecked)
+
                     }
 
                 }

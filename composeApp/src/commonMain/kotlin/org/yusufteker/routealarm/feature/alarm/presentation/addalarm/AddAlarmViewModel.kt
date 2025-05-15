@@ -58,14 +58,12 @@ class AddAlarmViewModel(
             try {
                 repository.saveAlarmWithStops(
                     Alarm(
-                        id = 0, // Auto-ID or dummy
                         title = currentState.title,
                         isActive = false,
                     ),
                     stops = currentState.stops
 
                 )
-                //_state.value = _state.value.copy(canAddAndNavigate = true)
                 sendUiEvent(UiEvent.NavigateTo(Routes.HomeScreen))
                 _state.value = AddAlarmState() // reset state
             } catch (e: Exception) {
