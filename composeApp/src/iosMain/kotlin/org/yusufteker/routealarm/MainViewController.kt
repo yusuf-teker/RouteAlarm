@@ -1,14 +1,21 @@
 package org.yusufteker.routealarm
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.window.ComposeUIViewController
 import org.koin.mp.KoinPlatform.getKoin
 import org.yusufteker.routealarm.app.App
 import org.yusufteker.routealarm.di.initKoin
+import org.yusufteker.routealarm.feature.location.presentation.PlatformMapFactory
 import org.yusufteker.routealarm.permissions.IOSLocationPermissionsHandler
 import org.yusufteker.routealarm.permissions.PermissionBridge
 
-
-fun MainViewController() =
+val LocalMapViewFactory = staticCompositionLocalOf<PlatformMapFactory> {
+        error(" local map view faactory error")
+}
+fun MainViewController(
+    platformMapFactory: PlatformMapFactory
+) =
     ComposeUIViewController(
         configure = {
 
@@ -20,6 +27,11 @@ fun MainViewController() =
             permissionBridge.setListener(IOSLocationPermissionsHandler())
         }
     ) {
-        App()
+        CompositionLocalProvider(
+            LocalMapViewFactory provides platformMapFactory,
+        ) {
+            App()
+        }
+
 
     }

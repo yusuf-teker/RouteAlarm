@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import java.util.Properties
 
 plugins {
@@ -23,6 +24,7 @@ kotlin {
     room {
         schemaDirectory("$projectDir/schemas")
     }
+    val framework = XCFramework()
     listOf(
         iosX64(),
         iosArm64(),
@@ -31,6 +33,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            framework.add(this)
         }
     }
     

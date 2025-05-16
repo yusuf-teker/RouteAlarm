@@ -4,7 +4,12 @@ import ComposeApp
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+    var controller = MainViewControllerKt.MainViewController(
+            platformMapFactory: IOSPlatformMapFactory.shared)
+        
+            controller.view.backgroundColor = .clear
+              controller.setNeedsStatusBarAppearanceUpdate()
+        return controller
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
@@ -15,6 +20,7 @@ struct ContentView: View {
         ComposeView()
                 .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
                 .ignoresSafeArea(.container)
+                .ignoresSafeArea()
     }
 }
 
