@@ -1,5 +1,6 @@
 package org.yusufteker.routealarm.feature.alarm.domain
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 import org.yusufteker.routealarm.feature.location.domain.Place
 import routealarm.composeapp.generated.resources.Res
@@ -11,7 +12,8 @@ import routealarm.composeapp.generated.resources.minibus
 import routealarm.composeapp.generated.resources.taxi
 import routealarm.composeapp.generated.resources.train
 
-enum class TransportType(val iconRes: DrawableResource) { // Int değil çünkü multiplatform
+@Serializable
+enum class TransportType(val iconRes: DrawableResource) {
     BUS(Res.drawable.bus),
     METRO(Res.drawable.metro),
     MINIBUS(Res.drawable.minibus),
@@ -21,6 +23,7 @@ enum class TransportType(val iconRes: DrawableResource) { // Int değil çünkü
     DEFAULT(Res.drawable.default_transport)
 }
 
+@Serializable
 data class Stop(
     val id: Int = 0,
     val alarmId: Int,

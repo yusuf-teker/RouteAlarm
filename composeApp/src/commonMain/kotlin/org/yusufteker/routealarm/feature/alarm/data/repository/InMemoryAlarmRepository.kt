@@ -38,9 +38,8 @@ class InMemoryAlarmRepository(
     }
 
 
-
     override fun getAlarms(): Flow<List<Alarm>> {
-         return localAlarmDataSource.getAlarms()
+        return localAlarmDataSource.getAlarms()
             .map {
                 it.map { alarm -> alarm.toDomain() }
             }
@@ -48,11 +47,11 @@ class InMemoryAlarmRepository(
     }
 
     override suspend fun addAlarm(alarm: Alarm) {
-         localAlarmDataSource.upsert(alarm.toEntity())
+        localAlarmDataSource.upsert(alarm.toEntity())
 
     }
 
-    override suspend fun deleteAlarm(id: Int){
+    override suspend fun deleteAlarm(id: Int) {
         localAlarmDataSource.deleteAlarmById(id)
     }
 
@@ -62,11 +61,11 @@ class InMemoryAlarmRepository(
 
     }
 
-    override suspend fun updateAlarm(alarm: Alarm){
+    override suspend fun updateAlarm(alarm: Alarm) {
         localAlarmDataSource.upsert(alarm.toEntity())
     }
 
-    override suspend fun insertAlarms(alarms: List<Alarm>){
+    override suspend fun insertAlarms(alarms: List<Alarm>) {
         localAlarmDataSource.insertAlarms(alarms.map { it.toEntity() })
     }
 
@@ -82,11 +81,36 @@ class InMemoryAlarmRepository(
     override suspend fun insertStop(stop: StopEntity) {
         stopDao.insert(stop)
     }
+
     override suspend fun setAlarmActive(alarmId: Int, isActive: Boolean) {
         localAlarmDataSource.updateIsActive(alarmId, isActive)
     }
 
+    override suspend fun getAlarmByIdWithStops(id: Int): Alarm? {
+        val alarm = localAlarmDataSource.getAlarmById(id)
+        val stops: List<StopEntity> = localAlarmDataSource.getStopsForAlarm(id)
+        return if (alarm != null) {
+            Alarm(
+                id = alarm.id,
+                title = alarm.title,
+                isActive = alarm.isActive,
+                timeInMillis = alarm.timeInMillis,
+                soundUri = alarm.soundUri,
+                isVibration = alarm.isVibration,
+                stops = stops.map {
+                    Stop(
+                        id = it.id,
+                        alarmId = it.alarmId,
+                        name = it.name,
+                        latitude = it.latitude,
+                        longitude = it.longitude,
+                    )
+                }
+            )
+        } else {
+            null
+        }
 
 
-
+    }
 }

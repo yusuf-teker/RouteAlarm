@@ -22,5 +22,8 @@ interface AlarmRepository {
 
     suspend fun setAlarmActive(alarmId: Int, isActive: Boolean)
 
+    suspend fun getAlarmByIdWithStops(id: Int): Alarm?
+
+
 
 }

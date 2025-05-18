@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
+import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopEntity
 
 @Dao
 interface AlarmDao {
@@ -40,5 +41,9 @@ interface AlarmDao {
 
     @Query("UPDATE alarms SET isActive = :isActive WHERE id = :alarmId")
     suspend fun updateIsActive(alarmId: Int, isActive: Boolean)
+
+    @Query("SELECT * FROM stops WHERE alarmId = :alarmId")
+    suspend fun getStopsForAlarm(alarmId: Int): List<StopEntity>
+
 
 }

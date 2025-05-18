@@ -17,6 +17,7 @@ import org.yusufteker.routealarm.feature.alarm.data.database.DatabaseFactory
 import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerViewModel
+import org.yusufteker.routealarm.feature.location.domain.LocationTracker
 import org.yusufteker.routealarm.permissions.PermissionBridge
 
 
@@ -45,7 +46,7 @@ val sharedModule = module {
 
 
 
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
 
     viewModel { AddAlarmViewModel(get (),get()) }
 

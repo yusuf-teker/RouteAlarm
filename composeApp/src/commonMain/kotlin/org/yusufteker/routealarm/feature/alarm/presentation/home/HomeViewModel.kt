@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
+import org.yusufteker.routealarm.feature.location.domain.LocationTracker
 import org.yusufteker.routealarm.permissions.LocationPermissionDialog
+import org.yusufteker.routealarm.permissions.NotificationPermissionDialog
 import org.yusufteker.routealarm.permissions.PermissionBridge
 import org.yusufteker.routealarm.permissions.PermissionResultCallback
 import org.yusufteker.routealarm.permissions.openAppSettings
@@ -20,8 +22,8 @@ import org.yusufteker.routealarm.permissions.openAppSettings
 class HomeViewModel(
     private val alarmRepository: AlarmRepository,
     private val permissionBridge: PermissionBridge,
-
-    ) : BaseViewModel() {
+    private val locationTracker: LocationTracker
+) : BaseViewModel() {
 
     private var observeJob: Job? = null
 
@@ -31,6 +33,7 @@ class HomeViewModel(
     val uiState: StateFlow<HomeState> = _uiState.onStart {
         addFakeAlarmsIfEmpty()
         observeAlarms()
+        requestNotificationPermission()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _uiState.value)
 
     private fun addFakeAlarmsIfEmpty() { // todo fake alarm kaldırılacak
@@ -95,6 +98,12 @@ class HomeViewModel(
                                         action.isChecked
                                     )
 
+                                    if (action.isChecked) {
+                                        locationTracker.startTracking(action.alarm.id)
+                                    } else {
+                                        locationTracker.stopTracking()
+                                    }
+
                                 }
                             }
                         }
@@ -109,6 +118,7 @@ class HomeViewModel(
                                         },
                                         onContinueClicked = {
                                             openAppSettings()
+                                            onDismiss()
                                         }
                                     )
                                 }
@@ -133,4 +143,32 @@ class HomeViewModel(
             }
         }
     }
+
+    private fun requestNotificationPermission(){
+        permissionBridge.requestNotificationPermission(
+            callback = object : PermissionResultCallback {
+                override fun onPermissionGranted() {
+
+                }
+
+                override fun onPermissionDenied(isPermanentDenied: Boolean) {
+                    showCustomPopup(
+                        content = { onDismiss ->
+                            NotificationPermissionDialog(
+                                onDismiss = {
+                                    println("on dismiss notification permission dialog")
+                                    onDismiss()
+                                },
+                                onContinueClicked = {
+                                    openAppSettings()
+                                }
+                            )
+                        }
+                    )
+
+                }
+            }
+        )
+    }
 }
+

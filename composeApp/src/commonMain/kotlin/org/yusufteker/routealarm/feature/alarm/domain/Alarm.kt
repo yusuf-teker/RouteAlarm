@@ -1,5 +1,8 @@
 package org.yusufteker.routealarm.feature.alarm.domain
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Alarm(
     val id: Int = 0,
     val title: String,

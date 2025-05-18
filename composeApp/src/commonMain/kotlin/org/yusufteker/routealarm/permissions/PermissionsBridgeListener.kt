@@ -6,6 +6,10 @@ expect interface PermissionsBridgeListener {
     fun requestBackgroundLocationPermission(callback: PermissionResultCallback)
 
     fun isLocationPermissionGranted(): Boolean
+
+    fun requestNotificationPermission(callback: PermissionResultCallback)
+
+    fun isNotificationPermissionGranted(): Boolean
 }
 
 class PermissionBridge {
@@ -25,6 +29,14 @@ class PermissionBridge {
 
     fun isLocationPermissionGranted(): Boolean {
         return listener?.isLocationPermissionGranted() ?: false
+    }
+
+    fun requestNotificationPermission(callback: PermissionResultCallback) {
+        listener?.requestNotificationPermission(callback) ?: error("Callback handler not set")
+    }
+
+    fun isNotificationPermissionGranted(): Boolean {
+        return listener?.isNotificationPermissionGranted() ?: false
     }
 }
 
