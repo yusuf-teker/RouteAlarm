@@ -23,8 +23,8 @@ sealed class PopupType {
         override val onDismiss: () -> Unit = {}
     ) : PopupType()
 
-    data class Custom(
-        val content: @Composable () -> Unit,
+     class Custom(
+        val content: @Composable (onDismiss: () -> Unit) -> Unit,
         override val onDismiss: () -> Unit = {}
     ) : PopupType()
 }

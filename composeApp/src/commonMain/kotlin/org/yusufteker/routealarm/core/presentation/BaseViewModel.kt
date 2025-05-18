@@ -31,8 +31,11 @@ open class BaseViewModel : ViewModel(), KoinComponent {
         popupManager.showPopup(PopupType.Error(message))
     }
 
-    fun showCustomPopup(content: @Composable () -> Unit) {
-        popupManager.showPopup(PopupType.Custom(content))
+    fun showCustomPopup(
+        content: @Composable (onDismiss: () -> Unit) -> Unit,
+        onDismiss: () -> Unit = {}
+    ) {
+        popupManager.showPopup(PopupType.Custom(content, onDismiss))
     }
 
     val _uiEvent = MutableSharedFlow<UiEvent>()

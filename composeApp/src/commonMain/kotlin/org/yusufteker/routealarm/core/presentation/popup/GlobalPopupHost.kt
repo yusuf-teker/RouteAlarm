@@ -36,7 +36,10 @@ fun GlobalPopupHost() {
 
             is PopupType.Custom -> CustomPopup(
                 content = popup.content,
-                onDismiss = { popupManager.dismissPopup(popup) }
+                onDismiss = {
+                    popupManager.dismissPopup(popup)
+                    print("CustomPopup global popup host")
+                }
             )
         }
     }
@@ -108,13 +111,15 @@ private fun ErrorPopup(
 
 @Composable
 private fun CustomPopup(
-    content: @Composable () -> Unit,
+    content: @Composable ( onDismiss: () -> Unit) -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {},
-        text = content,
+        text = {
+            content(onDismiss)
+        },
         confirmButton = {}
     )
 }

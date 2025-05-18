@@ -81,29 +81,30 @@ class IOSLocationPermissionsHandler : PermissionsBridgeListener {
     }
 
     // Yeni metod: Background konum izni iste
-    fun requestBackgroundLocationPermission(callback: PermissionResultCallback) {
+    override fun requestBackgroundLocationPermission(callback: PermissionResultCallback) {
+        val currentStatus = locationManager.authorizationStatus
+
+        if (currentStatus == kCLAuthorizationStatusAuthorizedAlways) {
+            callback.onPermissionGranted()
+            return
+        }
+
+        if (currentStatus == kCLAuthorizationStatusDenied || currentStatus == kCLAuthorizationStatusRestricted) {
+            callback.onPermissionDenied(isPermanentDenied = true)
+            return
+        }
+
+        // Eğer halihazırda foreground izni varsa ve tekrar Always istersek, iOS bir şey yapmaz
+        if (currentStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+            // 👇 Kullanıcıya bir şekilde el ile izin vermesi gerektiğini bildir
+            callback.onPermissionDenied(isPermanentDenied = true)
+            return
+        }
+
+        // Not Determined durumunda Always iste
         pendingCallback = callback
         requestingBackgroundPermission = true
-
-        when (locationManager.authorizationStatus) {
-            kCLAuthorizationStatusAuthorizedAlways -> {
-                callback.onPermissionGranted()
-                pendingCallback = null
-                requestingBackgroundPermission = false
-            }
-            kCLAuthorizationStatusAuthorizedWhenInUse,
-            kCLAuthorizationStatusNotDetermined,
-            kCLAuthorizationStatusDenied,
-            kCLAuthorizationStatusRestricted -> {
-                // Her durumda Always izni iste
-                locationManager.requestAlwaysAuthorization()
-            }
-            else -> {
-                callback.onPermissionDenied(isPermanentDenied = false)
-                pendingCallback = null
-                requestingBackgroundPermission = false
-            }
-        }
+        locationManager.requestAlwaysAuthorization()
     }
 
     // Background izni verilip verilmediğini kontrol et

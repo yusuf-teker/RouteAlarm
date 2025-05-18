@@ -12,10 +12,16 @@ import kotlinx.coroutines.launch
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
+import org.yusufteker.routealarm.permissions.LocationPermissionDialog
+import org.yusufteker.routealarm.permissions.PermissionBridge
+import org.yusufteker.routealarm.permissions.PermissionResultCallback
+import org.yusufteker.routealarm.permissions.openAppSettings
 
 class HomeViewModel(
-    private val alarmRepository: AlarmRepository
-) : BaseViewModel() {
+    private val alarmRepository: AlarmRepository,
+    private val permissionBridge: PermissionBridge,
+
+    ) : BaseViewModel() {
 
     private var observeJob: Job? = null
 
@@ -75,17 +81,45 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.OnAlarmCheckedChange -> {
-                viewModelScope.launch {
-                    val alreadyActive = uiState.value.alarms.any { it.isActive }
-                    val tryingToActivate = action.isChecked
-                    if (alreadyActive && tryingToActivate) {
-                        showInfoPopup("Hata","Sadece bir alarm aktif olamaz")
-                    } else {
-                        alarmRepository.setAlarmActive( action.alarm.id, action.isChecked)
+                permissionBridge.requestBackgroundLocationPermission(
+                    callback = object : PermissionResultCallback {
+                        override fun onPermissionGranted() {
+                            viewModelScope.launch {
+                                val alreadyActive = uiState.value.alarms.any { it.isActive }
+                                val tryingToActivate = action.isChecked
+                                if (alreadyActive && tryingToActivate) {
+                                    showInfoPopup("Hata", "Sadece bir alarm aktif olamaz")
+                                } else {
+                                    alarmRepository.setAlarmActive(
+                                        action.alarm.id,
+                                        action.isChecked
+                                    )
 
+                                }
+                            }
+                        }
+
+                        override fun onPermissionDenied(isPermanentDenied: Boolean) {
+                            showCustomPopup(
+                                content = { onDismiss ->
+                                    LocationPermissionDialog(
+                                        onDismiss = {
+                                            println("on dismiss location permission dialog")
+                                            onDismiss()
+                                        },
+                                        onContinueClicked = {
+                                            openAppSettings()
+                                        }
+                                    )
+                                }
+                            )
+
+
+
+                        }
                     }
+                )
 
-                }
             }
 
             is HomeAction.OnAlarmClick -> {

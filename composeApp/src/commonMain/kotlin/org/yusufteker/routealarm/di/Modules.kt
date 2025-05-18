@@ -45,7 +45,7 @@ val sharedModule = module {
 
 
 
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
 
     viewModel { AddAlarmViewModel(get (),get()) }
 

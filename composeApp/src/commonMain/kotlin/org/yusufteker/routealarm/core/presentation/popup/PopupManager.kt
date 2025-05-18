@@ -33,7 +33,7 @@ class PopupManager {
         showPopup(PopupType.Error(message, onDismiss))
     }
 
-    fun showCustom(content: @Composable () -> Unit, onDismiss: () -> Unit = {}) {
+    fun showCustom(content: @Composable (onDismiss: () -> Unit) -> Unit, onDismiss: () -> Unit = {}) {
         showPopup(PopupType.Custom(content, onDismiss))
     }
 }

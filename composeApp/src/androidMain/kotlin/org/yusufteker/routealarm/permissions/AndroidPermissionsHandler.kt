@@ -60,47 +60,49 @@ class AndroidLocationPermissionsHandler(
         requestBackgroundPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
 
-    fun requestBackgroundLocationPermission(callback: PermissionResultCallback) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val fineLocationPermission = Manifest.permission.ACCESS_FINE_LOCATION
-            val backgroundLocationPermission = Manifest.permission.ACCESS_BACKGROUND_LOCATION
-
-            when {
-                // 1. Önce Fine Location verilmiş mi?
-                ContextCompat.checkSelfPermission(activity, fineLocationPermission) != PackageManager.PERMISSION_GRANTED -> {
-                    // Fine yoksa önce onu iste
-                    permissionResultCallback = object : PermissionResultCallback {
-                        override fun onPermissionGranted() {
-                            // Fine verildi, şimdi background iznini iste
-                            requestBackgroundPermission(callback)
-                        }
-
-                        override fun onPermissionDenied(isPermanentDenied: Boolean) {
-                            callback.onPermissionDenied(isPermanentDenied)
-                        }
-                    }
-                    requestLocationPermissionLauncher.launch(fineLocationPermission)
-                }
-
-                // 2. Fine varsa, Background verilmiş mi?
-                ContextCompat.checkSelfPermission(activity, backgroundLocationPermission) == PackageManager.PERMISSION_GRANTED -> {
-                    callback.onPermissionGranted()
-                }
-
-                // 3. Background izni verilmemişse ve gerekçesi gösterilebilir mi?
-                activity.shouldShowRequestPermissionRationale(backgroundLocationPermission) -> {
-                    callback.onPermissionDenied(false)
-                }
-
-                // 4. Background iste
-                else -> {
-                    permissionResultCallback = callback
-                    requestBackgroundPermissionLauncher.launch(backgroundLocationPermission)
-                }
-            }
-        } else {
+    override fun requestBackgroundLocationPermission(callback: PermissionResultCallback) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             // Android 9 ve öncesi için gerekmez
             callback.onPermissionGranted()
+            return
+        }
+
+        val fineLocationPermission = Manifest.permission.ACCESS_FINE_LOCATION
+        val backgroundLocationPermission = Manifest.permission.ACCESS_BACKGROUND_LOCATION
+
+        when {
+            // 1. Fine yoksa önce onu iste
+            ContextCompat.checkSelfPermission(activity, fineLocationPermission) != PackageManager.PERMISSION_GRANTED -> {
+                permissionResultCallback = object : PermissionResultCallback {
+                    override fun onPermissionGranted() {
+                        requestBackgroundLocationPermission(callback)
+                    }
+
+                    override fun onPermissionDenied(isPermanentDenied: Boolean) {
+                        callback.onPermissionDenied(isPermanentDenied)
+                    }
+                }
+                requestLocationPermissionLauncher.launch(fineLocationPermission)
+            }
+
+            // 2. Background zaten varsa
+            ContextCompat.checkSelfPermission(activity, backgroundLocationPermission) == PackageManager.PERMISSION_GRANTED -> {
+                callback.onPermissionGranted()
+            }
+
+            // 3. Android 10'da doğrudan istenebilir
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.Q -> {
+                requestBackgroundPermission(callback)
+            }
+
+            // 4. Android 11+ ise ayarlara yönlendirilmeli (çünkü ilk istek gösterilmiyor)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                callback.onPermissionDenied(false) // veya ViewModel'e "openSettings" gibi event gönder
+            }
+
+            else -> {
+                callback.onPermissionDenied(false)
+            }
         }
     }
 

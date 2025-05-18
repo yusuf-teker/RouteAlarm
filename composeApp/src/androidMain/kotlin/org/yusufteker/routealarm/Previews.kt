@@ -29,6 +29,7 @@ import org.yusufteker.routealarm.feature.alarm.presentation.home.components.Bott
 import org.yusufteker.routealarm.feature.location.domain.Place
 import org.yusufteker.routealarm.feature.location.presentation.LocationSearchBar
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
+import org.yusufteker.routealarm.permissions.LocationPermissionDialog
 
 @Preview
 @Composable
@@ -129,4 +130,13 @@ fun LocationSearchBarPreview() {
         onSuggestionClicked = {}
     )
 
+}
+
+@Preview
+@Composable
+fun LocationPermissionDialogPrew(){
+    LocationPermissionDialog(
+        onDismiss = {},
+        onContinueClicked = {}
+    )
 }
