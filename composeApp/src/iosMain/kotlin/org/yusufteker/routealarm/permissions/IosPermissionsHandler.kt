@@ -120,4 +120,13 @@ class IOSLocationPermissionsHandler : PermissionsBridgeListener {
             else -> false
         }
     }
+
+    override fun requestNotificationPermission(callback: PermissionResultCallback) {
+        //TODO IMPLEMENTATION
+    }
+
+    override fun isNotificationPermissionGranted(): Boolean {
+        //TODO IMPLEMENTATION
+        return true
+    }
 }

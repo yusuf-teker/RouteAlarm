@@ -100,9 +100,14 @@ fun AppNavHost(
 
 
                     HomeScreenRoot(
-                        contentPadding = innerPadding, onNavigateToAlarmDetail = { alarm ->
+                        contentPadding = innerPadding,
+                        onNavigateToAlarmDetail = { alarm ->
                             navController.navigate(Routes.AlarmDetailScreen(alarmId = alarm.id))
-                        })
+                        },
+                        navigateToAddAlarm = {
+                            navController.navigate(Routes.AddAlarmScreen)
+                        }
+                    )
 
                 }
 

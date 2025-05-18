@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
@@ -31,7 +32,7 @@ class HomeViewModel(
         HomeState()
     )
     val uiState: StateFlow<HomeState> = _uiState.onStart {
-        addFakeAlarmsIfEmpty()
+        //addFakeAlarmsIfEmpty()
         observeAlarms()
         requestNotificationPermission()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _uiState.value)
@@ -84,51 +85,44 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.OnAlarmCheckedChange -> {
-                permissionBridge.requestBackgroundLocationPermission(
-                    callback = object : PermissionResultCallback {
-                        override fun onPermissionGranted() {
-                            viewModelScope.launch {
-                                val alreadyActive = uiState.value.alarms.any { it.isActive }
-                                val tryingToActivate = action.isChecked
-                                if (alreadyActive && tryingToActivate) {
-                                    showInfoPopup("Hata", "Sadece bir alarm aktif olamaz")
+                permissionBridge.requestBackgroundLocationPermission(callback = object :
+                    PermissionResultCallback {
+                    override fun onPermissionGranted() {
+                        viewModelScope.launch {
+                            val alreadyActive = uiState.value.alarms.any { it.isActive }
+                            val tryingToActivate = action.isChecked
+                            if (alreadyActive && tryingToActivate) {
+                                showInfoPopup("Hata", "Sadece bir alarm aktif olamaz")
+                            } else {
+                                alarmRepository.setAlarmActive(
+                                    action.alarm.id, action.isChecked
+                                )
+
+                                if (action.isChecked) {
+                                    locationTracker.startTracking(action.alarm.id)
                                 } else {
-                                    alarmRepository.setAlarmActive(
-                                        action.alarm.id,
-                                        action.isChecked
-                                    )
-
-                                    if (action.isChecked) {
-                                        locationTracker.startTracking(action.alarm.id)
-                                    } else {
-                                        locationTracker.stopTracking()
-                                    }
-
+                                    locationTracker.stopTracking()
                                 }
+
                             }
                         }
-
-                        override fun onPermissionDenied(isPermanentDenied: Boolean) {
-                            showCustomPopup(
-                                content = { onDismiss ->
-                                    LocationPermissionDialog(
-                                        onDismiss = {
-                                            println("on dismiss location permission dialog")
-                                            onDismiss()
-                                        },
-                                        onContinueClicked = {
-                                            openAppSettings()
-                                            onDismiss()
-                                        }
-                                    )
-                                }
-                            )
-
-
-
-                        }
                     }
-                )
+
+                    override fun onPermissionDenied(isPermanentDenied: Boolean) {
+                        showCustomPopup(
+                            content = { onDismiss ->
+                                LocationPermissionDialog(onDismiss = {
+                                    println("on dismiss location permission dialog")
+                                    onDismiss()
+                                }, onContinueClicked = {
+                                    openAppSettings()
+                                    onDismiss()
+                                })
+                            })
+
+
+                    }
+                })
 
             }
 
@@ -141,34 +135,33 @@ class HomeViewModel(
                     alarmRepository.deleteAlarm(action.alarmId)
                 }
             }
+
+            HomeAction.OnAddAlarmClick -> {
+                navigateTo(Routes.AddAlarmScreen)
+            }
         }
     }
 
-    private fun requestNotificationPermission(){
-        permissionBridge.requestNotificationPermission(
-            callback = object : PermissionResultCallback {
-                override fun onPermissionGranted() {
+    private fun requestNotificationPermission() {
+        permissionBridge.requestNotificationPermission(callback = object :
+            PermissionResultCallback {
+            override fun onPermissionGranted() {
 
-                }
-
-                override fun onPermissionDenied(isPermanentDenied: Boolean) {
-                    showCustomPopup(
-                        content = { onDismiss ->
-                            NotificationPermissionDialog(
-                                onDismiss = {
-                                    println("on dismiss notification permission dialog")
-                                    onDismiss()
-                                },
-                                onContinueClicked = {
-                                    openAppSettings()
-                                }
-                            )
-                        }
-                    )
-
-                }
             }
-        )
+
+            override fun onPermissionDenied(isPermanentDenied: Boolean) {
+                showCustomPopup(
+                    content = { onDismiss ->
+                        NotificationPermissionDialog(onDismiss = {
+                            println("on dismiss notification permission dialog")
+                            onDismiss()
+                        }, onContinueClicked = {
+                            openAppSettings()
+                        })
+                    })
+
+            }
+        })
     }
 }
 
