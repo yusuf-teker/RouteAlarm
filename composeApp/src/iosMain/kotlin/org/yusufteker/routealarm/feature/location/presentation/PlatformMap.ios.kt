@@ -1,10 +1,13 @@
 package org.yusufteker.routealarm.feature.location.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
+import androidx.compose.ui.viewinterop.UIKitViewController
 import kotlinx.cinterop.ExperimentalForeignApi
+import org.yusufteker.routealarm.LocalNativeViewFactory
 import org.yusufteker.routealarm.feature.location.domain.Location
 import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKMapView
@@ -21,23 +24,28 @@ actual fun PlatformMap(
 
 ) {
 
-    val clLocation = remember(currentLocation) {
-        CLLocationCoordinate2DMake(
-            currentLocation.lat,
-            currentLocation.lng
-        )
+    val factory = LocalNativeViewFactory.current
+
+    LaunchedEffect(currentLocation){
+        print("yusuf $currentLocation")
     }
-    UIKitView(
-        modifier = Modifier,
-        factory = {
-            MKMapView().apply {
-                setZoomEnabled(true)
-                setScrollEnabled(true)
-                // customize map view further
-            }
-        },
-        update = { mapView ->
-            mapView.setCenterCoordinate(clLocation, animated = true)
-        }
+
+
+    val mapView = factory.createGoogleMapView(
+        selectedLocation = selectedLocation,
+        currentLocation = currentLocation,
+        onLocationSelected = onLocationSelected,
+        centerToCurrentLocation = centerToCurrentLocation,
+        onCenterLocationConsumed = onCenterLocationConsumed
     )
+    UIKitViewController(
+        modifier = modifier,
+        factory = {
+            mapView
+        }
+
+
+    )
+
+
 }

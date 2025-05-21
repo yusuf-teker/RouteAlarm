@@ -1,5 +1,7 @@
 package org.yusufteker.routealarm
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.window.ComposeUIViewController
 import org.koin.mp.KoinPlatform.getKoin
 import org.yusufteker.routealarm.app.App
@@ -8,7 +10,13 @@ import org.yusufteker.routealarm.permissions.IOSLocationPermissionsHandler
 import org.yusufteker.routealarm.permissions.PermissionBridge
 
 
-fun MainViewController() =
+val LocalNativeViewFactory = staticCompositionLocalOf<NativeViewFactory> {
+    error("NativeViewFactory not provided")
+}
+
+fun MainViewController(
+    nativeViewFactory: NativeViewFactory
+) =
     ComposeUIViewController(
         configure = {
 
@@ -20,6 +28,9 @@ fun MainViewController() =
             permissionBridge.setListener(IOSLocationPermissionsHandler())
         }
     ) {
-        App()
+        CompositionLocalProvider(LocalNativeViewFactory provides nativeViewFactory){
+            App()
+        }
+
 
     }
