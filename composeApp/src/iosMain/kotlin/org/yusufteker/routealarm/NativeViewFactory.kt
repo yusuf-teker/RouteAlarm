@@ -12,6 +12,10 @@ interface NativeViewFactory {
         centerToCurrentLocation: Boolean,
         onCenterLocationConsumed: () -> Unit
     ): UIViewController
+}
 
-
+interface UpdatableMapViewFactory : NativeViewFactory {
+    fun updateCurrentLocation(location: Location)
+    fun updateSelectedLocation(location: Location?)
+    fun updateCenterToCurrentLocation(shouldCenter: Boolean)
 }

@@ -13,14 +13,14 @@ androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-plugin = "1.7.0"
 junit = "4.13.2"
-kotlin = "2.0.21"
+kotlin = "2.1.20"
 kotlinx-coroutines = "1.9.0"
 navigationCompose = "2.8.0-alpha10"
 kotlinSerialization = "1.7.3"
 koin = "4.0.0"
 ktor = "3.0.0"
 coil3 = "3.0.0-rc02"
-ksp = "2.0.20-1.0.24"
+ksp = "2.1.20-2.0.1"
 sqlite = "2.5.0-alpha11"
 room = "2.7.0-alpha11"
 play-services-location = "21.0.1"
@@ -28,6 +28,7 @@ google-maps = "18.2.0"
 maps-compose = "2.11.4"
 places = "3.3.0"
 accompanist = "0.36.0"
+kmp-nativecoroutines = "1.0.0-ALPHA-42"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -75,6 +76,8 @@ google-maps = { group = "com.google.android.gms", name = "play-services-maps", v
 maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "maps-compose" }
 google-places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
+kmp-nativecoroutines-core = { group = "com.rickclephas.kmp", name = "kmp-nativecoroutines-core", version.ref = "kmp-nativecoroutines" }
+
 
 
 
@@ -88,6 +91,7 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
+kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmp-nativecoroutines" }
 
 [bundles]
 ktor = [

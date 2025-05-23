@@ -11,6 +11,8 @@ import org.yusufteker.routealarm.LocalNativeViewFactory
 import org.yusufteker.routealarm.feature.location.domain.Location
 import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.MapKit.MKMapView
+import org.yusufteker.routealarm.LocalNativeViewFactory
+import org.yusufteker.routealarm.UpdatableMapViewFactory
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -25,25 +27,39 @@ actual fun PlatformMap(
 ) {
 
     val factory = LocalNativeViewFactory.current
+    val updatableFactory = factory as? UpdatableMapViewFactory
 
-    LaunchedEffect(currentLocation){
-        print("yusuf $currentLocation")
+    LaunchedEffect(currentLocation) {
+        println("PlatformMap: currentLocation değişti: $currentLocation")
+        updatableFactory?.updateCurrentLocation(currentLocation)
+    }
+
+    LaunchedEffect(selectedLocation) {
+        println("PlatformMap: selectedLocation değişti: $selectedLocation")
+        updatableFactory?.updateSelectedLocation(selectedLocation)
+    }
+
+    LaunchedEffect(centerToCurrentLocation) {
+        println("PlatformMap: centerToCurrentLocation değişti: $centerToCurrentLocation")
+        updatableFactory?.updateCenterToCurrentLocation(centerToCurrentLocation)
     }
 
 
-    val mapView = factory.createGoogleMapView(
-        selectedLocation = selectedLocation,
-        currentLocation = currentLocation,
-        onLocationSelected = onLocationSelected,
-        centerToCurrentLocation = centerToCurrentLocation,
-        onCenterLocationConsumed = onCenterLocationConsumed
-    )
+
     UIKitViewController(
         modifier = modifier,
         factory = {
-            mapView
-        }
+            factory.createGoogleMapView(
+                selectedLocation = selectedLocation,
+                currentLocation = currentLocation,
+                onLocationSelected = onLocationSelected,
+                centerToCurrentLocation = centerToCurrentLocation,
+                onCenterLocationConsumed = onCenterLocationConsumed
+            )
+        },
+        update = {
 
+        }
 
     )
 
