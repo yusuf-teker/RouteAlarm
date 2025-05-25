@@ -86,13 +86,15 @@
 
                 is StopPickerAction.SuggestionSelected -> {
                     _state.value = _state.value.copy(selectedPlace = null)
-                    selectPlace(action.suggestionPlace.id)
+
                     val changeStopName = _state.value.stop.name.ifBlank { action.suggestionPlace.name }
+
                     _state.value = _state.value.copy(
                         query = action.suggestionPlace.name,
                         suggestions = emptyList(),
-                        stop = _state.value.stop.copy(name = changeStopName),
-                        showBottom = true
+                        showBottom = true,
+                        location = action.suggestionPlace.toLocation(),
+                        stop = _state.value.stop.addPlace(action.suggestionPlace.copy(name = changeStopName))
                     )
 
                 }

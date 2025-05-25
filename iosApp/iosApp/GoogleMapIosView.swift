@@ -6,10 +6,10 @@
     //  Copyright © 2025 orgName. All rights reserved.
     //
 
-    import SwiftUI
-    import GoogleMaps
-    import ComposeApp
-    import CoreLocation
+import SwiftUI
+import GoogleMaps
+import CoreLocation
+import ComposeApp
 
 class IOSNativeViewFactory: NSObject, UpdatableMapViewFactory {
         
@@ -116,13 +116,14 @@ class IOSNativeViewFactory: NSObject, UpdatableMapViewFactory {
                 onCenterLocationConsumed?()
             }
             
+            NSLog("Selected location updated to: \(viewModel.selectedLocation?.lat), \(viewModel.selectedLocation?.lng)")
+
             // Handle selected location changes
-            if let selected = viewModel.selectedLocation, selected != context.coordinator.lastSelectedLocation {
-                NSLog("Selected location changed to: \(selected.lat), \(selected.lng)")
+            if  viewModel.selectedLocation != context.coordinator.lastSelectedLocation {
                 mapView.clear()
-                addMarker(on: mapView, at: selected)
-                animateCamera(mapView: mapView, to: selected, zoom: 15.0)
-                context.coordinator.lastSelectedLocation = selected
+                addMarker(on: mapView, at: viewModel.selectedLocation ?? emptyLocation)
+                animateCamera(mapView: mapView, to: viewModel.selectedLocation ?? emptyLocation, zoom: 15.0)
+                context.coordinator.lastSelectedLocation = viewModel.selectedLocation
             }
         }
         

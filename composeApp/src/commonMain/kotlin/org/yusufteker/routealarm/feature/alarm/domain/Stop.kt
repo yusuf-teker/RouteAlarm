@@ -42,6 +42,7 @@ fun Stop.addPlace(place: Place?): Stop {
         this
     else{
         this.copy(
+            name = place.name,
             latitude = place.latitude,
             longitude = place.longitude,
             address = place.address

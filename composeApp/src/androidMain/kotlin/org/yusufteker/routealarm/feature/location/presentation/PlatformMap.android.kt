@@ -19,7 +19,7 @@ import org.yusufteker.routealarm.feature.location.domain.emptyLocation
 @Composable
 actual fun PlatformMap(
     modifier: Modifier,
-    selectedLocation: Location?,
+    selectedLocation: Location,
     currentLocation: Location,
     onLocationSelected: (Location) -> Unit,
     centerToCurrentLocation: Boolean,

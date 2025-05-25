@@ -9,7 +9,7 @@ import org.yusufteker.routealarm.feature.location.domain.emptyLocation
 data class StopPickerState(
     val query: String = "",
     val stop: Stop = Stop(name = "", latitude = 0.0, longitude = 0.0, alarmId = -1),
-    val location: Location? = null,
+    val location: Location = emptyLocation,
     val selectedTransportType: TransportType = TransportType.BUS,
     val suggestions: List<Place> = emptyList(),
     val selectedPlace: Place? = null,
