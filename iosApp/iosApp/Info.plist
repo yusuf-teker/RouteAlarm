@@ -52,5 +52,7 @@
 	<string>Lokasyn izni verir misin lütfen</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Arka plandada konumun lazım.</string>
+    <key>GOOGLE_API_KEY</key>
+    <string>$(GOOGLE_API_KEY)</string>
 </dict>
 </plist>

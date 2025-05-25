@@ -78,8 +78,7 @@ class IOSNativeViewFactory: NSObject, UpdatableMapViewFactory {
             mapView.settings.rotateGestures = true
             mapView.settings.tiltGestures = true
             mapView.isMyLocationEnabled = true
-            mapView.settings.myLocationButton = true
-            
+
             context.coordinator.lastCurrentLocation = viewModel.currentLocation
             context.coordinator.logMapLoaded()
             
