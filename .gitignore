@@ -17,3 +17,5 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 */iosApp/Configuration/Config.xcconfig
+*/Config.xcconfig
+iosApp/Configuration/Config.xcconfig
