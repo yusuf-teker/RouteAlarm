@@ -8,7 +8,9 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import org.yusufteker.routealarm.LocalNativeViewFactory
 import org.yusufteker.routealarm.feature.location.domain.Location
 import org.yusufteker.routealarm.UpdatableMapViewFactory
-
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun PlatformMap(
@@ -52,8 +54,7 @@ actual fun PlatformMap(
                 onCenterLocationConsumed = onCenterLocationConsumed
             )
         },
-        update = {
-
+        update = { controller ->
         }
 
     )

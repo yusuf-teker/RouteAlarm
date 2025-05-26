@@ -76,7 +76,10 @@
                 }
 
                 is StopPickerAction.SelectTransportType -> {
-                    _state.value = _state.value.copy(selectedTransportType = action.type)
+                    _state.value = _state.value.copy(
+                        stop = _state.value.stop.copy(transportType = action.type),
+                        selectedTransportType = action.type
+                    )
                 }
 
                 is StopPickerAction.TitleChanged -> {
@@ -96,6 +99,12 @@
                         location = action.suggestionPlace.toLocation(),
                         stop = _state.value.stop.addPlace(action.suggestionPlace.copy(name = changeStopName))
                     )
+
+                    //Android için lat lng gelmiyor bu yüzden detay servisi lazım
+                    if (action.suggestionPlace.longitude == emptyLocation.lng && action.suggestionPlace.latitude == emptyLocation.lat){
+                        selectPlace(placeId = action.suggestionPlace.id)
+
+                    }
 
                 }
 

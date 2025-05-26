@@ -94,7 +94,6 @@ fun AddAlarmScreen(
             stops = state.stops,
             onRemove = { stop -> onAction(AddAlarmAction.RemoveStop(stop)) },
             onAddClick = {
-                //onAction(AddAlarmAction.AddStop)
                 onAction(AddAlarmAction.CheckLocationPermission)
             })
 

@@ -77,7 +77,9 @@ private fun AlarmItemContent(
                     text = alarm.title, style = AppTypography.titleMedium
                 )
                 Text(
-                    text = "Durak sayısı: ${alarm.stops.size}", style = AppTypography.bodyRegular
+                    text = "Durak sayısı: ${alarm.stops.size}", style = AppTypography.bodyRegular.copy(
+                        color = AppColors.textPrimary.copy(alpha = 0.5f)
+                    )
                 )
             }
             Switch(

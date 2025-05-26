@@ -33,7 +33,15 @@ class IOSNativeViewFactory: NSObject, UpdatableMapViewFactory {
                 onLocationSelected: onLocationSelected,
                 onCenterLocationConsumed: onCenterLocationConsumed
             )
-            return UIHostingController(rootView: view)
+            let hostingController = UIHostingController(rootView: view.edgesIgnoringSafeArea(.all))
+            let screenBounds = UIScreen.main.bounds
+            hostingController.view.frame = screenBounds
+
+            hostingController.view.insetsLayoutMarginsFromSafeArea = false
+            hostingController.additionalSafeAreaInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                  
+
+            return hostingController
         }
     
     // UpdatableMapViewFactory protokolünü implement et
@@ -60,7 +68,7 @@ class IOSNativeViewFactory: NSObject, UpdatableMapViewFactory {
         
         func makeUIView(context: Context) -> GMSMapView {
             let mapView = GMSMapView()
-            
+    
             // Configure the initial camera position
             let camera = GMSCameraPosition.camera(
                 withLatitude: viewModel.currentLocation.lat,

@@ -38,10 +38,11 @@ fun StopCard(
                 Text(
                     text = "Durak $index",
                     style = AppTypography.titleMedium,
-                    color = AppColors.textAlarmCard
                 )
                 Text(
-                    text = stop.name, style = AppTypography.bodyRegular, color = AppColors.textAlarmCard
+                    text = stop.name, style = AppTypography.bodyRegular.copy(
+                        color = AppColors.textPrimary.copy(alpha = 0.5f)
+                    )
                 )
             }
             Image(
