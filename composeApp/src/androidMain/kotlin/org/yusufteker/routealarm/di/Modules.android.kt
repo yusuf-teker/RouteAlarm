@@ -8,6 +8,7 @@ import org.koin.dsl.module
 import org.yusufteker.routealarm.feature.alarm.data.database.DatabaseFactory
 import org.yusufteker.routealarm.feature.location.data.LocationService
 import org.yusufteker.routealarm.feature.location.data.PlaceSuggestionService
+import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
 import org.yusufteker.routealarm.feature.location.domain.LocationTracker
 
 actual val platformModule: Module
@@ -17,4 +18,5 @@ actual val platformModule: Module
         single { PlaceSuggestionService(get()) }
         single { LocationService(get()) }
         single { LocationTracker(get(), get()) }
+        single { AlarmSoundPlayer(get()) }
     }

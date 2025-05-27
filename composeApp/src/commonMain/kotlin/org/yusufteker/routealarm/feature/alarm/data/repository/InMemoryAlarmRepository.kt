@@ -110,7 +110,12 @@ class InMemoryAlarmRepository(
         } else {
             null
         }
-
-
     }
+
+    override suspend fun markStopAsPassed(stopId: Int) {
+        println("markStopAsPassed called for stopId: $stopId")
+        stopDao.markStopAsPassed(stopId)
+    }
+
+
 }

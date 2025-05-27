@@ -67,4 +67,10 @@ interface StopDao {
         lat: Double,
         lon: Double
     ): StopEntity?
+
+    @Query("UPDATE stops SET isPassed = 1 WHERE id = :stopId")
+    suspend fun markStopAsPassed(stopId: Int)
+
+
+
 }

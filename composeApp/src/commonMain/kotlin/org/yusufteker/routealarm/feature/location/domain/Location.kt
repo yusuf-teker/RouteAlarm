@@ -20,7 +20,7 @@ fun calculateDistance(
     lat2: Double, lon2: Double
 ): Double {
     val R = 6371000.0 // Earth radius in meters
-    val dLat = (lat2 - lat1)
+    val dLat = (lat2 - lat1).toRadians()
     val dLon = (lon2 - lon1).toRadians()
     val a = sin(dLat / 2).pow(2.0) + cos(lat1.toRadians()) *
             cos(lat2.toRadians()) * sin(dLon / 2).pow(2.0)
@@ -30,3 +30,14 @@ fun calculateDistance(
 fun Double.toRadians(): Double = this * PI / 180
 
 val STOP_PROXIMITY_THRESHOLD_METERS = 250
+
+fun formatDistance(meters: Double): String {
+    return if (meters >= 1000) {
+        val km = (meters / 1000 * 100).toInt() / 100.0 // 2 basamak
+        "$km km"
+    } else {
+        val m = meters.toInt()
+        "$m m"
+    }
+}
+

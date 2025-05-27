@@ -45,5 +45,4 @@ interface AlarmDao {
     @Query("SELECT * FROM stops WHERE alarmId = :alarmId")
     suspend fun getStopsForAlarm(alarmId: Int): List<StopEntity>
 
-
 }

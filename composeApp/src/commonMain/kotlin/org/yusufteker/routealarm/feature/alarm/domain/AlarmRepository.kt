@@ -24,6 +24,8 @@ interface AlarmRepository {
 
     suspend fun getAlarmByIdWithStops(id: Int): Alarm?
 
+    suspend fun markStopAsPassed(stopId: Int)
+
 
 
 }
