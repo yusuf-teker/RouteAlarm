@@ -35,6 +35,9 @@ interface AlarmDao {
     @Query("SELECT * FROM alarms")
     fun getAlarmsWithStops(): Flow<List<AlarmWithStops>>
 
+    @Query("SELECT * FROM stops ORDER BY orderIndex")
+    fun getStops(): Flow<List<StopEntity>>
+
     @Transaction
     @Query("SELECT * FROM alarms WHERE isActive = 1 LIMIT 1")
     suspend fun getActiveAlarmWithStops(): AlarmWithStops?
@@ -44,5 +47,14 @@ interface AlarmDao {
 
     @Query("SELECT * FROM stops WHERE alarmId = :alarmId")
     suspend fun getStopsForAlarm(alarmId: Int): List<StopEntity>
+
+    @Query("UPDATE alarms SET id = id WHERE id = :alarmId")
+    suspend fun triggerAlarmUpdate(alarmId: Int)
+
+    @Query("UPDATE stops SET isPassed = :isPassed WHERE id = :stopId")
+    suspend fun setStopIsPassed(stopId: Int, isPassed: Boolean)
+
+    @Query("UPDATE stops SET isPassed = :isPassed")
+    suspend fun setAllStopIsPassed(isPassed: Boolean)
 
 }

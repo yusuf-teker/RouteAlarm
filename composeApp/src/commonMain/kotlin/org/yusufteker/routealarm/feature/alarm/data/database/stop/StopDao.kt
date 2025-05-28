@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface StopDao {
     @Query("SELECT * FROM stops WHERE alarmId = :alarmId ORDER BY orderIndex ASC")
     suspend fun getStopsForAlarm(alarmId: Long): List<StopEntity>
+
     // Yeni stop ekleme (ID döner)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(stop: StopEntity): Long
@@ -22,7 +23,7 @@ interface StopDao {
 
     // Alarm ID'sine göre stopları getirme
     @Query("SELECT * FROM stops WHERE alarmId = :alarmId ORDER BY orderIndex ASC")
-    fun getStopsByAlarmId(alarmId: Long): Flow<List<StopEntity>>
+    fun getStopsByAlarmId(alarmId: Int): Flow<List<StopEntity>>
 
     // Tek stop silme
     @Delete
@@ -37,22 +38,21 @@ interface StopDao {
     suspend fun update(stop: StopEntity)
 
     // Koordinata yakın stopları bulma
-    @Query("""
+    @Query(
+        """
         SELECT * FROM stops 
         WHERE latitude BETWEEN :minLat AND :maxLat 
         AND longitude BETWEEN :minLon AND :maxLon
         AND alarmId = :alarmId
-    """)
+    """
+    )
     suspend fun getStopsInArea(
-        alarmId: Long,
-        minLat: Double,
-        maxLat: Double,
-        minLon: Double,
-        maxLon: Double
+        alarmId: Long, minLat: Double, maxLat: Double, minLon: Double, maxLon: Double
     ): List<StopEntity>
 
     // Belirli bir yarıçap içindeki stoplar
-    @Query("""
+    @Query(
+        """
         SELECT * FROM stops 
         WHERE alarmId = :alarmId 
         AND isPassed = 0 
@@ -61,16 +61,14 @@ interface StopDao {
             (:lon - longitude) * (:lon - longitude)
         ) ASC 
         LIMIT 1
-    """)
+    """
+    )
     suspend fun getNearestStop(
-        alarmId: Long,
-        lat: Double,
-        lon: Double
+        alarmId: Long, lat: Double, lon: Double
     ): StopEntity?
 
-    @Query("UPDATE stops SET isPassed = 1 WHERE id = :stopId")
-    suspend fun markStopAsPassed(stopId: Int)
-
+    @Query("UPDATE stops SET isPassed = :isPassed WHERE id = :stopId")
+    suspend fun markStopAsPassed(stopId: Int, isPassed: Boolean = true)
 
 
 }

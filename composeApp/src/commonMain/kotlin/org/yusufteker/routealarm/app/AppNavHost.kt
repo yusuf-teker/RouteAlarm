@@ -149,7 +149,7 @@ fun AppNavHost(
                             },
                             navigateToAddAlarm = {
                                 sharedViewModel.addStop(it)
-                                navController.navigate(Routes.AddAlarmScreen)
+                                navController.popBackStack()
                             }
                         )
 

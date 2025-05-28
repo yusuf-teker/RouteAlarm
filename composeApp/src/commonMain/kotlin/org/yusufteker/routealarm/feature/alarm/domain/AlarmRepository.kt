@@ -16,6 +16,7 @@ interface AlarmRepository {
     suspend fun getActiveAlarmWithStops(): AlarmWithStops?
     suspend fun saveAlarmWithStops(alarm: Alarm, stops: List<Stop>): Int
     suspend fun getAlarmsWithStops(): Flow<List<Alarm>>
+    fun getAlarmsWithStops2(): Flow<List<Alarm>>
 
     // Stop
     suspend fun insertStop(stop: StopEntity)
@@ -24,8 +25,11 @@ interface AlarmRepository {
 
     suspend fun getAlarmByIdWithStops(id: Int): Alarm?
 
-    suspend fun markStopAsPassed(stopId: Int)
+    suspend fun setStopIsPassed(stopId: Int, isPassed: Boolean)
 
+    suspend fun setAllStopIsPassed(isPassed: Boolean = false)
+
+    suspend fun triggerAlarmUpdate(alarmId: Int)
 
 
 }

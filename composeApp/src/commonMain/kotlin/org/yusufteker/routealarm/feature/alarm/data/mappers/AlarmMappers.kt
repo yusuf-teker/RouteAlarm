@@ -34,6 +34,7 @@ fun StopEntity.toDomain(): Stop {
     return Stop(
         id = this.id,
         alarmId = this.alarmId,
+        isPassed = this.isPassed,
         name = this.name,
         latitude = this.latitude,
         longitude = this.longitude,
@@ -52,7 +53,8 @@ fun Stop.toEntity(): StopEntity {
         longitude = this.longitude,
         address = this.address,
         orderIndex = this.orderIndex,
-        radius = this.radius
+        radius = this.radius,
+        isPassed = this.isPassed
     )
 }
 

@@ -1,7 +1,11 @@
 package org.yusufteker.routealarm.feature.alarm.data.repository
 
 import androidx.room.Transaction
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.yusufteker.routealarm.core.domain.DataError
 import org.yusufteker.routealarm.core.domain.Result
@@ -39,8 +43,7 @@ class InMemoryAlarmRepository(
 
 
     override fun getAlarms(): Flow<List<Alarm>> {
-        return localAlarmDataSource.getAlarms()
-            .map {
+        return localAlarmDataSource.getAlarms().map {
                 it.map { alarm -> alarm.toDomain() }
             }
 
@@ -74,8 +77,24 @@ class InMemoryAlarmRepository(
     }
 
     override suspend fun getAlarmsWithStops(): Flow<List<Alarm>> {
-        return localAlarmDataSource.getAlarmsWithStops()
-            .map { list -> list.map { it.toDomain() } }
+        return localAlarmDataSource.getAlarmsWithStops().map { list -> list.map { it.toDomain() } }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getAlarmsWithStops2(): Flow<List<Alarm>> {
+        return localAlarmDataSource.getAlarms().flatMapLatest { alarmEntities ->
+            if (alarmEntities.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                val alarmFlows = alarmEntities.map { alarmEntity ->
+                    stopDao.getStopsByAlarmId(alarmEntity.id).map { stopEntities ->
+                        val stops = stopEntities.map { it.toDomain() }
+                        alarmEntity.toDomain(stops)
+                    }
+                }
+                combine(alarmFlows) { it.toList() } // Her alarm + durakları eşlenmiş olur
+            }
+        }
     }
 
     override suspend fun insertStop(stop: StopEntity) {
@@ -104,18 +123,26 @@ class InMemoryAlarmRepository(
                         name = it.name,
                         latitude = it.latitude,
                         longitude = it.longitude,
+                        isPassed = it.isPassed
                     )
-                }
-            )
+                })
         } else {
             null
         }
     }
 
-    override suspend fun markStopAsPassed(stopId: Int) {
-        println("markStopAsPassed called for stopId: $stopId")
-        stopDao.markStopAsPassed(stopId)
+    override suspend fun setStopIsPassed(stopId: Int, isPassed: Boolean) {
+        println("setStopIsPassed called for stopId: $stopId $isPassed")
+        localAlarmDataSource.setStopIsPassed(stopId, isPassed)
     }
 
+    override suspend fun setAllStopIsPassed(isPassed: Boolean) {
+        localAlarmDataSource.setAllStopIsPassed(false)
+    }
+
+
+    override suspend fun triggerAlarmUpdate(alarmId: Int) {
+        localAlarmDataSource.triggerAlarmUpdate(alarmId)
+    }
 
 }

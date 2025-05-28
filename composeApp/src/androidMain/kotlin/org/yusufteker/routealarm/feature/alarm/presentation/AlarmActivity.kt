@@ -33,11 +33,10 @@ class AlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val alarmId = intent?.getIntExtra("alarm_id", -1) ?: -1
+
         window.addFlags(
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -49,15 +48,21 @@ class AlarmActivity : ComponentActivity() {
 
         setContent {
             AlarmScreen(
-                onStopAlarm = { // todo düzenlenecek
+                onStopAlarm = {
                     alarmSoundPlayer.stop()
-                    stopService(Intent(this, LocationTrackingService::class.java))
+
+                    startService(
+                        Intent(this, LocationTrackingService::class.java).apply {
+                            action = "ACTION_STOP_SERVICE"
+                            putExtra("alarm_id", alarmId)
+
+                        })
                     finish()
-                }
-            )
+                })
         }
     }
 }
+
 @Composable
 fun AlarmScreen(onStopAlarm: () -> Unit) {
     Box(
@@ -68,9 +73,7 @@ fun AlarmScreen(onStopAlarm: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Alarm Çalıyor!",
-                fontSize = 24.sp,
-                color = Color.White
+                text = "Alarm Çalıyor!", fontSize = 24.sp, color = Color.White
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(onClick = onStopAlarm) {

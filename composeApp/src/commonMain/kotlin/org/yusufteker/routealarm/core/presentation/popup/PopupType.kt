@@ -27,4 +27,5 @@ sealed class PopupType {
         val content: @Composable (onDismiss: () -> Unit) -> Unit,
         override val onDismiss: () -> Unit = {}
     ) : PopupType()
+
 }

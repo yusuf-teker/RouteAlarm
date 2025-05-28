@@ -20,6 +20,7 @@ import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
+import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
@@ -139,4 +140,10 @@ fun LocationPermissionDialogPrew(){
         onDismiss = {},
         onContinueClicked = {}
     )
+}
+
+@Preview
+@Composable
+fun GoalReachedPopupPreview() {
+    GoalReachedPopup(onDismiss = {})
 }

@@ -32,46 +32,19 @@ class HomeViewModel(
         HomeState()
     )
     val uiState: StateFlow<HomeState> = _uiState.onStart {
-        //addFakeAlarmsIfEmpty()
         observeAlarms()
         requestNotificationPermission()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _uiState.value)
-
-    private fun addFakeAlarmsIfEmpty() { // todo fake alarm kaldırılacak
-        viewModelScope.launch {
-            alarmRepository.getAlarms().collect { alarms ->
-                if (alarms.isEmpty()) {
-                    val fakeAlarms = listOf(
-                        Alarm(
-                            id = 1,
-                            title = "Evden Okula",
-                            isActive = false,
-                            stops = listOf(/* dummy stops */)
-                        ), Alarm(
-                            id = 2,
-                            title = "Okuldan Eve",
-                            isActive = false,
-                            stops = listOf(/* dummy stops */)
-                        ), Alarm(
-                            id = 3,
-                            title = "Antrenmana Gidiş",
-                            isActive = false,
-                            stops = listOf(/* dummy stops */)
-                        )
-                    )
-                    alarmRepository.insertAlarms(fakeAlarms)
-                }
-            }
-        }
-    }
 
     private fun observeAlarms() {
         observeJob?.cancel()
         observeJob = viewModelScope.launch {
 
-            alarmRepository.getAlarmsWithStops().collect { alarms ->
+            alarmRepository.getAlarmsWithStops2().collect { alarms ->
                 val active = alarms.find { it.isActive }
-
+                active?.stops?.forEach { stop ->
+                    println("Stop ${stop.id}: isPassed = ${stop.isPassed}")
+                }
                 _uiState.update {
                     it.copy(
                         alarms = alarms, activeAlarm = active
@@ -101,6 +74,7 @@ class HomeViewModel(
                                 if (action.isChecked) {
                                     locationTracker.startTracking(action.alarm.id)
                                 } else {
+                                    alarmRepository.setAllStopIsPassed(false)
                                     locationTracker.stopTracking()
                                 }
 

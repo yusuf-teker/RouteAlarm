@@ -33,12 +33,18 @@ import org.yusufteker.routealarm.feature.location.domain.STOP_PROXIMITY_THRESHOL
 import org.yusufteker.routealarm.feature.location.domain.calculateDistance
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import androidx.core.net.toUri
+import kotlinx.coroutines.withContext
+import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
+import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 private lateinit var locationCallback: LocationCallback
+
 class LocationTrackingService() : Service() {
     private var alarmRepository: AlarmRepository = getKoin().get<AlarmRepository>()
     private var alarmSoundPlayer: AlarmSoundPlayer = getKoin().get<AlarmSoundPlayer>()
+
+    private var popupManager: PopupManager = getKoin().get<PopupManager>()
 
     private var alarmAlreadyTriggered = false
 
@@ -47,6 +53,7 @@ class LocationTrackingService() : Service() {
         val alarmId = intent?.getIntExtra(EXTRA_ALARM_ID, -1) ?: -1
 
         if (intent?.action == ACTION_STOP_SERVICE) { // callback Foreground Notification Durdur
+            alarmAlreadyTriggered = false
             if (alarmId != -1) {
                 CoroutineScope(Dispatchers.IO).launch {
                     deactivateAlarm(alarmId)
@@ -55,22 +62,21 @@ class LocationTrackingService() : Service() {
             }
             stopSelf()
             return START_NOT_STICKY
-        }else if (intent?.action == ACTION_STOP_ACHIEVED){
-            if (alarmId != -1){
+        } else if (intent?.action == ACTION_STOP_ACHIEVED) {
+            if (alarmId != -1) {
                 CoroutineScope(Dispatchers.IO).launch {
+                    alarmSoundPlayer.stop()
+                    alarmAlreadyTriggered = false
                     val alarm = alarmRepository.getAlarmByIdWithStops(alarmId)
                     if (alarm != null) {
                         cancelNotificationByID(STOP_ACHIEVED_NOTIFICATION_ID)
                     }
                 }
             }
+            return START_NOT_STICKY
         }
-
         createNotificationChannel()
 
-        if (alarmId != -1) {
-            println("Tracking started for alarmId: $alarmId")
-        }
         if (alarmId != -1) {
 
             CoroutineScope(Dispatchers.IO).launch {
@@ -82,7 +88,7 @@ class LocationTrackingService() : Service() {
                 }
             }
 
-            startForeground(FOREGROUND_NOTIFICATION_ID, createNotification(alarmId))
+            startForeground(FOREGROUND_NOTIFICATION_ID, createForegroundNotification(alarmId))
         }
         return START_STICKY
     }
@@ -92,38 +98,53 @@ class LocationTrackingService() : Service() {
 
         val request = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY, 10_000L
-        ).setMinUpdateIntervalMillis(5_000L)
-            .build()
+        ).setMinUpdateIntervalMillis(5_000L).build()
+
 
 
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { location ->
-                    println("AlarmId: ${alarm?.id} -> Konum: ${location.latitude}, ${location.longitude}")
 
-                    if (alarm != null){
-                        val lastStop = alarm.stops.first{ it ->
-                            !it.isPassed
-                        }
-                        val distance = calculateDistance(
-                            location.latitude, location.longitude,
-                            lastStop.latitude, lastStop.longitude
-                        )
-                        println("Last Stop: ${lastStop.name} -> Mesafe: ${formatDistance(distance)}")
-                        if (!alarmAlreadyTriggered && distance < STOP_PROXIMITY_THRESHOLD_METERS){ // callback achieved
-                            println("Yeterince yaklaştı alarm çalıyor mesafe ${formatDistance(distance)}")
-                            onLocationAchieved(alarm,lastStop.id)
-                        }
+                    CoroutineScope(Dispatchers.IO).launch {
 
+                         val alarm = alarmRepository.getAlarmByIdWithStops(alarm!!.id)
+
+                        Log.d("LocationTrackingService", "AlarmId: ${alarm?.id} -> Konum: ${location.latitude}, ${location.longitude}")
+
+                        if (alarm != null) {
+
+                            val lastStop = alarm.stops.first { it ->
+                                !it.isPassed
+                            }
+                            val distance = calculateDistance(
+                                location.latitude,
+                                location.longitude,
+                                lastStop.latitude,
+                                lastStop.longitude
+                            )
+                            println("Last Stop: ${lastStop.name} -> Mesafe: ${formatDistance(distance)}")
+
+                            if (!alarmAlreadyTriggered && distance < STOP_PROXIMITY_THRESHOLD_METERS) { // callback achieved
+                                Log.d("LocationTrackingService", "Yeterince yaklaştı alarm çalıyor mesafe ${formatDistance(distance)}")
+                                onLocationAchieved(alarm, lastStop.id)
+                            }
+
+                        }
                     }
 
                 }
             }
         }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper())
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.requestLocationUpdates(
+                request, locationCallback, Looper.getMainLooper()
+            )
         }
     }
 
@@ -133,53 +154,73 @@ class LocationTrackingService() : Service() {
         }
     }
 
-    private fun onLocationAchieved(alarm: Alarm, lastStopId: Int){
+    private fun onLocationAchieved(alarm: Alarm, lastStopId: Int) {
         alarmAlreadyTriggered = true
+        Log.d("alarmAlreadyTriggered", "$alarmAlreadyTriggered")
         alarmSoundPlayer.play()
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            alarmRepository.markStopAsPassed(lastStopId)
-            Log.d("onLocationAchieved",  "Achieved stop id: $lastStopId")
-            Log.d("onLocationAchieved",  "Last stop id: ${alarm.stops.last().id}")
+            alarmRepository.setStopIsPassed(lastStopId, true)
+            Log.d("LocationTrackingService", " onLocationAchieved setStopIsPassed $lastStopId")
+            alarmRepository.triggerAlarmUpdate(alarm.id)
+            Log.d("LocationTrackingService", " onLocationAchieved Achieved stop id: $lastStopId")
 
         }
-        if(alarm.stops.last().id == lastStopId){ // SON DURAK
+        if (alarm.stops.last().id == lastStopId) { // SON DURAK
+
             deactivateAlarm(alarm.id)
-            showAlarmNotificationWithFullScreenIntent(alarm.id,ACTION_STOP_SERVICE)
-        }else{ // SON DURAK DEĞİL
-            showAlarmNotificationWithFullScreenIntent(alarm.id,ACTION_STOP_ACHIEVED)
+
+            popupManager.showCustom(
+                content ={
+                    GoalReachedPopup({ it()
+                        this.startService(stopIntent(ACTION_STOP_SERVICE, alarm.id))
+                        alarmAlreadyTriggered = false
+                        alarmSoundPlayer.stop()
+                    })
+                } ,
+                onDismiss = {}
+            )
+                showAlarmNotificationWithFullScreenIntent(alarm.id, ACTION_STOP_SERVICE)
+
+
+        } else { // SON DURAK DEĞİL
+
+            popupManager.showCustom(
+                content ={
+                    GoalReachedPopup({
+                        it()
+                        alarmSoundPlayer.stop()
+                        alarmAlreadyTriggered = false
+                        cancelNotificationByID(STOP_ACHIEVED_NOTIFICATION_ID)
+                    })
+                } ,
+                onDismiss = {}
+            )
+            showAlarmNotificationWithFullScreenIntent(alarm.id, ACTION_STOP_ACHIEVED)
+
+
         }
 
 
-
-        //openAlarmActivity()
     }
 
-    private fun createNotification(alarmId: Int?): Notification {
-        val stopIntent = Intent(this, LocationTrackingService::class.java).apply {
-            action = ACTION_STOP_SERVICE
-            putExtra(EXTRA_ALARM_ID, alarmId)
-        }
+    private fun createForegroundNotification(alarmId: Int?): Notification {
+        val stopIntent = stopIntent(ACTION_STOP_SERVICE, alarmId!!)
         val stopPendingIntent = PendingIntent.getService(
             this, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Konum Takibi Aktif")
+        return NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Konum Takibi Aktif")
             .setContentText("Alarm ID: $alarmId izleniyor.")
             .setSmallIcon(R.drawable.ic_notification)
-            .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent)
-            .setOngoing(true)
-            .build()
+            .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent).setOngoing(true).build()
     }
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
-            CHANNEL_ID,
-            "Konum Takip Servisi",
-            NotificationManager.IMPORTANCE_HIGH
+            CHANNEL_ID, "Konum Takip Servisi", NotificationManager.IMPORTANCE_HIGH
         )
         val manager = getSystemService(NotificationManager::class.java)
         manager?.createNotificationChannel(channel)
@@ -196,46 +237,33 @@ class LocationTrackingService() : Service() {
         private const val ACTION_STOP_ACHIEVED = "ACTION_STOP_ACHIEVED"
 
 
-
     }
 
     private fun showAlarmNotificationWithFullScreenIntent(alarmId: Int, action: String) {
         val alarmIntent = Intent(this, AlarmActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(EXTRA_ALARM_ID, alarmId)
         }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            alarmIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val stopIntent = Intent(this, LocationTrackingService::class.java).apply {
-            this.action = action
-            putExtra("alarm_id", alarmId)
-        }
+        val stopIntent = stopIntent(action, alarmId)
         val stopPendingIntent = PendingIntent.getService(
-            this,
-            1,
-            stopIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            this, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val alarmSoundUri = "android.resource://${packageName}/${R.raw.alarm_sound}".toUri()
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Hedefe Yaklaştınız")
-            .setContentText("")
-            .setSound(alarmSoundUri)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setFullScreenIntent(fullScreenPendingIntent, true)
-            .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent)
-            .setAutoCancel(true)
-            .build()
+        val notification =
+            NotificationCompat.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Hedefe Yaklaştınız").setContentText("").setSound(alarmSoundUri)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
+                .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent).setAutoCancel(true)
+                .build()
 
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -243,46 +271,26 @@ class LocationTrackingService() : Service() {
     }
 
 
-    private fun openAlarmActivity(){
-        Log.d("LocationTrackingService", "Trying to open AlarmActivity")
-
-        val alarmIntent = Intent(this, AlarmActivity::class.java).apply {
-            addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-            )
-        }
-
-        // Uygulama kapalıyken bile çalışması için PendingIntent kullan
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            alarmIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        try {
-            pendingIntent.send()
-        } catch (e: PendingIntent.CanceledException) {
-            Log.e("LocationTracking", "PendingIntent canceled", e)
-        }
-
-    }
-
-    private fun cancelNotificationByID(notificationId: Int){
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private fun cancelNotificationByID(notificationId: Int) {
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(notificationId)
     }
 
-    private fun cancelAllNotification(){
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private fun cancelAllNotification() {
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
     }
 
-    private fun deactivateAlarm(alarmId: Int){
+    private fun deactivateAlarm(alarmId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
+            alarmRepository.setAllStopIsPassed(false)
             alarmRepository.setAlarmActive(alarmId, false)
+            withContext(Dispatchers.Main) {
+                stopLocationUpdates()
+            }
+
         }
     }
 
@@ -295,7 +303,17 @@ class LocationTrackingService() : Service() {
         super.onDestroy()
     }
 
+    override fun onCreate() {
+        super.onCreate()
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
+    private fun stopIntent(intentAction: String, alarmId: Int): Intent {
+        return Intent(this, LocationTrackingService::class.java).apply {
+            action = intentAction
+            putExtra(EXTRA_ALARM_ID, alarmId)
+        }
+    }
 
 }

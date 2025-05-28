@@ -37,18 +37,15 @@
 
         <activity
             android:name=".feature.alarm.presentation.AlarmActivity"
-            android:launchMode="singleTop"
             android:exported="true"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true"
-            android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
-            android:enabled="true"
-            android:directBootAware="true"
-            android:resumeWhilePausing="true"
-            android:allowTaskReparenting="true"
+            android:launchMode="singleTop"
             android:taskAffinity=""
-            tools:targetApi="27"/>
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
 
         <meta-data
@@ -59,7 +56,7 @@
             android:name=".feature.location.data.LocationTrackingService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location"/>
+            android:foregroundServiceType="location" />
 
     </application>
 
