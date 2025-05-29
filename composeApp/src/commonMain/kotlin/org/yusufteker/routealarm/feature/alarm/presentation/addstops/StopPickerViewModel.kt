@@ -56,6 +56,11 @@
                 is StopPickerAction.LocationSelected -> {
                     _state.value = _state.value.copy(
                         location = action.location,
+                        stop = _state.value.stop.copy(
+                            latitude = action.location.lat,
+                            longitude = action.location.lng
+
+                        ),
                         showBottom = true
                     )
                     clearQueryAndSuggestions()
