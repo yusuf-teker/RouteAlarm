@@ -15,10 +15,6 @@
 		20B23DF72DE09DA5007A26E8 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B23DF62DE09DA5007A26E8 /* MapViewModel.swift */; };
 		20B23DFE2DE1DCC0007A26E8 /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 20B23DFD2DE1DCC0007A26E8 /* GooglePlaces */; };
 		20B23E002DE1DCC0007A26E8 /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 20B23DFF2DE1DCC0007A26E8 /* GooglePlacesSwift */; };
-		20F62A592DE059BA00C511B3 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A582DE059BA00C511B3 /* KMPNativeCoroutinesAsync */; };
-		20F62A5B2DE059BA00C511B3 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A5A2DE059BA00C511B3 /* KMPNativeCoroutinesCombine */; };
-		20F62A5D2DE059BA00C511B3 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A5C2DE059BA00C511B3 /* KMPNativeCoroutinesCore */; };
-		20F62A5F2DE059BA00C511B3 /* KMPNativeCoroutinesRxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A5E2DE059BA00C511B3 /* KMPNativeCoroutinesRxSwift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
@@ -42,12 +38,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20F62A5B2DE059BA00C511B3 /* KMPNativeCoroutinesCombine in Frameworks */,
-				20F62A592DE059BA00C511B3 /* KMPNativeCoroutinesAsync in Frameworks */,
 				20B23E002DE1DCC0007A26E8 /* GooglePlacesSwift in Frameworks */,
-				20F62A5F2DE059BA00C511B3 /* KMPNativeCoroutinesRxSwift in Frameworks */,
 				20B23DFE2DE1DCC0007A26E8 /* GooglePlaces in Frameworks */,
-				20F62A5D2DE059BA00C511B3 /* KMPNativeCoroutinesCore in Frameworks */,
 				200A47012DDDFA3900686A18 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,10 +123,6 @@
 			name = iosApp;
 			packageProductDependencies = (
 				200A47002DDDFA3900686A18 /* GoogleMaps */,
-				20F62A582DE059BA00C511B3 /* KMPNativeCoroutinesAsync */,
-				20F62A5A2DE059BA00C511B3 /* KMPNativeCoroutinesCombine */,
-				20F62A5C2DE059BA00C511B3 /* KMPNativeCoroutinesCore */,
-				20F62A5E2DE059BA00C511B3 /* KMPNativeCoroutinesRxSwift */,
 				20B23DFD2DE1DCC0007A26E8 /* GooglePlaces */,
 				20B23DFF2DE1DCC0007A26E8 /* GooglePlacesSwift */,
 			);
@@ -172,7 +160,6 @@
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
 				200A46FF2DDDFA3900686A18 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
-				20F62A572DE059BA00C511B3 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 				20B23DFC2DE1DCC0007A26E8 /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
@@ -375,6 +362,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_ID}${TEAM_ID}";
 				PRODUCT_NAME = "${APP_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"SWIFT_PRECOMPILE_BRIDGING_HEADER[arch=*]" = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -402,6 +390,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_ID}${TEAM_ID}";
 				PRODUCT_NAME = "${APP_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"SWIFT_PRECOMPILE_BRIDGING_HEADER[arch=*]" = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -447,14 +436,6 @@
 				minimumVersion = 9.4.1;
 			};
 		};
-		20F62A572DE059BA00C511B3 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
-			requirement = {
-				kind = exactVersion;
-				version = "1.0.0-ALPHA-42";
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -472,26 +453,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 20B23DFC2DE1DCC0007A26E8 /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
 			productName = GooglePlacesSwift;
-		};
-		20F62A582DE059BA00C511B3 /* KMPNativeCoroutinesAsync */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 20F62A572DE059BA00C511B3 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
-			productName = KMPNativeCoroutinesAsync;
-		};
-		20F62A5A2DE059BA00C511B3 /* KMPNativeCoroutinesCombine */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 20F62A572DE059BA00C511B3 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
-			productName = KMPNativeCoroutinesCombine;
-		};
-		20F62A5C2DE059BA00C511B3 /* KMPNativeCoroutinesCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 20F62A572DE059BA00C511B3 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
-			productName = KMPNativeCoroutinesCore;
-		};
-		20F62A5E2DE059BA00C511B3 /* KMPNativeCoroutinesRxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 20F62A572DE059BA00C511B3 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
-			productName = KMPNativeCoroutinesRxSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
