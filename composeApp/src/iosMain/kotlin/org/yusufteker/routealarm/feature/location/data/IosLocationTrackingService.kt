@@ -21,6 +21,8 @@ import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
 import org.yusufteker.routealarm.feature.location.domain.STOP_PROXIMITY_THRESHOLD_METERS
 import org.yusufteker.routealarm.feature.location.domain.calculateDistance
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
+import org.yusufteker.routealarm.platform.NotificationManager
+
 
 class IosLocationTrackingService {
     private val locationManager = CLLocationManager()
@@ -35,6 +37,9 @@ class IosLocationTrackingService {
     private var popupManager: PopupManager = getKoin().get<PopupManager>()
 
     private val alreadyTriggeredStops = mutableSetOf<Int>()
+
+    val  not = NotificationManager()
+
 
 
     private var activeAlarmId: Int? = null
@@ -61,6 +66,7 @@ class IosLocationTrackingService {
                         lng = lng
 
                     )
+
                     handleLocationUpdate(currentLocation)
                 }
 
@@ -112,7 +118,10 @@ class IosLocationTrackingService {
                 println("Last Stop: ${lastStop.name} -> Mesafe: ${formatDistance(distance)}")
 
                 if (distance <= STOP_PROXIMITY_THRESHOLD_METERS) {
+
+
                     alreadyTriggeredStops.add(lastStop.id)
+                    showLocationReachedNotification()
                     showLocationReachedPopup()
                     val isLastStop =  alarm.stops.last().id == lastStop.id
                     alarmRepository.setStopIsPassed(lastStop.id, true)
@@ -143,6 +152,16 @@ class IosLocationTrackingService {
             },
             onDismiss = {
 
+            }
+        )
+    }
+    private fun showLocationReachedNotification(){
+        not.showNotification(
+            "Hedefe ulaşıldı.",
+            "Konuma Yaklaştın !",
+            onStopReached = {
+                alarmSoundPlayer.stop()
+                alreadyTriggeredStops.clear()
             }
         )
     }
