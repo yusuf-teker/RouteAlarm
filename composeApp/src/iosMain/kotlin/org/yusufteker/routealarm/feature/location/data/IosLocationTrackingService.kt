@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
+import org.yusufteker.routealarm.core.presentation.popup.PopupType
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
@@ -39,7 +40,6 @@ class IosLocationTrackingService {
     private val alreadyTriggeredStops = mutableSetOf<Int>()
 
     val  not = NotificationManager()
-
 
 
     private var activeAlarmId: Int? = null
@@ -121,6 +121,7 @@ class IosLocationTrackingService {
 
 
                     alreadyTriggeredStops.add(lastStop.id)
+                    alarmSoundPlayer.play()
                     showLocationReachedNotification()
                     showLocationReachedPopup()
                     val isLastStop =  alarm.stops.last().id == lastStop.id
@@ -158,10 +159,12 @@ class IosLocationTrackingService {
     private fun showLocationReachedNotification(){
         not.showNotification(
             "Hedefe ulaşıldı.",
-            "Konuma Yaklaştın !",
+            "Konuma Yaklaştın 3",
             onStopReached = {
+                println("showLocationReachedNotification on stop reached tıklandı")
                 alarmSoundPlayer.stop()
                 alreadyTriggeredStops.clear()
+                popupManager.dismissAll()
             }
         )
     }

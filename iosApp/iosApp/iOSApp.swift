@@ -27,11 +27,18 @@ struct iOSApp: App {
 func requestNotificationPermission() {
     UNUserNotificationCenter
         .current()
-        .requestAuthorization(options: [.alert, .badge]) { (success, error) in
+        .requestAuthorization(options: [.alert, .sound, .badge]) { (success, error) in
             if success {
-                print("Permission granted.")
+                print("Notification permission granted.")
+
+                // İzin alındıktan sonra notification settings'i kontrol et
+                UNUserNotificationCenter.current().getNotificationSettings { settings in
+                    print("Notification settings: \(settings)")
+                    print("Authorization status: \(settings.authorizationStatus.rawValue)")
+                    print("Alert setting: \(settings.alertSetting.rawValue)")
+                }
             } else if let error = error {
-                print(error.localizedDescription)
+                print("Notification permission error: \(error.localizedDescription)")
             }
-    }
+        }
 }

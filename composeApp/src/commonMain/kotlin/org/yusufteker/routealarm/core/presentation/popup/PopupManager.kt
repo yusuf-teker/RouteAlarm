@@ -7,6 +7,13 @@ class PopupManager {
     private val _popups = mutableStateListOf<PopupType>()
     val popups: List<PopupType> get() = _popups
 
+    fun dismissAll() {
+        val currentPopups = _popups.toList()
+        _popups.clear()
+        currentPopups.forEach { it.onDismiss() }
+    }
+
+
     fun showPopup(popup: PopupType) {
         _popups.add(popup)
     }
