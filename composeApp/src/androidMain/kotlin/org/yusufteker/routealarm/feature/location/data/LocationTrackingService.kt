@@ -13,7 +13,6 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -24,15 +23,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.getKoin
-import org.yusufteker.routealarm.R
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
-import org.yusufteker.routealarm.feature.alarm.presentation.AlarmActivity
 import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
 import org.yusufteker.routealarm.feature.location.domain.STOP_PROXIMITY_THRESHOLD_METERS
 import org.yusufteker.routealarm.feature.location.domain.calculateDistance
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
-import androidx.core.net.toUri
 import kotlinx.coroutines.withContext
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
@@ -48,6 +44,8 @@ class LocationTrackingService() : Service() {
 
     private var alarmAlreadyTriggered = false
 
+    private val notificationManager: org.yusufteker.routealarm.notification.NotificationManager = getKoin().get<org.yusufteker.routealarm.notification.NotificationManager>()
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val alarmId = intent?.getIntExtra(EXTRA_ALARM_ID, -1) ?: -1
@@ -58,6 +56,7 @@ class LocationTrackingService() : Service() {
                 CoroutineScope(Dispatchers.IO).launch {
                     deactivateAlarm(alarmId)
                     cancelAllNotification()
+                    popupManager.dismissAll()
                 }
             }
             stopSelf()
@@ -71,11 +70,12 @@ class LocationTrackingService() : Service() {
                     if (alarm != null) {
                         cancelNotificationByID(STOP_ACHIEVED_NOTIFICATION_ID)
                     }
+                    popupManager.dismissAll()
                 }
             }
             return START_NOT_STICKY
         }
-        createNotificationChannel()
+        notificationManager.createNotificationChannel()
 
         if (alarmId != -1) {
 
@@ -85,10 +85,10 @@ class LocationTrackingService() : Service() {
                     // 🔔 alarm ve alarm.stops burada
                     // Konum kontrolünü burada başlatabilirsin
                     startLocationUpdates(alarm)
+                    startForeground(FOREGROUND_NOTIFICATION_ID, notificationManager.createForegroundNotification(alarmId, alarm.stops.size))
                 }
             }
 
-            startForeground(FOREGROUND_NOTIFICATION_ID, createForegroundNotification(alarmId))
         }
         return START_STICKY
     }
@@ -181,7 +181,9 @@ class LocationTrackingService() : Service() {
                 } ,
                 onDismiss = {}
             )
-                showAlarmNotificationWithFullScreenIntent(alarm.id, ACTION_STOP_SERVICE)
+            notificationManager.updateForegroundNotification(alarm.id, alarm.stops.size, alarm.stops.indexOfFirst { it.id == lastStopId } + 1)
+
+            notificationManager.showAlarmNotificationWithFullScreenIntent( alarm.id, ACTION_STOP_SERVICE)
 
 
         } else { // SON DURAK DEĞİL
@@ -197,33 +199,12 @@ class LocationTrackingService() : Service() {
                 } ,
                 onDismiss = {}
             )
-            showAlarmNotificationWithFullScreenIntent(alarm.id, ACTION_STOP_ACHIEVED)
+            notificationManager.showAlarmNotificationWithFullScreenIntent(alarm.id, ACTION_STOP_ACHIEVED)
 
 
         }
 
 
-    }
-
-    private fun createForegroundNotification(alarmId: Int?): Notification {
-        val stopIntent = stopIntent(ACTION_STOP_SERVICE, alarmId!!)
-        val stopPendingIntent = PendingIntent.getService(
-            this, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-
-        )
-
-        return NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Konum Takibi Aktif")
-            .setContentText("Alarm ID: $alarmId izleniyor.")
-            .setSmallIcon(R.drawable.ic_notification)
-            .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent).setOngoing(true).build()
-    }
-
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID, "Konum Takip Servisi", NotificationManager.IMPORTANCE_HIGH
-        )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager?.createNotificationChannel(channel)
     }
 
     companion object {
@@ -239,36 +220,6 @@ class LocationTrackingService() : Service() {
 
     }
 
-    private fun showAlarmNotificationWithFullScreenIntent(alarmId: Int, action: String) {
-        val alarmIntent = Intent(this, AlarmActivity::class.java).apply {
-            flags =
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            putExtra(EXTRA_ALARM_ID, alarmId)
-        }
-
-        val fullScreenPendingIntent = PendingIntent.getActivity(
-            this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        val stopIntent = stopIntent(action, alarmId)
-        val stopPendingIntent = PendingIntent.getService(
-            this, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val alarmSoundUri = "android.resource://${packageName}/${R.raw.alarm_sound}".toUri()
-
-        val notification =
-            NotificationCompat.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle("Hedefe Yaklaştınız").setContentText("").setSound(alarmSoundUri)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setFullScreenIntent(fullScreenPendingIntent, true)
-                .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent).setAutoCancel(true)
-                .build()
-
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(STOP_ACHIEVED_NOTIFICATION_ID, notification)
-    }
 
 
     private fun cancelNotificationByID(notificationId: Int) {

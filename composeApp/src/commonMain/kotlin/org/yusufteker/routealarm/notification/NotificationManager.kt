@@ -1,4 +1,4 @@
-package org.yusufteker.routealarm.platform
+package org.yusufteker.routealarm.notification
 
 
 expect class NotificationManager {

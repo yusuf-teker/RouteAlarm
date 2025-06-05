@@ -10,6 +10,7 @@ import org.yusufteker.routealarm.feature.location.data.LocationService
 import org.yusufteker.routealarm.feature.location.data.PlaceSuggestionService
 import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
 import org.yusufteker.routealarm.feature.location.domain.LocationTracker
+import org.yusufteker.routealarm.notification.NotificationManager
 
 actual val platformModule: Module
     get() = module {
@@ -19,4 +20,5 @@ actual val platformModule: Module
         single { LocationService(get()) }
         single { LocationTracker(get(), get()) }
         single { AlarmSoundPlayer(get()) }
+        single { NotificationManager(get()) }
     }
