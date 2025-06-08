@@ -21,17 +21,18 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.getKoin
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
-import org.yusufteker.routealarm.feature.location.domain.STOP_PROXIMITY_THRESHOLD_METERS
 import org.yusufteker.routealarm.feature.location.domain.calculateDistance
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import kotlinx.coroutines.withContext
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
+import org.yusufteker.routealarm.preferences.SettingsManager
 
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 private lateinit var locationCallback: LocationCallback
@@ -46,6 +47,7 @@ class LocationTrackingService() : Service() {
 
     private val notificationManager: org.yusufteker.routealarm.notification.NotificationManager = getKoin().get<org.yusufteker.routealarm.notification.NotificationManager>()
 
+    private val settingsManager: SettingsManager = getKoin().get<SettingsManager>()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val alarmId = intent?.getIntExtra(EXTRA_ALARM_ID, -1) ?: -1
@@ -126,7 +128,7 @@ class LocationTrackingService() : Service() {
                             )
                             println("Last Stop: ${lastStop.name} -> Mesafe: ${formatDistance(distance)}")
 
-                            if (!alarmAlreadyTriggered && distance < STOP_PROXIMITY_THRESHOLD_METERS) { // callback achieved
+                            if (!alarmAlreadyTriggered && distance < settingsManager.stopProximityThresholdMeters.first()) { // callback achieved
                                 Log.d("LocationTrackingService", "Yeterince yaklaştı alarm çalıyor mesafe ${formatDistance(distance)}")
                                 onLocationAchieved(alarm, lastStop.id)
                             }

@@ -80,6 +80,7 @@ actual class NotificationManager(private val context: Context) {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setFullScreenIntent(fullScreenPendingIntent, true)
                 .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent).setAutoCancel(true)
+                .setVibrate(longArrayOf(0, 500, 250, 500))
                 .build()
 
         val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -109,7 +110,10 @@ actual class NotificationManager(private val context: Context) {
      fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID, "Konum Takip Servisi", NotificationManager.IMPORTANCE_HIGH
-        )
+        ).apply {
+            enableVibration(true)
+            vibrationPattern = longArrayOf(0, 500, 250, 500)
+        }
         val manager = getSystemService(context,NotificationManager::class.java)
         manager?.createNotificationChannel(channel)
     }

@@ -80,6 +80,9 @@
                 implementation(libs.compottie)
                 implementation(libs.compottie.resources)
 
+                api(libs.datastore.preferences)
+                api(libs.datastore)
+
             }
 
             nativeMain.dependencies {

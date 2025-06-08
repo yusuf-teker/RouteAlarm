@@ -19,6 +19,7 @@ import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmVie
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerViewModel
 import org.yusufteker.routealarm.feature.location.domain.LocationTracker
 import org.yusufteker.routealarm.permissions.PermissionBridge
+import org.yusufteker.routealarm.preferences.SettingsManager
 
 
 expect val platformModule: Module
@@ -53,4 +54,9 @@ val sharedModule = module {
     viewModel { StopPickerViewModel(get(),get() ) }
 
     viewModel { SharedAlarmViewModel() }
+
+    single<SettingsManager> {
+        SettingsManager(get())
+    }
+
 }
