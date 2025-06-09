@@ -16,15 +16,13 @@ import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
-import org.yusufteker.routealarm.core.presentation.popup.PopupType
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
-import org.yusufteker.routealarm.feature.location.domain.STOP_PROXIMITY_THRESHOLD_METERS
 import org.yusufteker.routealarm.feature.location.domain.calculateDistance
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import org.yusufteker.routealarm.notification.NotificationManager
-import org.yusufteker.routealarm.preferences.SettingsManager
+import org.yusufteker.routealarm.settings.SettingsManager
 
 
 class IosLocationTrackingService {

@@ -1,10 +1,7 @@
 package org.yusufteker.routealarm.feature.location.data
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -32,7 +29,7 @@ import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import kotlinx.coroutines.withContext
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
-import org.yusufteker.routealarm.preferences.SettingsManager
+import org.yusufteker.routealarm.settings.SettingsManager
 
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 private lateinit var locationCallback: LocationCallback

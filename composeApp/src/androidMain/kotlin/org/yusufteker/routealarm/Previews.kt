@@ -31,6 +31,7 @@ import org.yusufteker.routealarm.feature.location.domain.Place
 import org.yusufteker.routealarm.feature.location.presentation.LocationSearchBar
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
 import org.yusufteker.routealarm.permissions.LocationPermissionDialog
+import org.yusufteker.routealarm.settings.CarSliderInteractive
 
 @Preview
 @Composable
@@ -146,4 +147,14 @@ fun LocationPermissionDialogPrew(){
 @Composable
 fun GoalReachedPopupPreview() {
     GoalReachedPopup(onDismiss = {})
+}
+
+
+@Preview
+@Composable
+fun CarSliderInteractivePrew(){
+    CarSliderInteractive(
+        value = 100,
+        onValueChange = {}
+    )
 }

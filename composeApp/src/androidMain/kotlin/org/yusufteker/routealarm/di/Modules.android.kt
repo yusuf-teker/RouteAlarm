@@ -14,8 +14,8 @@ import org.yusufteker.routealarm.feature.location.data.PlaceSuggestionService
 import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
 import org.yusufteker.routealarm.feature.location.domain.LocationTracker
 import org.yusufteker.routealarm.notification.NotificationManager
-import org.yusufteker.routealarm.preferences.SettingsManager
-import org.yusufteker.routealarm.preferences.createDataStore
+import org.yusufteker.routealarm.settings.SettingsManager
+import org.yusufteker.routealarm.settings.createDataStore
 
 actual val platformModule: Module
     get() = module {

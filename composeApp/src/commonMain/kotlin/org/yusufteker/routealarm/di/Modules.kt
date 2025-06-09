@@ -7,7 +7,6 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.yusufteker.routealarm.core.data.HttpClientFactory
-import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 import org.yusufteker.routealarm.feature.alarm.data.database.AlarmDatabase
 import org.yusufteker.routealarm.feature.alarm.data.repository.InMemoryAlarmRepository
@@ -17,9 +16,9 @@ import org.yusufteker.routealarm.feature.alarm.data.database.DatabaseFactory
 import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerViewModel
-import org.yusufteker.routealarm.feature.location.domain.LocationTracker
 import org.yusufteker.routealarm.permissions.PermissionBridge
-import org.yusufteker.routealarm.preferences.SettingsManager
+import org.yusufteker.routealarm.settings.SettingsManager
+import org.yusufteker.routealarm.settings.SettingsViewModel
 
 
 expect val platformModule: Module
@@ -58,5 +57,7 @@ val sharedModule = module {
     single<SettingsManager> {
         SettingsManager(get())
     }
+
+    viewModel { SettingsViewModel(get()) }
 
 }

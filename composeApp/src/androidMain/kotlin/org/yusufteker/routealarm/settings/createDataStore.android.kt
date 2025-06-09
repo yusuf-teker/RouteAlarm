@@ -1,4 +1,4 @@
-package org.yusufteker.routealarm.preferences
+package org.yusufteker.routealarm.settings
 
 import android.content.Context
 import androidx.datastore.core.DataStore

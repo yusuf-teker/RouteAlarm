@@ -32,6 +32,7 @@ import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerS
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreenRoot
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
+import org.yusufteker.routealarm.settings.SettingsScreenRoot
 
 
 @Composable
@@ -168,9 +169,7 @@ fun AppNavHost(
 
                 composable<Routes.SettingsScreen> {
 
-                    Text("Settings")
-                    // SettingsScreen(modifier = Modifier.padding(padding))
-
+                    SettingsScreenRoot(contentPadding = innerPadding,)
                 }
             }
         }
