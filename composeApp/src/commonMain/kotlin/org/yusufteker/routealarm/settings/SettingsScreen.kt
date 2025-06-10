@@ -39,7 +39,6 @@ import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
 import routealarm.composeapp.generated.resources.Res
 import routealarm.composeapp.generated.resources.bus_stop
-import routealarm.composeapp.generated.resources.map_pin
 import routealarm.composeapp.generated.resources.minibus
 
 @Composable
