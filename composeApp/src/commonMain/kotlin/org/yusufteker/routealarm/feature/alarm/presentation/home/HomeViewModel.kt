@@ -11,10 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
-import org.yusufteker.routealarm.feature.alarm.domain.Alarm
+import org.yusufteker.routealarm.feature.alarm.domain.AlarmActivationHandler
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
-import org.yusufteker.routealarm.feature.location.domain.LocationTracker
-import org.yusufteker.routealarm.permissions.LocationPermissionDialog
 import org.yusufteker.routealarm.permissions.NotificationPermissionDialog
 import org.yusufteker.routealarm.permissions.PermissionBridge
 import org.yusufteker.routealarm.permissions.PermissionResultCallback
@@ -23,7 +21,8 @@ import org.yusufteker.routealarm.permissions.openAppSettings
 class HomeViewModel(
     private val alarmRepository: AlarmRepository,
     private val permissionBridge: PermissionBridge,
-    private val locationTracker: LocationTracker
+    private val alarmActivationHandler: AlarmActivationHandler
+
 ) : BaseViewModel() {
 
     private var observeJob: Job? = null
@@ -58,45 +57,13 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.OnAlarmCheckedChange -> {
-                permissionBridge.requestBackgroundLocationPermission(callback = object :
-                    PermissionResultCallback {
-                    override fun onPermissionGranted() {
-                        viewModelScope.launch {
-                            val alreadyActive = uiState.value.alarms.any { it.isActive }
-                            val tryingToActivate = action.isChecked
-                            if (alreadyActive && tryingToActivate) {
-                                showInfoPopup("Hata", "Sadece bir alarm aktif olamaz")
-                            } else {
-                                alarmRepository.setAlarmActive(
-                                    action.alarm.id, action.isChecked
-                                )
-
-                                if (action.isChecked) {
-                                    locationTracker.startTracking(action.alarm.id)
-                                } else {
-                                    alarmRepository.setAllStopIsPassed(false)
-                                    locationTracker.stopTracking()
-                                }
-
-                            }
-                        }
-                    }
-
-                    override fun onPermissionDenied(isPermanentDenied: Boolean) {
-                        showCustomPopup(
-                            content = { onDismiss ->
-                                LocationPermissionDialog(onDismiss = {
-                                    println("on dismiss location permission dialog")
-                                    onDismiss()
-                                }, onContinueClicked = {
-                                    openAppSettings()
-                                    onDismiss()
-                                })
-                            })
-
-
-                    }
-                })
+                alarmActivationHandler.handleAlarmToggle(
+                    alarm = action.alarm,
+                    isChecked = action.isChecked,
+                    currentAlarms = uiState.value.alarms,
+                    permissionBridge = permissionBridge,
+                    scope = viewModelScope,
+                )
 
             }
 
@@ -124,10 +91,9 @@ class HomeViewModel(
             }
 
             override fun onPermissionDenied(isPermanentDenied: Boolean) {
-                showCustomPopup(
+                popupManager.showCustom(
                     content = { onDismiss ->
                         NotificationPermissionDialog(onDismiss = {
-                            println("on dismiss notification permission dialog")
                             onDismiss()
                         }, onContinueClicked = {
                             openAppSettings()

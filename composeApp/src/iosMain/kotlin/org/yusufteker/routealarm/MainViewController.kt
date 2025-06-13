@@ -3,6 +3,8 @@ package org.yusufteker.routealarm
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.window.ComposeUIViewController
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import org.koin.mp.KoinPlatform.getKoin
 import org.yusufteker.routealarm.app.App
 import org.yusufteker.routealarm.di.initKoin
@@ -19,6 +21,8 @@ fun MainViewController(
 ) =
     ComposeUIViewController(
         configure = {
+
+            Napier.base(DebugAntilog()) // init logger
 
             //Koin
             initKoin()

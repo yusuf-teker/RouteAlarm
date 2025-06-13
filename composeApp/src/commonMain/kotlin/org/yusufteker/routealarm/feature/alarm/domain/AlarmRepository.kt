@@ -25,6 +25,9 @@ interface AlarmRepository {
 
     suspend fun getAlarmByIdWithStops(id: Int): Alarm?
 
+    fun getAlarmWithStopsByIdFlow(id: Int): Flow<Alarm?>
+
+
     suspend fun setStopIsPassed(stopId: Int, isPassed: Boolean)
 
     suspend fun setAllStopIsPassed(isPassed: Boolean = false)

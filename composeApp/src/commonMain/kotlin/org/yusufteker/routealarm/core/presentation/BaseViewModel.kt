@@ -15,28 +15,8 @@ import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.popup.PopupType
 
 open class BaseViewModel : ViewModel(), KoinComponent {
-    // PopupManager'ı Koin ile inject ediyoruz
+
     protected val popupManager: PopupManager by inject()
-
-    // Popup gösterme metodları
-    fun showInfoPopup(title: String, message: String) {
-        popupManager.showPopup(PopupType.Info(title, message))
-    }
-
-    fun showConfirmPopup(title: String, message: String, onConfirm: () -> Unit) {
-        popupManager.showPopup(PopupType.Confirm(title, message, onConfirm))
-    }
-
-    fun showErrorPopup(message: String) {
-        popupManager.showPopup(PopupType.Error(message))
-    }
-
-    fun showCustomPopup(
-        content: @Composable (onDismiss: () -> Unit) -> Unit,
-        onDismiss: () -> Unit = {}
-    ) {
-        popupManager.showPopup(PopupType.Custom(content, onDismiss))
-    }
 
     val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -55,11 +35,5 @@ open class BaseViewModel : ViewModel(), KoinComponent {
         sendUiEventSafe(UiEvent.NavigateTo(route))
     }
 
-    fun navigateBack() {
-        sendUiEventSafe(UiEvent.NavigateBack)
-    }
-    fun showSuccessAndNavigate(message: String, route: Routes) {
-        showInfoPopup("Başarılı", message)
-        navigateTo(route)
-    }
+
 }

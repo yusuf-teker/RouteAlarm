@@ -35,6 +35,11 @@ interface AlarmDao {
     @Query("SELECT * FROM alarms")
     fun getAlarmsWithStops(): Flow<List<AlarmWithStops>>
 
+    @Transaction
+    @Query("SELECT * FROM alarms WHERE id = :id")
+    fun getAlarmWithStopsByIdFlow(id: Int): Flow<AlarmWithStops?>
+
+
     @Query("SELECT * FROM stops ORDER BY orderIndex")
     fun getStops(): Flow<List<StopEntity>>
 

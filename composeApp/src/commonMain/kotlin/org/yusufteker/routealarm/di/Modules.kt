@@ -13,9 +13,11 @@ import org.yusufteker.routealarm.feature.alarm.data.repository.InMemoryAlarmRepo
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeViewModel
 import org.yusufteker.routealarm.feature.alarm.data.database.DatabaseFactory
+import org.yusufteker.routealarm.feature.alarm.domain.AlarmActivationHandler
 import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerViewModel
+import org.yusufteker.routealarm.feature.alarm.presentation.alarmDetail.AlarmDetailViewModel
 import org.yusufteker.routealarm.permissions.PermissionBridge
 import org.yusufteker.routealarm.settings.SettingsManager
 import org.yusufteker.routealarm.settings.SettingsViewModel
@@ -44,6 +46,10 @@ val sharedModule = module {
     single { get<AlarmDatabase>().alarmDao } // Create AlarmDataBase
     single { get<AlarmDatabase>().stopDao } // Create AlarmDataBase
 
+    single<SettingsManager> {
+        SettingsManager(get())
+    }
+    single { AlarmActivationHandler(get(), get(), get(), get(), get()) }
 
 
     viewModel { HomeViewModel(get(), get(), get()) }
@@ -54,10 +60,7 @@ val sharedModule = module {
 
     viewModel { SharedAlarmViewModel() }
 
-    single<SettingsManager> {
-        SettingsManager(get())
-    }
-
     viewModel { SettingsViewModel(get()) }
 
+    viewModel { AlarmDetailViewModel(get(), get(), get(), get(), get()) }
 }

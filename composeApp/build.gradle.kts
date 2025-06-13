@@ -83,6 +83,8 @@
                 api(libs.datastore.preferences)
                 api(libs.datastore)
 
+                api(libs.napier.logging)
+
             }
 
             nativeMain.dependencies {

@@ -5,6 +5,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.yusufteker.routealarm.BuildConfig
 import org.yusufteker.routealarm.feature.location.domain.Place
@@ -35,10 +36,13 @@ actual class PlaceSuggestionService(private val context: Context) {
                             longitude = 0.0
                         )
                     }
+                    Napier.d ("PlaceSuggesion service success $result", tag = "Yusuf")
+
                     cont.resume(result, null)
                 }
                 .addOnFailureListener {
                     cont.resume(emptyList(), null)
+                    Napier.e ("PlaceSuggesion service failed", tag = "Yusuf")
                 }
         }
     }

@@ -10,17 +10,23 @@ class PopupManager {
     fun dismissAll() {
         val currentPopups = _popups.toList()
         _popups.clear()
-        currentPopups.forEach { it.onDismiss() }
+        currentPopups.forEach { popup ->
+            try {
+                popup.onDismiss()
+            } catch (e: Exception) {
+                // Handle any dismiss errors
+            }
+        }
     }
-
 
     fun showPopup(popup: PopupType) {
         _popups.add(popup)
     }
 
     fun dismissPopup(popup: PopupType) {
+        popup.onDismiss() // ekstra birşeyler yaplmak istenirse
         _popups.remove(popup)
-        popup.onDismiss()
+
     }
 
     fun showInfo(title: String, message: String, onDismiss: () -> Unit = {}) {
@@ -44,5 +50,3 @@ class PopupManager {
         showPopup(PopupType.Custom(content, onDismiss))
     }
 }
-
-

@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import io.github.aakira.napier.Napier
 import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
@@ -67,7 +68,7 @@ fun GlobalPopupHost() {
                 content = popup.content,
                 onDismiss = {
                     popupManager.dismissPopup(popup)
-                    print("CustomPopup global popup host")
+                    Napier.d ("CustomPopup global popup onDismiss", tag = "popup")
                 }
             )
         }

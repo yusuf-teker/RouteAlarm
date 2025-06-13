@@ -23,7 +23,7 @@ import org.yusufteker.routealarm.feature.alarm.presentation.home.components.Empt
 @Composable
 fun HomeScreenRoot(
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigateToAlarmDetail: (Alarm) -> Unit,
+    onNavigateToAlarmDetail: (Int) -> Unit,
     navigateToAddAlarm: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -48,7 +48,7 @@ fun HomeScreenRoot(
         state = state, onAction = { action ->
             when (action) {
                 //Diğer ekranlarla ilgili olanlar bu kısımda diğerleri viewmodelde
-                is HomeAction.OnAlarmClick -> onNavigateToAlarmDetail(action.alarm)
+                is HomeAction.OnAlarmClick -> onNavigateToAlarmDetail(action.alarmId)
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -80,6 +80,9 @@ fun HomeScreen(
                 },
                 onDeleteAlarm = { alarm ->
                     onAction(HomeAction.OnDeleteAlarm(alarm.id))
+                },
+                onAlarmClick = { alarmId ->
+                    onAction(HomeAction.OnAlarmClick(alarmId = alarmId))
                 }
             )
         }else{

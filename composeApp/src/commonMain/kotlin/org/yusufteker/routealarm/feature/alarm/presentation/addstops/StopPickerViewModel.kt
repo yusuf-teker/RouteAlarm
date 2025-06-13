@@ -70,7 +70,7 @@
                     val currentStop = _state.value.stop
                     if (currentStop.name.isBlank()) {
 
-                        showErrorPopup("Durak adı boş olamaz")
+                        popupManager.showError("Durak adı boş olamaz")
 
                         return
                     } else {

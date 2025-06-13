@@ -117,8 +117,7 @@ fun StopList(
 ) {
     Column {
         stops.forEachIndexed { index, stop ->
-            StopItem(
-                stop = stop, index = index + 1, onRemove = { onRemove(stop) })
+            StopItem(stop = stop, index = index + 1, onRemove = { onRemove(stop) })
         }
 
         AddStopCard(onClick = onAddClick)
@@ -144,7 +143,7 @@ fun StopItem(
 
         Box(Modifier.fillMaxSize().background(Color.Transparent)) {
             Card(
-                modifier = Modifier.fillMaxSize().padding(vertical = 4.dp),
+                modifier = Modifier.fillMaxSize().padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.Red)
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
@@ -29,12 +30,14 @@ import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmAct
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreenRoot
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.StopPickerScreenRoot
+import org.yusufteker.routealarm.feature.alarm.presentation.alarmDetail.AlarmDetailScreenRoot
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreenRoot
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
 import org.yusufteker.routealarm.settings.SettingsScreenRoot
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -49,8 +52,10 @@ fun AppNavHost(
         Routes.MainGraph.toString(),
         Routes.HomeScreen.toString(),
         Routes.AddAlarmScreen.toString(),
-        Routes.SettingsScreen.toString()
+        Routes.SettingsScreen.toString(),
+        Routes.ActiveAlarmScreen.toString(),
     )
+
     Scaffold(
         modifier = Modifier.background(AppColors.cardBackground),
         bottomBar = {
@@ -76,6 +81,7 @@ fun AppNavHost(
             navigation<Routes.OnboardingGraph>(
                 startDestination = Routes.WelcomeScreen
             ) {
+
                 composable<Routes.WelcomeScreen> {
                     WelcomeScreen(onContinue = {
                         // Onboarding'den sonra ana ekrana geçiş
@@ -98,16 +104,14 @@ fun AppNavHost(
             ) {
 
                 composable<Routes.HomeScreen> {
-
-
                     HomeScreenRoot(
                         contentPadding = innerPadding,
                         onNavigateToAlarmDetail = { alarm ->
-                            navController.navigate(Routes.AlarmDetailScreen(alarmId = alarm.id))
+                            navController.navigate(Routes.AlarmDetailScreen(alarmId = alarm))
                         },
                         navigateToAddAlarm = {
                             navController.navigate(Routes.AddAlarmScreen)
-                        }
+                        },
                     )
 
                 }
@@ -158,13 +162,15 @@ fun AppNavHost(
 
                 composable<Routes.AlarmDetailScreen> { backStackEntry ->
                     val args = backStackEntry.toRoute<Routes.AlarmDetailScreen>()
-                    val alarmId = args.alarmId
-                    //AlarmDetailScreen(alarmId = alarmId)
+                    val alarmIdd = args.alarmId
+                    AlarmDetailScreenRoot(
+                        alarmId = alarmIdd,
+                        contentPadding = innerPadding
+                    )
                 }
 
                 composable<Routes.ActiveAlarmScreen> {
-                    Text("Active Alarm")
-                    //ActiveAlarmScreen()
+
                 }
 
                 composable<Routes.SettingsScreen> {

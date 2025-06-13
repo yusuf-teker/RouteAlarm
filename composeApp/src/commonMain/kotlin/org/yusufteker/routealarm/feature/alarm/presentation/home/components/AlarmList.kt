@@ -2,6 +2,7 @@ package org.yusufteker.routealarm.feature.alarm.presentation.home.components
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,7 +26,8 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeToDeleteAlarmItem(
-    alarm: Alarm, onCheckedChange: (Boolean) -> Unit, onDelete: () -> Unit
+    alarm: Alarm, onCheckedChange: (Boolean) -> Unit, onDelete: () -> Unit,
+    modifier: Modifier
 ) {
     val state = rememberSwipeToDismissBoxState(
         confirmValueChange = { dismissValue ->
@@ -53,7 +55,7 @@ fun SwipeToDeleteAlarmItem(
         AlarmItemContent(
             alarm = alarm,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.background(AppColors.cardBackground, shape = MaterialTheme.shapes.medium)
+            modifier = modifier.background(AppColors.cardBackground, shape = MaterialTheme.shapes.medium)
         )
     })
 }
@@ -99,7 +101,8 @@ fun AlarmList(
     modifier: Modifier = Modifier,
     alarms: List<Alarm>,
     onAlarmCheckedChange: (Alarm, Boolean) -> Unit,
-    onDeleteAlarm: (Alarm) -> Unit
+    onDeleteAlarm: (Alarm) -> Unit,
+    onAlarmClick: (Int) -> Unit
 ) {
     Column(modifier = modifier) {
         Text(
@@ -115,7 +118,9 @@ fun AlarmList(
                 SwipeToDeleteAlarmItem(
                     alarm = alarm,
                     onCheckedChange = { onAlarmCheckedChange(alarm, it) },
-                    onDelete = { onDeleteAlarm(alarm) })
+                    onDelete = { onDeleteAlarm(alarm) },
+                    modifier = Modifier.clickable{ onAlarmClick(alarm.id)}
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }

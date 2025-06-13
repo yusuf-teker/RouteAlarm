@@ -18,6 +18,7 @@ import org.yusufteker.routealarm.feature.alarm.data.mappers.toEntity
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
+import kotlin.collections.map
 
 class InMemoryAlarmRepository(
     private val localAlarmDataSource: AlarmDao,
@@ -130,6 +131,11 @@ class InMemoryAlarmRepository(
             null
         }
     }
+
+    override fun getAlarmWithStopsByIdFlow(id: Int): Flow<Alarm?> {
+        return localAlarmDataSource.getAlarmWithStopsByIdFlow(id).map {  it?.toDomain()  }
+    }
+
 
     override suspend fun setStopIsPassed(stopId: Int, isPassed: Boolean) {
         println("setStopIsPassed called for stopId: $stopId $isPassed")

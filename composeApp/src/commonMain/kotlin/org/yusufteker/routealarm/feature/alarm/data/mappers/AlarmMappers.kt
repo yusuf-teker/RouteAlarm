@@ -5,6 +5,7 @@ import org.yusufteker.routealarm.feature.alarm.data.database.AlarmWithStops
 import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopEntity
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
+import org.yusufteker.routealarm.feature.location.domain.Location
 
 fun AlarmEntity.toDomain(stops: List<Stop> = emptyList()): Alarm {
     return Alarm(
@@ -55,6 +56,14 @@ fun Stop.toEntity(): StopEntity {
         orderIndex = this.orderIndex,
         radius = this.radius,
         isPassed = this.isPassed
+    )
+}
+
+fun Stop.toLocation(): Location {
+    return Location(
+        name = this.name,
+        lat = this.latitude,
+        lng = this.longitude
     )
 }
 

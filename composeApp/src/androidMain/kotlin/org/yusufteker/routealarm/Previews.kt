@@ -16,13 +16,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.data.dummy.fakeAlarms
 import org.yusufteker.routealarm.core.data.dummy.fakeStops
-import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmState
+import org.yusufteker.routealarm.feature.alarm.presentation.alarmDetail.AlarmDetailScreen
+import org.yusufteker.routealarm.feature.alarm.presentation.alarmDetail.AlarmDetailState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeState
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.ActiveAlarm
@@ -156,5 +157,22 @@ fun CarSliderInteractivePrew(){
     CarSliderInteractive(
         value = 100,
         onValueChange = {}
+    )
+}
+
+@Preview
+@Composable
+fun AlarmDetailScreenPrew(){
+    AlarmDetailScreen(
+        state = AlarmDetailState(
+            alarm = fakeAlarms.get(0),
+            isAlarmActive = true,
+            previousStops = fakeStops.take(2),
+            nextStops = fakeStops.drop(4),
+            progress = 0.5f,
+            remainingDistance = 1000.0F
+        ),
+        onAction = {},
+        contentPadding = PaddingValues()
     )
 }

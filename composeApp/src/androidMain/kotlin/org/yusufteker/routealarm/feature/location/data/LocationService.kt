@@ -3,8 +3,10 @@ package org.yusufteker.routealarm.feature.location.data
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.yusufteker.routealarm.feature.location.domain.Location
 import android.location.Location as ApiLocation
@@ -16,7 +18,11 @@ actual class LocationService(private val context: Context) {
 
     @SuppressLint("MissingPermission")
     actual suspend fun getCurrentLocation(): Location? = suspendCancellableCoroutine { cont ->
-        fusedLocationClient.lastLocation
+        val locationRequest = CurrentLocationRequest.Builder()
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+            .build()
+
+        fusedLocationClient.getCurrentLocation(locationRequest, null)
             .addOnSuccessListener { location: ApiLocation? ->
                 if (location != null) {
                     cont.resume(

@@ -37,9 +37,11 @@ class AddAlarmViewModel(
             }
 
             is AddAlarmAction.OnStopsChange -> {
-
+                val updatedStops = action.stops.mapIndexed { index, stop ->
+                    stop.copy(orderIndex = index + 1) // stop.orderIndex’i index ile güncelle
+                }
                 _state.value = _state.value.copy(
-                    stops = action.stops
+                    stops = updatedStops
                 )
             }
             is AddAlarmAction.CheckLocationPermission -> checkLocationPermission()
@@ -50,7 +52,7 @@ class AddAlarmViewModel(
     private fun saveAlarm() {
         val currentState = _state.value
         if (currentState.title.isBlank() || currentState.stops.isEmpty()) {
-            showErrorPopup(message = "Başlık ve en az bir durak girin.")
+            popupManager.showError(message = "Başlık ve en az bir durak girin.")
             return
         }
 
@@ -67,7 +69,7 @@ class AddAlarmViewModel(
                 sendUiEvent(UiEvent.NavigateTo(Routes.HomeScreen))
                 _state.value = AddAlarmState() // reset state
             } catch (e: Exception) {
-                showErrorPopup( message = "Alarm kaydedilemedi.")
+                popupManager.showError( message = "Alarm kaydedilemedi.")
             } finally {
 
             }
@@ -94,7 +96,7 @@ class AddAlarmViewModel(
                     isLoading = false,
                     error = if (isPermanentDenied) "Permission permanently denied" else "Permission denied"
                 )
-                showConfirmPopup(
+                popupManager.showConfirm(
                     title = "Permission Required",
                     message = "Location permission is required to add stops. Please grant permission in settings.",
                     onConfirm = {
