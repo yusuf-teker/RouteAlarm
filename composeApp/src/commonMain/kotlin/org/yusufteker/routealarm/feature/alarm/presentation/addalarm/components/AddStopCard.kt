@@ -12,6 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.yusufteker.routealarm.core.presentation.UiText
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.add_stop_button
 
 @Composable
 fun AddStopCard(onClick: () -> Unit) {
@@ -28,7 +31,7 @@ fun AddStopCard(onClick: () -> Unit) {
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "+ Durak Ekle", color = Color.Gray)
+            Text(text = UiText.StringResourceId(Res.string.add_stop_button).asString(), color = Color.Gray)
         }
     }
 }

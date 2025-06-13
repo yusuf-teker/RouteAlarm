@@ -37,9 +37,13 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
+import org.yusufteker.routealarm.core.presentation.UiText
 import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.alarm_distance
+import routealarm.composeapp.generated.resources.alarm_trigger_distance
 import routealarm.composeapp.generated.resources.bus_stop
 import routealarm.composeapp.generated.resources.minibus
+import routealarm.composeapp.generated.resources.settings
 
 @Composable
 fun SettingsScreenRoot(
@@ -69,7 +73,9 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Ayarlar", style = AppTypography.titleLarge)
+        Text(
+            UiText.StringResourceId(Res.string.settings).asString()
+            , style = AppTypography.titleLarge)
 
         CarSliderInteractive(
             value = state.stopProximityThresholdMeters,
@@ -97,7 +103,7 @@ fun CarSliderInteractive(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Alarm Mesafesi",
+            text = UiText.StringResourceId(Res.string.alarm_distance).asString(),
             style = AppTypography.titleMedium,
         )
 
@@ -188,7 +194,10 @@ fun CarSliderInteractive(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "$clampedValue metre kala alarm çalacak",
+            text = UiText.StringResourceId(
+                Res.string.alarm_trigger_distance,
+                arrayOf(clampedValue)
+            ).asString(),
             style = MaterialTheme.typography.bodyMedium,
             color = AppColors.textPrimary
         )

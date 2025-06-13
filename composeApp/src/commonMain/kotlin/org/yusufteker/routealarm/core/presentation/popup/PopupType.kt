@@ -1,25 +1,26 @@
 package org.yusufteker.routealarm.core.presentation.popup
 
 import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.StringResource
 
 sealed class PopupType {
     abstract val onDismiss: () -> Unit
 
     data class Info(
-        val title: String,
-        val message: String,
+        val title: StringResource,
+        val message: StringResource,
         override val onDismiss: () -> Unit = {}
     ) : PopupType()
 
     data class Confirm(
-        val title: String,
-        val message: String,
+        val title: StringResource,
+        val message: StringResource,
         val onConfirm: () -> Unit,
         override val onDismiss: () -> Unit = {}
     ) : PopupType()
 
     data class Error(
-        val message: String,
+        val message: StringResource,
         override val onDismiss: () -> Unit = {}
     ) : PopupType()
 

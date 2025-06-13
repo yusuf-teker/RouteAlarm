@@ -28,11 +28,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
+import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopCard
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopStatus
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.SwipeToDeleteAlarmItem
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.alarm_detail
+import routealarm.composeapp.generated.resources.remaining_distance
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -72,7 +76,8 @@ fun AlarmDetailScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = state.alarm?.title ?: "Alarm Detayı",
+            text = state.alarm?.title ?: UiText.StringResourceId(Res.string.alarm_detail).asString()
+            ,
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -163,7 +168,10 @@ fun RouteProgressBar(
             // Kalan mesafe üstte
             remainingDistance?.let {
                 Text(
-                    text = "Kalan: ${formatDistance(it.toDouble())}",
+                    text =  UiText.StringResourceId(
+                        Res.string.remaining_distance,
+                        arrayOf(formatDistance(it.toDouble()))
+                    ).asString(),
                     style = AppTypography.titleMedium,
                     color = AppColors.textPrimary,
                     modifier = Modifier.padding(bottom = 4.dp)

@@ -21,6 +21,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import org.jetbrains.compose.resources.stringResource
+import org.yusufteker.routealarm.core.presentation.UiText
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.alarms
+import routealarm.composeapp.generated.resources.stop_count
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,7 +84,7 @@ private fun AlarmItemContent(
                     text = alarm.title, style = AppTypography.titleMedium
                 )
                 Text(
-                    text = "Durak sayısı: ${alarm.stops.size}", style = AppTypography.bodyRegular.copy(
+                    text = stringResource(Res.string.stop_count,alarm.stops.size ), style = AppTypography.bodyRegular.copy(
                         color = AppColors.textPrimary.copy(alpha = 0.5f)
                     )
                 )
@@ -106,7 +111,7 @@ fun AlarmList(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "Alarmlar",
+            text = UiText.StringResourceId(Res.string.alarms).asString(),
             style = AppTypography.titleLarge,
             modifier = Modifier.padding(bottom = 16.dp).align(Alignment.CenterHorizontally)
         )

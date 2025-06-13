@@ -34,7 +34,14 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.yusufteker.routealarm.core.presentation.AppTypography
+import org.yusufteker.routealarm.core.presentation.UiText
 import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.cancel
+import routealarm.composeapp.generated.resources.close
+import routealarm.composeapp.generated.resources.confirm
+import routealarm.composeapp.generated.resources.destination_reached
+import routealarm.composeapp.generated.resources.error
+import routealarm.composeapp.generated.resources.ok
 
 @Composable
 fun GlobalPopupHost() {
@@ -44,14 +51,14 @@ fun GlobalPopupHost() {
     popups.forEach { popup ->
         when (popup) {
             is PopupType.Info -> InfoPopup(
-                title = popup.title,
-                message = popup.message,
+                title = UiText.StringResourceId(popup.title).asString(),
+                message = UiText.StringResourceId(popup.message).asString(),
                 onDismiss = { popupManager.dismissPopup(popup) }
             )
 
             is PopupType.Confirm -> ConfirmPopup(
-                title = popup.title,
-                message = popup.message,
+                title = UiText.StringResourceId(popup.title).asString() ,
+                message = UiText.StringResourceId(popup.message).asString(),
                 onConfirm = {
                     popup.onConfirm()
                     popupManager.dismissPopup(popup)
@@ -60,7 +67,7 @@ fun GlobalPopupHost() {
             )
 
             is PopupType.Error -> ErrorPopup(
-                message = popup.message,
+                message = UiText.StringResourceId(popup.message).asString() ,
                 onDismiss = { popupManager.dismissPopup(popup) }
             )
 
@@ -89,7 +96,7 @@ private fun InfoPopup(
         text = { Text(text = message) },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Tamam")
+                Text(UiText.StringResourceId(Res.string.ok).asString())
             }
         }
     )
@@ -108,7 +115,7 @@ private fun ConfirmPopup(
         text = { Text(text = message) },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("İptal")
+                Text(UiText.StringResourceId(Res.string.cancel).asString())
             }
         },
         confirmButton = {
@@ -116,7 +123,7 @@ private fun ConfirmPopup(
                 onConfirm()
                 onDismiss()
             }) {
-                Text("Onayla")
+                Text(UiText.StringResourceId(Res.string.confirm).asString())
             }
         }
     )
@@ -129,11 +136,11 @@ private fun ErrorPopup(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Hata") },
+        title = { Text(UiText.StringResourceId(Res.string.error).asString()) },
         text = { Text(text = message) },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Tamam")
+                Text(UiText.StringResourceId(Res.string.ok).asString())
             }
         }
     )
@@ -173,7 +180,8 @@ fun GoalReachedPopup(onDismiss: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(" Hedefe Ulaşıldı!", style = AppTypography.titleLarge.copy(
+        Text(
+            UiText.StringResourceId(Res.string.destination_reached).asString(), style = AppTypography.titleLarge.copy(
             color = Color.Black
         ))
         Spacer(Modifier.height(16.dp))
@@ -194,7 +202,7 @@ fun GoalReachedPopup(onDismiss: () -> Unit) {
 
         Spacer(Modifier.height(16.dp))
         Button(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-            Text("Kapat")
+            Text(UiText.StringResourceId(Res.string.close).asString())
         }
     }
 }

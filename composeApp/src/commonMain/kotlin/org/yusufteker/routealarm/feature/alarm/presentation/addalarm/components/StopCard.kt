@@ -26,6 +26,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
+import org.yusufteker.routealarm.core.presentation.UiText
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.stop_with_index
 
 @Composable
 fun StopCard(
@@ -75,7 +78,7 @@ fun StopCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Durak $index",
+                    text = UiText.StringResourceId(Res.string.stop_with_index, arrayOf(index)).asString(),
                     style = AppTypography.titleMedium.copy(color = AppColors.textPrimary.copy(alpha = contentAlpha))
                 )
                 Text(

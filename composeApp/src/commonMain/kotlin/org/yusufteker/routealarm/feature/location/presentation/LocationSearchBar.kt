@@ -14,7 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.yusufteker.routealarm.core.presentation.AppColors
+import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.feature.location.domain.Place
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.search_location
+
 @Composable
 fun LocationSearchBar(
     modifier: Modifier = Modifier,
@@ -32,7 +36,9 @@ fun LocationSearchBar(
         TextField(
             value = query,
             onValueChange = onQueryChanged,
-            label = { Text("Konum Ara...") },
+            label = { Text(
+                UiText.StringResourceId(Res.string.search_location).asString()
+            ) },
             modifier = Modifier
                 .fillMaxWidth(),
             singleLine = true,

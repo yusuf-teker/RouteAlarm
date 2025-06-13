@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+
+    <string name= "search_hint">Search here </string>
+    <string name= "clear_search">Clear Search</string>
+    <string name= "search_results">Search Results</string>
+    <string name= "no_result">No Result</string>
+
+    <string name= "error_occured">An error occurred</string>
+    <!-- Local Errors -->
+    <string name="error_disk_full">Disk dolu. Lütfen boş alan açın.</string>
+    <string name="error_local_unknown">Bilinmeyen bir hata oluştu.</string>
+
+    <!-- Remote Errors -->
+    <string name="error_request_timeout">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</string>
+    <string name="error_too_many_requests">Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_no_internet">İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.</string>
+    <string name="error_server">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_serialization">Veri dönüştürme hatası. Lütfen tekrar deneyin.</string>
+    <string name="error_remote_unknown">Bilinmeyen bir hata oluştu.</string>
+
+    <string name="app_name">Route Alarm</string>
+
+    <string name="go_back">Geri</string>
+    <string name="error">Hata</string>
+    <string name="destination_reached">Hedefe Ulaşıldı!</string>
+    <string name="close">Kapat</string>
+    <string name="ok">Tamam</string>
+    <string name="cancel">İptal</string>
+    <string name="confirm">Onayla</string>
+    <string name="no_popup_manager">PopupYöneticisi sağlanmadı</string>
+    <string name="never_miss_stop">Durağını bir daha asla kaçırma.</string>
+    <string name="get_started">Hadi başlayalım.</string>
+    <string name="add_stop_button">+ Durak Ekle</string>
+    <string name="stop_with_index">Durak %1$d</string>
+    <string name="alarm_title">Alarm Başlığı</string>
+    <string name="save">Kaydet</string>
+    <string name="delete_stop">Durağı Sil</string>
+    <string name="enter_title_and_stop">Başlık ve en az bir durak girin.</string>
+    <string name="alarm_save_failed">Alarm kaydedilemedi.</string>
+    <string name="permission_permanently_denied">İzin kalıcı olarak reddedildi</string>
+    <string name="permission_denied">İzin reddedildi</string>
+    <string name="permission_required">İzin Gerekli</string>
+    <string name="location_permission_required">Durak eklemek için konum izni gereklidir. Lütfen ayarlardan izin verin.</string>
+    <string name="only_one_alarm_active">Sadece bir alarm aktif olabilir</string>
+    <string name="stop_name_cannot_be_empty">Durak adı boş olamaz</string>
+    <string name="current_location">Mevcut Konum</string>
+    <string name="stop_title">Durak Başlığı</string>
+    <string name="add_stop">Durak Ekle</string>
+    <string name="alarm_detail">Alarm Detayı</string>
+    <string name="remaining_distance">Kalan: %1$s</string>
+    <string name="stop_count">Durak sayısı: %1$d</string>
+    <string name="alarms">Alarmlar</string>
+    <string name="add_alarm">Alarm Ekle</string>
+    <string name="no_alarms_yet">Henüz bir alarm eklemediniz</string>
+    <string name="search_location">Konum Ara...</string>
+    <string name="settings">Ayarlar</string>
+    <string name="alarm_distance">Alarm Mesafesi</string>
+    <string name="alarm_trigger_distance">Alarm %1$d metre kala çalacak</string>
+    <string name="location_tracking_active">Konum Takibi Aktif</string>
+    <string name="stops_remaining">%1$d durak kaldı.</string>
+    <string name="stop">Durdur</string>
+    <string name="approaching_destination">Hedefe Yaklaştınız!</string>
+    <string name="stops_remaining_camel_case">%1$d durak kaldı.</string>
+
+
+
+
+
+
+
+
+</resources>

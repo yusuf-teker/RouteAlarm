@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+
+    <string name= "search_hint">Search here </string>
+    <string name= "clear_search">Clear Search</string>
+    <string name= "search_results">Search Results</string>
+    <string name= "no_result">No Result</string>
+
+    <string name= "error_occured">An error occurred</string>
+    <!-- Local Errors -->
+    <string name="error_disk_full">Disk dolu. Lütfen boş alan açın.</string>
+    <string name="error_local_unknown">Bilinmeyen bir hata oluştu.</string>
+
+    <!-- Remote Errors -->
+    <string name="error_request_timeout">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</string>
+    <string name="error_too_many_requests">Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_no_internet">İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.</string>
+    <string name="error_server">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_serialization">Veri dönüştürme hatası. Lütfen tekrar deneyin.</string>
+    <string name="error_remote_unknown">Bilinmeyen bir hata oluştu.</string>
+    <string name="app_name">Route Alarm</string>
+    <string name="go_back">Back</string>
+    <string name="error">Error</string>
+    <string name="destination_reached">Destination Reached!</string>
+    <string name="close">Close</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="no_popup_manager">No PopupManager provided</string>
+    <string name="never_miss_stop">Never miss your stop again.</string>
+    <string name="get_started">Get started.</string>
+    <string name="add_stop_button">+ Add Stop</string>
+    <string name="stop_with_index">Stop %1$d</string>
+    <string name="alarm_title">Alarm Title</string>
+    <string name="save">Save</string>
+    <string name="delete_stop">Delete Stop</string>
+    <string name="enter_title_and_stop">Enter a title and at least one stop.</string>
+    <string name="alarm_save_failed">Failed to save alarm.</string>
+    <string name="permission_permanently_denied">Permission permanently denied</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="location_permission_required">Location permission is required to add stops. Please grant permission in settings.</string>
+    <string name="only_one_alarm_active">Only one alarm can be active</string>
+    <string name="stop_name_cannot_be_empty">Stop name cannot be empty</string>
+    <string name="current_location">Current Location</string>
+    <string name="stop_title">Stop Title</string>
+    <string name="add_stop">Add Stop</string>
+    <string name="alarm_detail">Alarm Detail</string>
+    <string name="remaining_distance">Remaining: %1$s</string>
+    <string name="stop_count">Number of stops: %1$d</string>
+    <string name="alarms">Alarms</string>
+    <string name="add_alarm">Add Alarm</string>
+    <string name="no_alarms_yet">You haven't added any alarms yet</string>
+    <string name="search_location">Search Location...</string>
+    <string name="settings">Settings</string>
+    <string name="alarm_distance">Alarm Distance</string>
+    <string name="alarm_trigger_distance">Alarm will ring at %1$d meters</string>
+    <string name="location_tracking_active">Location Tracking Active</string>
+    <string name="stops_remaining">%1$d stops remaining.</string>
+    <string name="stop">Stop</string>
+    <string name="approaching_destination">Approaching Destination!</string>
+    <string name="stops_remaining_camel_case">%1$d stops remaining.</string>
+
+
+</resources>

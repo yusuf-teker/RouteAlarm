@@ -39,6 +39,7 @@ import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
 import org.yusufteker.routealarm.core.presentation.UiEvent
+import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
@@ -48,6 +49,10 @@ import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addstops.components.TransportTypeDropdownSelector
 import org.yusufteker.routealarm.feature.location.presentation.LocationSearchBar
 import org.yusufteker.routealarm.feature.location.presentation.PlatformMap
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.add_stop
+import routealarm.composeapp.generated.resources.current_location
+import routealarm.composeapp.generated.resources.stop_title
 
 
 @Composable
@@ -162,7 +167,7 @@ fun StopPickerScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Place,
-                    contentDescription = "Current Location",
+                    contentDescription = UiText.StringResourceId(Res.string.current_location).asString(),
                     tint = AppColors.iconTint
                 )
             }
@@ -188,7 +193,7 @@ fun StopPickerScreen(
                                         modifier = Modifier.weight(1f),
                                         value = state.stop.name,
                                         onValueChange = { onAction(StopPickerAction.TitleChanged(it)) },
-                                        placeholder = "Durak Başlığı",
+                                        placeholder = UiText.StringResourceId(Res.string.stop_title).asString(),
                                         textStyle = AppTypography.bodyRegular
                                     ), CardContent.CustomComposable {
                                         TransportTypeDropdownSelector(
@@ -202,7 +207,8 @@ fun StopPickerScreen(
                             CardContent.CustomComposable {
                                 PrimaryButton(
                                     modifier = Modifier.fillMaxWidth().padding(bottomPadding),
-                                    text = "Durak Ekle",
+                                    text = UiText.StringResourceId(Res.string.add_stop).asString()
+                                    ,
                                     onClick = {
                                         onAction(StopPickerAction.AddStop(state.stop))
                                     },

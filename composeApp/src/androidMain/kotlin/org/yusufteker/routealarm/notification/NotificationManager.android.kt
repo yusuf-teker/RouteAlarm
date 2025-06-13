@@ -13,9 +13,16 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
+import org.jetbrains.compose.resources.getString
 import org.yusufteker.routealarm.R
 import org.yusufteker.routealarm.feature.alarm.presentation.AlarmActivity
 import org.yusufteker.routealarm.feature.location.data.LocationTrackingService
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.approaching_destination
+import routealarm.composeapp.generated.resources.location_tracking_active
+import routealarm.composeapp.generated.resources.stop
+import routealarm.composeapp.generated.resources.stops_remaining
+import routealarm.composeapp.generated.resources.stops_remaining_camel_case
 
 actual class NotificationManager(private val context: Context) {
     actual fun showNotification(title: String, description: String, onStopReached: () -> Unit) {
@@ -23,7 +30,7 @@ actual class NotificationManager(private val context: Context) {
     }
 
 
-     fun createForegroundNotification( alarmId: Int?, stopSize: Int): Notification{
+     suspend fun createForegroundNotification(alarmId: Int?, stopSize: Int): Notification{
 
          val content = RemoteViews(context.packageName, R.layout.notification_foreground_content)
          val expandedContent = RemoteViews(context.packageName, R.layout.notification_foreground_content_expanded)
@@ -45,18 +52,18 @@ actual class NotificationManager(private val context: Context) {
 
 
          return NotificationCompat.Builder(context, CHANNEL_ID)
-             .setContentTitle("Konum Takibi Aktif")
-             .setContentText("${stopSize} durak kaldı.")
+             .setContentTitle(getString(Res.string.location_tracking_active))
+             .setContentText(getString(Res.string.stops_remaining, stopSize))
              .setCustomContentView(content)
              .setCustomBigContentView(expandedContent)
              .setSmallIcon(R.drawable.ic_notification)
-             .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent)
+             .addAction(R.drawable.ic_close, getString(Res.string.stop), stopPendingIntent)
              .setOngoing(true).build()
 
 
      }
 
-    fun showAlarmNotificationWithFullScreenIntent(alarmId: Int, action: String) {
+     suspend fun showAlarmNotificationWithFullScreenIntent(alarmId: Int, action: String) {
         val alarmIntent = Intent(context, AlarmActivity::class.java).apply {
             flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -75,11 +82,12 @@ actual class NotificationManager(private val context: Context) {
 
         val notification =
             NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle("Hedefe Yaklaştınız").setContentText("").setSound(alarmSoundUri)
+                .setContentTitle(
+                        getString(Res.string.approaching_destination)).setContentText("").setSound(alarmSoundUri)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setFullScreenIntent(fullScreenPendingIntent, true)
-                .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent).setAutoCancel(true)
+                .addAction(R.drawable.ic_close, getString(Res.string.stop), stopPendingIntent).setAutoCancel(true)
                 .setVibrate(longArrayOf(0, 500, 250, 500))
                 .build()
 
@@ -117,12 +125,12 @@ actual class NotificationManager(private val context: Context) {
         val manager = getSystemService(context,NotificationManager::class.java)
         manager?.createNotificationChannel(channel)
     }
-    fun updateNotificationRoute(
+    suspend fun updateNotificationRoute(
         remoteViews: RemoteViews,
         totalStops: Int,
         currentStopIndex: Int
     ) {
-        remoteViews.setTextViewText(R.id.notificationTitle, "${totalStops-currentStopIndex} Durak Kaldı.")
+        remoteViews.setTextViewText(R.id.notificationTitle, getString(Res.string.stops_remaining_camel_case,totalStops-currentStopIndex ))
 
         val totalDots = totalStops + 1 // +1 because of the start point
 
@@ -166,7 +174,7 @@ actual class NotificationManager(private val context: Context) {
     }
 
 
-    fun updateForegroundNotification(alarmId: Int, totalStops: Int, currentStopIndex: Int) {
+    suspend fun updateForegroundNotification(alarmId: Int, totalStops: Int, currentStopIndex: Int) {
         val content = RemoteViews(context.packageName, R.layout.notification_foreground_content)
         val expandedContent =  RemoteViews(context.packageName, R.layout.notification_foreground_content_expanded)
         updateNotificationRoute(content, totalStops, currentStopIndex)
@@ -177,11 +185,11 @@ actual class NotificationManager(private val context: Context) {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle("Konum Takibi Aktif")
+            .setContentTitle(getString(Res.string.location_tracking_active))
             .setCustomContentView(content)
             .setCustomBigContentView(expandedContent)
             .setSmallIcon(R.drawable.ic_notification)
-            .addAction(R.drawable.ic_close, "Durdur", stopPendingIntent)
+            .addAction(R.drawable.ic_close, getString(Res.string.stop), stopPendingIntent)
             .setOngoing(true)
             .build()
 

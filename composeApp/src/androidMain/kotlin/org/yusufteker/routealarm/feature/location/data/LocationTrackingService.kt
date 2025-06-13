@@ -153,7 +153,7 @@ class LocationTrackingService() : Service() {
         }
     }
 
-    private fun onLocationAchieved(alarm: Alarm, lastStopId: Int) {
+    private suspend fun onLocationAchieved(alarm: Alarm, lastStopId: Int) {
         alarmAlreadyTriggered = true
         Log.d("alarmAlreadyTriggered", "$alarmAlreadyTriggered")
         alarmSoundPlayer.play()

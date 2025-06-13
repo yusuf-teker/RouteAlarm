@@ -3,15 +3,14 @@ agp = "8.5.2"
 android-compileSdk = "35"
 android-minSdk = "26"
 android-targetSdk = "35"
-androidx-activityCompose = "1.9.3"
+androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.2.0"
 androidx-core-ktx = "1.15.0"
 androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.3"
-androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose-plugin = "1.8.1"
+compose-plugin = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.1.20"
 kotlinx-coroutines = "1.9.0"
@@ -31,7 +30,6 @@ accompanist = "0.36.0"
 compottie = "2.0.0-rc04"
 datastore = "1.1.7"
 napier-logging = "2.7.1"
-
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -74,8 +72,6 @@ compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources",
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 napier-logging = { module = "io.github.aakira:napier", version.ref = "napier-logging" }
-
-
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -2,6 +2,7 @@ package org.yusufteker.routealarm.core.presentation.popup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import org.jetbrains.compose.resources.StringResource
 
 class PopupManager {
     private val _popups = mutableStateListOf<PopupType>()
@@ -29,20 +30,20 @@ class PopupManager {
 
     }
 
-    fun showInfo(title: String, message: String, onDismiss: () -> Unit = {}) {
+    fun showInfo(title: StringResource, message: StringResource, onDismiss: () -> Unit = {}) {
         showPopup(PopupType.Info(title, message, onDismiss))
     }
 
     fun showConfirm(
-        title: String,
-        message: String,
+        title: StringResource,
+        message: StringResource,
         onConfirm: () -> Unit,
         onDismiss: () -> Unit = {}
     ) {
         showPopup(PopupType.Confirm(title, message, onConfirm, onDismiss))
     }
 
-    fun showError(message: String, onDismiss: () -> Unit = {}) {
+    fun showError(message: StringResource, onDismiss: () -> Unit = {}) {
         showPopup(PopupType.Error(message, onDismiss))
     }
 

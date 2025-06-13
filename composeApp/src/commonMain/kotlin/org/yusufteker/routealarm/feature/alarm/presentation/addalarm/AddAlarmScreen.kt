@@ -29,13 +29,17 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.UiEvent
+import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
-import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.AddStopCard
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopCard
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.alarm_title
+import routealarm.composeapp.generated.resources.delete_stop
+import routealarm.composeapp.generated.resources.save
 
 
 @Composable
@@ -84,7 +88,8 @@ fun AddAlarmScreen(
             content = CardContent.EditableTextContent(
                 value = state.title,
                 onValueChange = { onAction(AddAlarmAction.TitleChanged(it)) },
-                placeholder = "Alarm Başlığı"
+                placeholder = UiText.StringResourceId(Res.string.alarm_title).asString()
+
             )
         )
 
@@ -101,7 +106,7 @@ fun AddAlarmScreen(
 
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
-            text = "Kaydet",
+            text = UiText.StringResourceId(Res.string.save).asString(),
             onClick = {
                 onAction(AddAlarmAction.SaveAlarm)
             }
@@ -149,7 +154,7 @@ fun StopItem(
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Durağı Sil",
+                        contentDescription = UiText.StringResourceId(Res.string.delete_stop).asString(),
                         tint = Color.White
                     )
                 }

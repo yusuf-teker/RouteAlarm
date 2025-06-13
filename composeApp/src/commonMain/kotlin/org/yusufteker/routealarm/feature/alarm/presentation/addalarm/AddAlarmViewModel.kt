@@ -4,14 +4,24 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
 import org.yusufteker.routealarm.core.presentation.UiEvent
+import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.permissions.PermissionBridge
 import org.yusufteker.routealarm.permissions.PermissionResultCallback
 import org.yusufteker.routealarm.permissions.openAppSettings
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.alarm_save_failed
+import routealarm.composeapp.generated.resources.enter_title_and_stop
+import routealarm.composeapp.generated.resources.error
+import routealarm.composeapp.generated.resources.location_permission_required
+import routealarm.composeapp.generated.resources.permission_denied
+import routealarm.composeapp.generated.resources.permission_permanently_denied
+import routealarm.composeapp.generated.resources.permission_required
 
 class AddAlarmViewModel(
     private val repository: AlarmRepository,
@@ -52,7 +62,7 @@ class AddAlarmViewModel(
     private fun saveAlarm() {
         val currentState = _state.value
         if (currentState.title.isBlank() || currentState.stops.isEmpty()) {
-            popupManager.showError(message = "Başlık ve en az bir durak girin.")
+            popupManager.showError(message = Res.string.enter_title_and_stop)
             return
         }
 
@@ -69,7 +79,7 @@ class AddAlarmViewModel(
                 sendUiEvent(UiEvent.NavigateTo(Routes.HomeScreen))
                 _state.value = AddAlarmState() // reset state
             } catch (e: Exception) {
-                popupManager.showError( message = "Alarm kaydedilemedi.")
+                popupManager.showError( message =Res.string.alarm_save_failed)
             } finally {
 
             }
@@ -94,11 +104,11 @@ class AddAlarmViewModel(
             override fun onPermissionDenied(isPermanentDenied: Boolean) {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    error = if (isPermanentDenied) "Permission permanently denied" else "Permission denied"
+                    error = if (isPermanentDenied) Res.string.permission_permanently_denied else Res.string.permission_denied
                 )
                 popupManager.showConfirm(
-                    title = "Permission Required",
-                    message = "Location permission is required to add stops. Please grant permission in settings.",
+                    title = Res.string.permission_required,
+                    message = Res.string.location_permission_required,
                     onConfirm = {
                         openAppSettings()
                     }

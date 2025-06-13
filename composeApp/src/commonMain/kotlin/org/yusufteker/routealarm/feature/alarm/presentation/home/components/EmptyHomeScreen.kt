@@ -18,6 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.yusufteker.routealarm.core.presentation.AppTypography
+import org.yusufteker.routealarm.core.presentation.UiText
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.add_alarm
+import routealarm.composeapp.generated.resources.no_alarms_yet
 
 @Composable
 fun EmptyHomeScreen(
@@ -35,10 +39,13 @@ fun EmptyHomeScreen(
             tint = Color.Gray
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Henüz bir alarm eklemediniz", style = AppTypography.titleMedium)
+        Text(UiText.StringResourceId(Res.string.no_alarms_yet).asString()
+            , style = AppTypography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = { onAddAlarmClick() }) {
-            Text("Alarm Ekle")
+            Text(
+                UiText.StringResourceId(Res.string.add_alarm).asString()
+            )
         }
     }
 }

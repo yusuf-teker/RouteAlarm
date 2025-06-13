@@ -21,9 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.yusufteker.routealarm.core.presentation.AppColors
+import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.core.presentation.WelcomeBackgroundColor
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.app_name
+import routealarm.composeapp.generated.resources.get_started
+import routealarm.composeapp.generated.resources.never_miss_stop
 import routealarm.composeapp.generated.resources.welcomeNoBackground
 
 
@@ -46,7 +50,7 @@ fun WelcomeScreen(
             )
             // App İsmi
             Text(
-                text = "Route Alarm", style = TextStyle.Default.copy(
+                text = UiText.StringResourceId(Res.string.app_name).asString(), style = TextStyle.Default.copy(
                     color = AppColors.textPrimary,
                     fontSize = 48.sp,
                 ), fontWeight = FontWeight.Bold
@@ -55,7 +59,7 @@ fun WelcomeScreen(
             // Açıklama
             Text(
                 modifier = Modifier.padding(horizontal = 64.dp),
-                text = "Never miss your stop again.",
+                text = UiText.StringResourceId(Res.string.never_miss_stop).asString(),
                 style = TextStyle.Default.copy(
                     color = AppColors.textPrimary,
                     fontSize = 24.sp,
@@ -67,7 +71,7 @@ fun WelcomeScreen(
 
             // Devam Buton
             PrimaryButton(
-                modifier = Modifier.width(360.dp), text = "Get started.", onClick = onContinue
+                modifier = Modifier.width(360.dp), text = UiText.StringResourceId(Res.string.get_started).asString(), onClick = onContinue
 
             )
         }

@@ -15,6 +15,8 @@
     import org.yusufteker.routealarm.feature.location.data.PlaceSuggestionService
     import org.yusufteker.routealarm.feature.location.domain.emptyLocation
     import org.yusufteker.routealarm.feature.location.domain.toLocation
+    import routealarm.composeapp.generated.resources.Res
+    import routealarm.composeapp.generated.resources.stop_name_cannot_be_empty
 
     class StopPickerViewModel(
         private val placeSuggestionService: PlaceSuggestionService,
@@ -28,13 +30,6 @@
         private val _state = MutableStateFlow(StopPickerState())
 
         val state: StateFlow<StopPickerState> = _state.asStateFlow()
-
-        private val _state2 = MutableStateFlow("Hello")
-        val state2: StateFlow<String> = _state2
-
-        fun updateMessage(newMsg: String) {
-            _state2.value = newMsg
-        }
 
         init {
             viewModelScope.launch {
@@ -70,7 +65,7 @@
                     val currentStop = _state.value.stop
                     if (currentStop.name.isBlank()) {
 
-                        popupManager.showError("Durak adı boş olamaz")
+                        popupManager.showError(Res.string.stop_name_cannot_be_empty)
 
                         return
                     } else {

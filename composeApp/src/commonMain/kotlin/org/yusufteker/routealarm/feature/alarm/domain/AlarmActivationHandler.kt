@@ -11,6 +11,9 @@ import org.yusufteker.routealarm.permissions.PermissionBridge
 import org.yusufteker.routealarm.permissions.PermissionResultCallback
 import org.yusufteker.routealarm.permissions.openAppSettings
 import org.yusufteker.routealarm.settings.SettingsManager
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.error
+import routealarm.composeapp.generated.resources.only_one_alarm_active
 
 class AlarmActivationHandler(
     private val alarmRepository: AlarmRepository,
@@ -36,7 +39,7 @@ class AlarmActivationHandler(
                     val tryingToActivate = isChecked
 
                     if (alreadyActive && tryingToActivate) {
-                        popupManager.showPopup(PopupType.Info("Hata", "Sadece bir alarm aktif olabilir"))
+                        popupManager.showPopup(PopupType.Info(Res.string.error, Res.string.only_one_alarm_active))
                     } else {
                         alarmRepository.setAlarmActive(alarm.id, isChecked)
 

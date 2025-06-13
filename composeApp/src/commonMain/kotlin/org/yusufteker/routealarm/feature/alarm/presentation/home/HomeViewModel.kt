@@ -11,12 +11,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
+import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmActivationHandler
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmRepository
 import org.yusufteker.routealarm.permissions.NotificationPermissionDialog
 import org.yusufteker.routealarm.permissions.PermissionBridge
 import org.yusufteker.routealarm.permissions.PermissionResultCallback
 import org.yusufteker.routealarm.permissions.openAppSettings
+import routealarm.composeapp.generated.resources.Res
+import routealarm.composeapp.generated.resources.permission_denied
 
 class HomeViewModel(
     private val alarmRepository: AlarmRepository,
@@ -42,8 +45,7 @@ class HomeViewModel(
             alarmRepository.getAlarmsWithStops2().collect { alarms ->
                 val active = alarms.find { it.isActive }
                 active?.stops?.forEach { stop ->
-                    println("Stop ${stop.id}: isPassed = ${stop.isPassed}")
-                }
+                    println("Stop ${stop.id}: isPassed = ${stop.isPassed}") }
                 _uiState.update {
                     it.copy(
                         alarms = alarms, activeAlarm = active
