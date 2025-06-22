@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +33,7 @@ import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopCard
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopStatus
+import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.rememberShimmerBrush
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.SwipeToDeleteAlarmItem
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import routealarm.composeapp.generated.resources.Res
@@ -146,65 +148,56 @@ fun RouteProgressBar(
     progress: Float,
     remainingDistance: Float?,
     activeStop: Stop?,
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
+    modifier: Modifier = Modifier.fillMaxWidth()
 ) {
-    val totalSegments = 20
-    val activeSegments = min(ceil(progress * totalSegments).toInt(), totalSegments)
+    val shimmerBrush = rememberShimmerBrush()
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Üstte: Durak adı ve kalan mesafe
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween){
+            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = "${activeStop?.name}",
-                style = AppTypography.titleMedium,
+                style = AppTypography.bodyRegular,
                 color = AppColors.textPrimary,
-                modifier = Modifier.padding(bottom = 4.dp)
             )
-            // Kalan mesafe üstte
+            Spacer(Modifier.width(16.dp))
             remainingDistance?.let {
                 Text(
-                    text =  UiText.StringResourceId(
+                    text = UiText.StringResourceId(
                         Res.string.remaining_distance,
                         arrayOf(formatDistance(it.toDouble()))
                     ).asString(),
-                    style = AppTypography.titleMedium,
+                    style = AppTypography.bodyRegular,
                     color = AppColors.textPrimary,
-                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
         }
 
-
-        // Segment çubuğu
-        Row(
+        // Progress Bar (shimmerli tek parça bar)
+        Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(50))
-                .background(Color.Transparent)
+                .fillMaxWidth()
                 .height(20.dp)
-                .fillMaxWidth(),
+                .clip(RoundedCornerShape(50))
+                .background(Color.Gray.copy(alpha = 0.2f)) // Kalan kısım
         ) {
-            repeat(totalSegments) { index ->
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .padding(horizontal = 1.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(
-                            if (index < activeSegments) AppColors.green
-                            else Color.Gray.copy(alpha = 0.2f)
-                        )
-                )
-            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(progress.coerceIn(0f, 1f))
+                    .fillMaxHeight()
+                    .background(shimmerBrush)
+            )
         }
 
         Spacer(Modifier.height(8.dp))
 
+        // StopCard
         activeStop?.let {
             StopCard(
                 stop = it,
@@ -215,5 +208,6 @@ fun RouteProgressBar(
         }
     }
 }
+
 
 

@@ -162,6 +162,8 @@ fun ActiveAlarm(alarm: Alarm){
                             }
                         }
                     }
+                    Spacer(Modifier.width(segmentLength))
+
                 }
             }
         }
@@ -207,7 +209,7 @@ fun ActiveAlarmMax2Stop(
                 ) {
                     Text(
                         text = stop.name,
-                        textAlign = TextAlign.Center,
+                        textAlign = if (index != stops.lastIndex) TextAlign.Center else TextAlign.End,
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColors.textPrimary,
                         modifier = Modifier.padding(bottom = 8.dp)
