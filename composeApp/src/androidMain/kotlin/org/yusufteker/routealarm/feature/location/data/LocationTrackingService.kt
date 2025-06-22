@@ -166,6 +166,8 @@ class LocationTrackingService() : Service() {
             Log.d("LocationTrackingService", " onLocationAchieved Achieved stop id: $lastStopId")
 
         }
+        notificationManager.updateForegroundNotification(alarm.id, alarm.stops.size, alarm.stops.indexOfFirst { it.id == lastStopId } + 1)
+
         if (alarm.stops.last().id == lastStopId) { // SON DURAK
 
             deactivateAlarm(alarm.id)
@@ -180,7 +182,6 @@ class LocationTrackingService() : Service() {
                 } ,
                 onDismiss = {}
             )
-            notificationManager.updateForegroundNotification(alarm.id, alarm.stops.size, alarm.stops.indexOfFirst { it.id == lastStopId } + 1)
 
             notificationManager.showAlarmNotificationWithFullScreenIntent( alarm.id, ACTION_STOP_SERVICE)
 

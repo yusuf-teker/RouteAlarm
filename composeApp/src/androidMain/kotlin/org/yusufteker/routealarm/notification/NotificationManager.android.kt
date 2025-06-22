@@ -178,6 +178,7 @@ actual class NotificationManager(private val context: Context) {
         val content = RemoteViews(context.packageName, R.layout.notification_foreground_content)
         val expandedContent =  RemoteViews(context.packageName, R.layout.notification_foreground_content_expanded)
         updateNotificationRoute(content, totalStops, currentStopIndex)
+        updateNotificationRoute(expandedContent, totalStops, currentStopIndex)
 
         val stopIntent = stopIntent(ACTION_STOP_SERVICE, alarmId)
         val stopPendingIntent = PendingIntent.getService(
