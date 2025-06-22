@@ -1,10 +1,16 @@
 package org.yusufteker.routealarm
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,13 +18,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.yusufteker.routealarm.app.Routes
 import org.yusufteker.routealarm.core.data.dummy.fakeAlarms
 import org.yusufteker.routealarm.core.data.dummy.fakeStops
 import org.yusufteker.routealarm.core.presentation.button.PrimaryButton
 import org.yusufteker.routealarm.core.presentation.card.AdaptiveCard
 import org.yusufteker.routealarm.core.presentation.card.CardContent
+import org.yusufteker.routealarm.core.presentation.modifier.rainbowColors
+import org.yusufteker.routealarm.core.presentation.modifier.rgbBorder
+
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.AddAlarmState
@@ -175,4 +186,29 @@ fun AlarmDetailScreenPrew(){
         onAction = {},
         contentPadding = PaddingValues()
     )
+}
+
+@Preview
+@Composable
+fun RainbowBorderPreview() {
+    Column(Modifier.fillMaxSize()) {
+
+        Text(modifier = Modifier.rgbBorder(
+            strokeWidth = 8.dp,
+            shape = RectangleShape,
+            duration = 5000,
+            colorList = rainbowColors
+        ).size(600.dp).padding(16.dp),
+            text = "RGB Border Example")
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(Color.Black)
+                .rgbBorder(strokeWidth = 8.dp, shape = CircleShape, duration = 5000)
+        )
+
+
+
+    }
+
 }

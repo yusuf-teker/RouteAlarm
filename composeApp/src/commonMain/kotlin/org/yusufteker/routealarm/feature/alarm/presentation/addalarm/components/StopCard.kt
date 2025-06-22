@@ -27,6 +27,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import org.yusufteker.routealarm.core.presentation.UiText
+import org.yusufteker.routealarm.core.presentation.modifier.activeAlarmBorderColors
+import org.yusufteker.routealarm.core.presentation.modifier.rainbowColors
+import org.yusufteker.routealarm.core.presentation.modifier.rgbBorder
 import routealarm.composeapp.generated.resources.Res
 import routealarm.composeapp.generated.resources.stop_with_index
 
@@ -41,7 +44,14 @@ fun StopCard(
 
     val backgroundModifier = when (status) {
         StopStatus.InProgress -> modifier
+
             .background(shimmerBrush, shape = RoundedCornerShape(16.dp))
+            .rgbBorder(
+                strokeWidth = 4.dp,
+                shape = RoundedCornerShape(16.dp),
+                duration = 5000,
+                colorList = activeAlarmBorderColors
+            )
         else -> modifier
             .background(
                 color = when (status) {
