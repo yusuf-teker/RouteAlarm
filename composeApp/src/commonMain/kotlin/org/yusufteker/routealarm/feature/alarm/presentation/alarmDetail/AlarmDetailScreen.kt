@@ -12,9 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,11 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
+import org.yusufteker.routealarm.core.presentation.UiEvent
 import org.yusufteker.routealarm.core.presentation.UiText
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopCard
@@ -47,14 +55,24 @@ import kotlin.math.min
 fun AlarmDetailScreenRoot(
     viewModel: AlarmDetailViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
-    alarmId: Int
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    alarmId: Int,
+    onBackClick: () -> Unit,
 
+    ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.onAction(AlarmDetailAction.LoadData(alarmId))
+        viewModel.uiEvent.collect { event ->
+            when(event){
+                is UiEvent.NavigateBack -> {
+                    onBackClick()
+                }
+                else -> Unit
+            }
+        }
 
     }
+
 
     AlarmDetailScreen(
         state = state,
@@ -77,11 +95,32 @@ fun AlarmDetailScreen(
             .padding(contentPadding)
             .padding(16.dp)
     ) {
-        Text(
-            text = state.alarm?.title ?: UiText.StringResourceId(Res.string.alarm_detail).asString()
-            ,
-            style = MaterialTheme.typography.titleLarge
-        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 8.dp)
+        ) {
+            IconButton(
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = AppColors.cardBackground,
+                ),
+                modifier = Modifier.size(48.dp),
+                onClick = { onAction(AlarmDetailAction.NavigateBack) }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Geri",
+                    tint = AppColors.iconTint
+                )
+            }
+            Text(
+                text = state.alarm?.title ?: UiText.StringResourceId(Res.string.alarm_detail).asString(),
+                modifier = Modifier.weight(1f),
+                style = AppTypography.titleLarge,
+                textAlign = TextAlign.Center,
+                color = AppColors.textPrimary
+            )
+        }
+
 
         state.alarm?.let {
             SwipeToDeleteAlarmItem(
