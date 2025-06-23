@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.yusufteker.routealarm.core.presentation.BaseViewModel
+import org.yusufteker.routealarm.core.presentation.UiEvent
 import org.yusufteker.routealarm.feature.alarm.data.mappers.toLocation
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.AlarmActivationHandler
@@ -69,6 +70,10 @@ class AlarmDetailViewModel(
                     alarmRepository.deleteAlarm(action.alarmId)
                 }
             }
+            is AlarmDetailAction.NavigateBack -> {
+                sendUiEventSafe(UiEvent.NavigateBack)
+            }
+
         }
     }
 

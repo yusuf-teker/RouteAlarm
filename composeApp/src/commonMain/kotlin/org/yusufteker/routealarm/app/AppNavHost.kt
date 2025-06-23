@@ -172,7 +172,10 @@ fun AppNavHost(
                     val alarmIdd = args.alarmId
                     AlarmDetailScreenRoot(
                         alarmId = alarmIdd,
-                        contentPadding = innerPadding
+                        contentPadding = innerPadding,
+                        onBackClick = {
+                            navController.popBackStack()
+                        }
                     )
                 }
 
