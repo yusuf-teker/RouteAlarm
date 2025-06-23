@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import io.github.aakira.napier.Napier
 import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
@@ -55,6 +56,12 @@ fun AppNavHost(
         Routes.SettingsScreen.toString(),
         Routes.ActiveAlarmScreen.toString(),
     )
+
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { route ->
+           Napier.d("-- Navigated to: $route --", tag = "ScreenNavigation" )
+        }
+    }
 
     Scaffold(
         modifier = Modifier.background(AppColors.cardBackground),
