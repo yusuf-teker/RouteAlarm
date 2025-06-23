@@ -46,6 +46,7 @@ class AlarmActivity : ComponentActivity() {
         keyguardManager.requestDismissKeyguard(this, null)
 
         val alarmId = intent?.getIntExtra("alarm_id", -1) ?: -1
+        val intentAction = intent?.getStringExtra("action") ?: ""
 
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -60,7 +61,7 @@ class AlarmActivity : ComponentActivity() {
                     popupManager.dismissAll()
                     startService(
                         Intent(this, LocationTrackingService::class.java).apply {
-                            action = "ACTION_STOP_SERVICE"
+                            action = intentAction
                             putExtra("alarm_id", alarmId)
 
                         })

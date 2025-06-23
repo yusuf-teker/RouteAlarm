@@ -68,6 +68,7 @@ actual class NotificationManager(private val context: Context) {
             flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(EXTRA_ALARM_ID, alarmId)
+            putExtra("action", action)
         }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
