@@ -134,24 +134,14 @@ fun StopPickerScreen(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                IconButton(
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = AppColors.cardBackground,
-                    ),
-                    modifier = Modifier.size(48.dp),
-                    onClick = { onAction(StopPickerAction.NavigateBack) }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Geri",
-                        tint = AppColors.iconTint
-                    )
-                }
                 LocationSearchBar(query = state.query, onQueryChanged = { query ->
                     onAction(StopPickerAction.QueryChanged(query))
                 }, suggestions = state.suggestions, onSuggestionClicked = { suggestion ->
                     onAction(StopPickerAction.SuggestionSelected(suggestion))
                     keyboardController?.hide()
-                })
+                }, currentLocation = state.currentLocation,
+                    onBackClick = {onAction(StopPickerAction.NavigateBack) }
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))

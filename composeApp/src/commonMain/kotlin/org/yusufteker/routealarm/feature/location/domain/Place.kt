@@ -5,7 +5,7 @@ data class Place(
     val name: String,
     val address: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
 )
 fun Place.toLocation(): Location {
     return Location(
