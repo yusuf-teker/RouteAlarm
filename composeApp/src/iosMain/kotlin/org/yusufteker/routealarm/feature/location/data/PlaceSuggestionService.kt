@@ -61,7 +61,7 @@ actual class PlaceSuggestionService {
                         name = item.name ?: item.placemark.title ?: "Bilinmeyen Konum",
                         address = formatAddress(item.placemark),
                         latitude = coordinate.useContents { latitude },
-                        longitude = coordinate.useContents { longitude }
+                        longitude = coordinate.useContents { longitude },
                     )
                 } ?: emptyList()
 

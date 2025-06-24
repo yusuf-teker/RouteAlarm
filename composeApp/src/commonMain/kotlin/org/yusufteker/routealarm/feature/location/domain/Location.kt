@@ -41,3 +41,18 @@ fun formatDistance(meters: Double): String {
     }
 }
 
+fun Location.distanceTextTo(lat: Double, lng: Double): String {
+
+    return  formatDistance(
+        calculateDistance(
+            this.lat,
+            this.lng,
+            lat,
+            lng
+        )
+    )
+
+
+}
+
+

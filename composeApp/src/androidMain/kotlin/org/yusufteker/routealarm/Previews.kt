@@ -141,7 +141,7 @@ fun LocationSearchBarPreview() {
             Place("4", "Suggestion 4", "", 1.1, 1.1),
             Place("5", "Suggestion 5", "", 1.1, 1.1)
         ),
-        onSuggestionClicked = {}
+        onSuggestionClicked = {},
     )
 
 }

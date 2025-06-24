@@ -6,9 +6,12 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.yusufteker.routealarm.BuildConfig
 import org.yusufteker.routealarm.feature.location.domain.Place
+import kotlin.coroutines.resume
 
 // androidMain
 actual class PlaceSuggestionService(private val context: Context) {
@@ -19,6 +22,7 @@ actual class PlaceSuggestionService(private val context: Context) {
         Places.createClient(context)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     actual suspend fun getSuggestions(query: String): List<Place> {
         val request = FindAutocompletePredictionsRequest.builder()
             .setQuery(query)
@@ -27,18 +31,19 @@ actual class PlaceSuggestionService(private val context: Context) {
         return suspendCancellableCoroutine { cont ->
             placesClient.findAutocompletePredictions(request)
                 .addOnSuccessListener { response ->
-                    val result = response.autocompletePredictions.map {
-                        Place(
-                            id = it.placeId,
-                            name = it.getPrimaryText(null).toString(),
-                            address = it.getSecondaryText(null).toString(),
-                            latitude = 0.0,
-                            longitude = 0.0
-                        )
-                    }
-                    Napier.d ("PlaceSuggesion service success $result", tag = "Yusuf")
+                    val predictions = response.autocompletePredictions
 
-                    cont.resume(result, null)
+                    kotlinx.coroutines.GlobalScope.launch {
+                        val places = predictions.mapNotNull { prediction ->
+                            try {
+                                getPlaceDetails(prediction.placeId)
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
+
+                        cont.resume(places)
+                    }
                 }
                 .addOnFailureListener {
                     cont.resume(emptyList(), null)
