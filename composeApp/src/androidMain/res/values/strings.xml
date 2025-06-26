@@ -4,4 +4,5 @@
     <string name="stop_reached">%s. durağına ulaştınız.</string>
     <string name="stop_reached_final">Varış noktasına ulaştınız</string>
     <string name="stop_alarm_text">Alarmı Durdur</string>
+    <string name="stop_tracking">Takibi Durdur</string>
 </resources>

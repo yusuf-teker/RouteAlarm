@@ -4,7 +4,6 @@
     <string name="stop_reached_final">You have reached your destination</string>
     <string name="stop_reached">You have reached %s.</string>
     <string name="stop_alarm_text">Stop Alarm</string>
-
-    
+    <string name="stop_tracking">Stop Tracking</string>
 
 </resources>

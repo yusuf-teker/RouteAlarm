@@ -9,12 +9,14 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
 import org.jetbrains.compose.resources.getString
 import org.yusufteker.routealarm.R
+import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.feature.alarm.presentation.AlarmActivity
 import org.yusufteker.routealarm.feature.location.data.LocationTrackingService
 import routealarm.composeapp.generated.resources.Res
@@ -126,13 +128,17 @@ actual class NotificationManager(private val context: Context) {
 
             if (i == 0) {
                 // Başlangıç noktası her zaman yeşil
-                remoteViews.setImageViewResource(dotId, R.drawable.stop_dot_green)
+                remoteViews.setImageViewResource(dotId, R.drawable.map_pin)
+                remoteViews.setInt(dotId, "setColorFilter", AppColors.green.toArgb())
+
             } else if (i <= currentStopIndex) {
                 // Geçilen duraklar
-                remoteViews.setImageViewResource(dotId, R.drawable.stop_dot_green)
+                remoteViews.setImageViewResource(dotId, R.drawable.map_pin)
+                remoteViews.setInt(dotId, "setColorFilter", AppColors.green.toArgb())
             } else {
                 // Henüz geçilmemiş duraklar
-                remoteViews.setImageViewResource(dotId, R.drawable.stop_dot_red)
+                remoteViews.setImageViewResource(dotId, R.drawable.map_pin)
+                remoteViews.setInt(dotId, "setColorFilter", AppColors.red.toArgb())
             }
 
             if (i < totalDots - 1) {
