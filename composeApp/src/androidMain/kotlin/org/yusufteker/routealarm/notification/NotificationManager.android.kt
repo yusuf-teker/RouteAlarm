@@ -29,27 +29,15 @@ actual class NotificationManager(private val context: Context) {
         // Implementation olmayacak
     }
 
-
      suspend fun createForegroundNotification(alarmId: Int?, stopSize: Int): Notification{
 
-         val content = RemoteViews(context.packageName, R.layout.notification_foreground_content)
-         val expandedContent = RemoteViews(context.packageName, R.layout.notification_foreground_content_expanded)
+         val content = createNotificationViews(R.layout.notification_foreground_content, stopSize, 0)
+         val expandedContent = createNotificationViews(R.layout.notification_foreground_content_expanded, stopSize, 0)
 
+         val stopPendingIntent = createStopPendingIntent(alarmId!!)
 
-         val currentStopIndex = 0
-         updateNotificationRoute(content, stopSize, currentStopIndex)
-         updateNotificationRoute(expandedContent, stopSize, currentStopIndex)
-
-         val stopIntent = stopIntent(ACTION_STOP_SERVICE, alarmId!!)
-         val stopPendingIntent = PendingIntent.getService(
-             context, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-
-         )
-         // todo btnStop şuan textview sonra imageButton olacak
          content.setOnClickPendingIntent(R.id.btnStop, stopPendingIntent)
          expandedContent.setOnClickPendingIntent(R.id.btnStop, stopPendingIntent)
-
-
 
          return NotificationCompat.Builder(context, CHANNEL_ID)
              .setContentTitle(getString(Res.string.location_tracking_active))
@@ -59,25 +47,22 @@ actual class NotificationManager(private val context: Context) {
              .setSmallIcon(R.drawable.ic_notification)
              .addAction(R.drawable.ic_close, getString(Res.string.stop), stopPendingIntent)
              .setOngoing(true).build()
-
-
      }
 
-     suspend fun showAlarmNotificationWithFullScreenIntent(alarmId: Int, action: String) {
+     suspend fun showAlarmNotificationWithFullScreenIntent(stopName: String, alarmId: Int, action: String) {
         val alarmIntent = Intent(context, AlarmActivity::class.java).apply {
             flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(EXTRA_ALARM_ID, alarmId)
-            putExtra("action", action)
+            putExtra(AlarmActivity.EXTRA_ACTION, action)
+            putExtra(AlarmActivity.EXTRA_STOP_NAME, stopName)
         }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val stopIntent = stopIntent(action, alarmId)
-        val stopPendingIntent = PendingIntent.getService(
-            context, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+
+        val stopPendingIntent = createStopPendingIntent(alarmId, action)
 
         val alarmSoundUri = "android.resource://${context.packageName}/${R.raw.alarm_sound}".toUri()
 
@@ -181,10 +166,7 @@ actual class NotificationManager(private val context: Context) {
         updateNotificationRoute(content, totalStops, currentStopIndex)
         updateNotificationRoute(expandedContent, totalStops, currentStopIndex)
 
-        val stopIntent = stopIntent(ACTION_STOP_SERVICE, alarmId)
-        val stopPendingIntent = PendingIntent.getService(
-            context, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        val stopPendingIntent = createStopPendingIntent(alarmId)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle(getString(Res.string.location_tracking_active))
@@ -198,6 +180,19 @@ actual class NotificationManager(private val context: Context) {
         val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(FOREGROUND_NOTIFICATION_ID, notification)
     }
+
+    private suspend fun createNotificationViews(layoutId: Int, totalStops: Int, currentStopIndex: Int): RemoteViews {
+        val views = RemoteViews(context.packageName, layoutId)
+        updateNotificationRoute(views, totalStops, currentStopIndex)
+        return views
+    }
+
+    private fun createStopPendingIntent(alarmId: Int, action: String = ACTION_STOP_SERVICE): PendingIntent {
+        return PendingIntent.getService(
+            context, 1, stopIntent(action, alarmId), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
 
 }
 

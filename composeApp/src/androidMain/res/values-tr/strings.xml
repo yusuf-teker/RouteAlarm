@@ -2,6 +2,7 @@
     <string name="app_name">RouteAlarm</string>
     <string name="stop_reached_intermediate">Bir ara durağa ulaştınız</string>
     <string name="stop_reached">%s. durağına ulaştınız.</string>
+
     <string name="stop_reached_final">Varış noktasına ulaştınız</string>
     <string name="stop_alarm_text">Alarmı Durdur</string>
 </resources>

@@ -1,6 +1,8 @@
 package org.yusufteker.routealarm.feature.alarm.presentation.alarmDetail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +19,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,9 +52,10 @@ import org.yusufteker.routealarm.feature.alarm.presentation.home.components.Swip
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import routealarm.composeapp.generated.resources.Res
 import routealarm.composeapp.generated.resources.alarm_detail
+import routealarm.composeapp.generated.resources.current_stop_title
+import routealarm.composeapp.generated.resources.passed_stops_title
 import routealarm.composeapp.generated.resources.remaining_distance
-import kotlin.math.ceil
-import kotlin.math.min
+import routealarm.composeapp.generated.resources.upcoming_stops_title
 
 
 @Composable
@@ -60,13 +67,16 @@ fun AlarmDetailScreenRoot(
 
     ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+
     LaunchedEffect(Unit) {
         viewModel.onAction(AlarmDetailAction.LoadData(alarmId))
         viewModel.uiEvent.collect { event ->
-            when(event){
+            when (event) {
                 is UiEvent.NavigateBack -> {
                     onBackClick()
                 }
+
                 else -> Unit
             }
         }
@@ -88,12 +98,16 @@ fun AlarmDetailScreen(
     onAction: (AlarmDetailAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
+
+    var showPreviousStops by remember { mutableStateOf(false) }
+    var showNextStops by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(AppColors.background)
             .padding(contentPadding)
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
 
         Row(
@@ -113,12 +127,140 @@ fun AlarmDetailScreen(
                 )
             }
             Text(
-                text = state.alarm?.title ?: UiText.StringResourceId(Res.string.alarm_detail).asString(),
-                modifier = Modifier.weight(1f),
+                text = state.alarm?.title ?: UiText.StringResourceId(Res.string.alarm_detail)
+                    .asString(),
+                modifier = Modifier.weight(1f).padding(start = 16.dp, end = 8.dp),
                 style = AppTypography.titleLarge,
-                textAlign = TextAlign.Center,
                 color = AppColors.textPrimary
             )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+
+                if (state.isAlarmActive) {
+
+
+                    // Current Stop
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = UiText.StringResourceId(Res.string.current_stop_title).asString(),
+                        style = AppTypography.titleMedium,
+                        color = AppColors.textPrimary,
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    RouteProgressBar(
+                        state.progress,
+                        state.remainingDistance,
+                        state.activeStop,
+                    )
+
+                    // Previous Stops
+                    Spacer(Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(AppColors.cardBackground)
+                            .clickable { showPreviousStops = !showPreviousStops }
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = UiText.StringResourceId(Res.string.passed_stops_title)
+                                .asString(),
+                            style = AppTypography.titleMedium,
+                            color = AppColors.textSecondary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(AppColors.background),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (showPreviousStops) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = AppColors.textPrimary
+                            )
+                        }
+                    }
+                    AnimatedVisibility(visible = showPreviousStops) {
+                        Column {
+                            state.previousStops.forEach {
+                                StopCard(
+                                    stop = it,
+                                    index = it.orderIndex,
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                    status = StopStatus.Passed
+                                )
+                            }
+                        }
+                    }
+
+                    // Next Stops
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(AppColors.cardBackground)
+                            .clickable { showNextStops = !showNextStops }
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = UiText.StringResourceId(Res.string.upcoming_stops_title)
+                                .asString(),
+                            style = AppTypography.titleMedium,
+                            color = AppColors.textSecondary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(AppColors.background),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (showNextStops) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = AppColors.textPrimary
+                            )
+                        }
+                    }
+                    AnimatedVisibility(visible = showNextStops) {
+                        Spacer(Modifier.height(16.dp))
+                        Column {
+                            state.nextStops.forEach {
+                                StopCard(
+                                    stop = it,
+                                    index = it.orderIndex,
+                                    textColor = AppColors.textSecondary,
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                    status = StopStatus.Upcoming
+                                )
+                            }
+                        }
+                    }
+                }
+
+
+            }
+
+
         }
 
 
@@ -133,49 +275,6 @@ fun AlarmDetailScreen(
                 },
                 modifier = Modifier
             )
-        }
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (state.isAlarmActive) {
-
-            state.previousStops.forEach {
-                StopCard(
-                    stop = it,
-                    index = it.orderIndex,
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    status = StopStatus.Passed
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-
-            if (state.isLoading){
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }else{
-                RouteProgressBar(
-                    state.progress,
-                    state.remainingDistance,
-                    state.activeStop,
-                )
-
-                Spacer(Modifier.height(16.dp))
-            }
-
-
-            state.nextStops.forEach {
-                StopCard(
-                    stop = it,
-                    index = it.orderIndex,
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    status = StopStatus.Upcoming
-                )
-            }
         }
 
 

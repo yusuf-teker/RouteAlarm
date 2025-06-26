@@ -37,6 +37,7 @@ import routealarm.composeapp.generated.resources.stop_with_index
 fun StopCard(
     stop: Stop,
     index: Int,
+    textColor: Color = AppColors.textPrimary,
     modifier: Modifier = Modifier,
     status: StopStatus = StopStatus.Upcoming
 ) {
@@ -89,12 +90,12 @@ fun StopCard(
             ) {
                 Text(
                     text = UiText.StringResourceId(Res.string.stop_with_index, arrayOf(index)).asString(),
-                    style = AppTypography.titleMedium.copy(color = AppColors.textPrimary.copy(alpha = contentAlpha))
+                    style = AppTypography.titleMedium.copy(color = textColor.copy(alpha = contentAlpha))
                 )
                 Text(
                     text = stop.name,
                     style = AppTypography.bodyRegular.copy(
-                        color = AppColors.textPrimary.copy(alpha = contentAlpha * 0.6f)
+                        color = textColor.copy(alpha = contentAlpha * 0.6f)
                     )
                 )
             }

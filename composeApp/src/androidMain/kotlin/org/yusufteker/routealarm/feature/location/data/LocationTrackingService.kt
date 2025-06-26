@@ -166,7 +166,8 @@ class LocationTrackingService() : Service() {
             Log.d("LocationTrackingService", " onLocationAchieved Achieved stop id: $lastStopId")
 
         }
-        notificationManager.updateForegroundNotification(alarm.id, alarm.stops.size, alarm.stops.indexOfFirst { it.id == lastStopId } + 1)
+        val currentStopIndex = alarm.stops.indexOfFirst { it.id == lastStopId } + 1
+        notificationManager.updateForegroundNotification(alarm.id, alarm.stops.size, currentStopIndex )
 
         if (alarm.stops.last().id == lastStopId) { // SON DURAK
 
@@ -183,7 +184,7 @@ class LocationTrackingService() : Service() {
                 onDismiss = {}
             )
 
-            notificationManager.showAlarmNotificationWithFullScreenIntent( alarm.id, ACTION_STOP_SERVICE)
+            notificationManager.showAlarmNotificationWithFullScreenIntent( alarm.stops.get(currentStopIndex).name, alarm.id, ACTION_STOP_SERVICE)
 
 
         } else { // SON DURAK DEĞİL
@@ -199,7 +200,7 @@ class LocationTrackingService() : Service() {
                 } ,
                 onDismiss = {}
             )
-            notificationManager.showAlarmNotificationWithFullScreenIntent(alarm.id, ACTION_STOP_ACHIEVED)
+            notificationManager.showAlarmNotificationWithFullScreenIntent(alarm.stops.get(currentStopIndex).name, alarm.id, ACTION_STOP_ACHIEVED)
 
 
         }
@@ -215,7 +216,7 @@ class LocationTrackingService() : Service() {
         private const val CHANNEL_ID = "routealarm_location_channel"
         private const val EXTRA_ALARM_ID = "alarm_id"
         private const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
-        private const val ACTION_STOP_ACHIEVED = "ACTION_STOP_ACHIEVED"
+        const val ACTION_STOP_ACHIEVED = "ACTION_STOP_ACHIEVED"
 
 
     }

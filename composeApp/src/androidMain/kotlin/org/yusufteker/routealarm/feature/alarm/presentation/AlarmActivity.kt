@@ -15,21 +15,32 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.android.ext.android.inject
+import org.yusufteker.routealarm.R
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 import org.yusufteker.routealarm.feature.location.data.LocationTrackingService
+import org.yusufteker.routealarm.feature.location.data.LocationTrackingService.Companion.ACTION_STOP_ACHIEVED
 import org.yusufteker.routealarm.feature.location.domain.AlarmSoundPlayer
 import kotlin.getValue
 
 class AlarmActivity : ComponentActivity() {
+
+    companion object {
+        const val EXTRA_ALARM_ID = "alarm_id"
+        const val EXTRA_ACTION = "action"
+
+        const val EXTRA_STOP_NAME = "stop_name"
+    }
 
 
     private val alarmSoundPlayer: AlarmSoundPlayer by inject()
@@ -45,8 +56,9 @@ class AlarmActivity : ComponentActivity() {
         val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         keyguardManager.requestDismissKeyguard(this, null)
 
-        val alarmId = intent?.getIntExtra("alarm_id", -1) ?: -1
-        val intentAction = intent?.getStringExtra("action") ?: ""
+        val alarmId = intent?.getIntExtra(EXTRA_ALARM_ID, -1) ?: -1
+        val intentAction = intent?.getStringExtra(EXTRA_ACTION) ?: ""
+        val stopName = intent?.getStringExtra(EXTRA_STOP_NAME)
 
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -56,13 +68,15 @@ class AlarmActivity : ComponentActivity() {
 
         setContent {
             AlarmScreen(
+                title = getString(R.string.stop_reached, stopName),
+                buttonText = getString(R.string.stop_alarm_text),
                 onStopAlarm = {
                     alarmSoundPlayer.stop()
                     popupManager.dismissAll()
                     startService(
                         Intent(this, LocationTrackingService::class.java).apply {
                             action = intentAction
-                            putExtra("alarm_id", alarmId)
+                            putExtra(EXTRA_ALARM_ID, alarmId)
 
                         })
                     finish()
@@ -72,7 +86,10 @@ class AlarmActivity : ComponentActivity() {
 }
 
 @Composable
-fun AlarmScreen(onStopAlarm: () -> Unit) {
+fun AlarmScreen(
+    title: String,
+    buttonText: String,
+    onStopAlarm: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -81,11 +98,11 @@ fun AlarmScreen(onStopAlarm: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Alarm Çalıyor!", fontSize = 24.sp, color = Color.White
+                text = title, fontSize = 24.sp, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 36.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(onClick = onStopAlarm) {
-                Text("Alarmı Durdur")
+                Text(text = buttonText)
             }
         }
     }

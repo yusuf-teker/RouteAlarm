@@ -62,4 +62,7 @@
     <string name="stops_remaining_camel_case">%1$d stops remaining.</string>
 
 
+    <string name="passed_stops_title">Passed Stops</string>
+    <string name="current_stop_title">Current Stop</string>
+    <string name="upcoming_stops_title">Upcoming Stops</string>
 </resources>

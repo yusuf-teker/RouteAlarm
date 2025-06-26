@@ -63,7 +63,9 @@
     <string name="approaching_destination">Hedefe Yaklaştınız!</string>
     <string name="stops_remaining_camel_case">%1$d durak kaldı.</string>
 
-
+    <string name="passed_stops_title">Geçilen Duraklar</string>
+    <string name="current_stop_title">Şu Anki Durak</string>
+    <string name="upcoming_stops_title">Sonraki Duraklar</string>
 
 
 

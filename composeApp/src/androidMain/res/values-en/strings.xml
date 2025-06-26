@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">RouteAlarm</string>
+    <string name="stop_reached_intermediate">You have reached an intermediate stop</string>
+    <string name="stop_reached_final">You have reached your destination</string>
+    <string name="stop_reached">You have reached %s.</string>
+    <string name="stop_alarm_text">Stop Alarm</string>
+
+    
+
+</resources>
