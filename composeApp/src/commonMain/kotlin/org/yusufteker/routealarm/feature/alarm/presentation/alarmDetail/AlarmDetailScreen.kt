@@ -44,10 +44,10 @@ import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
 import org.yusufteker.routealarm.core.presentation.UiEvent
 import org.yusufteker.routealarm.core.presentation.UiText
+import org.yusufteker.routealarm.core.presentation.brush.rememberShimmerBrush
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopCard
 import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.StopStatus
-import org.yusufteker.routealarm.feature.alarm.presentation.addalarm.components.rememberShimmerBrush
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.SwipeToDeleteAlarmItem
 import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import routealarm.composeapp.generated.resources.Res

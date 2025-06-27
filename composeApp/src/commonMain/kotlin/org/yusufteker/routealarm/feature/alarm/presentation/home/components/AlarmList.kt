@@ -21,8 +21,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.ui.draw.clip
 import org.jetbrains.compose.resources.stringResource
 import org.yusufteker.routealarm.core.presentation.UiText
+import org.yusufteker.routealarm.core.presentation.brush.rememberShimmerBrushAlarmList
 import routealarm.composeapp.generated.resources.Res
 import routealarm.composeapp.generated.resources.alarms
 import routealarm.composeapp.generated.resources.stop_count
@@ -67,25 +69,37 @@ fun SwipeToDeleteAlarmItem(
 
 @Composable
 private fun AlarmItemContent(
-    alarm: Alarm, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier
+    alarm: Alarm,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = AppColors.cardBackground)
+
+    val shimmerBrush = rememberShimmerBrushAlarmList()
+
+    Box(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.medium)
+            .background(shimmerBrush)
+
+            .padding(4.dp) // İçerik ile kenar arasında boşluk
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
                 Text(
-                    text = alarm.title, style = AppTypography.titleMedium
+                    text = alarm.title,
+                    style = AppTypography.titleMedium,
+                    color = Color.White
                 )
                 Text(
-                    text = stringResource(Res.string.stop_count,alarm.stops.size ), style = AppTypography.bodyRegular.copy(
-                        color = AppColors.textPrimary.copy(alpha = 0.5f)
+                    text = stringResource(Res.string.stop_count, alarm.stops.size),
+                    style = AppTypography.bodyRegular.copy(
+                        color = Color.White.copy(alpha = 0.7f)
                     )
                 )
             }

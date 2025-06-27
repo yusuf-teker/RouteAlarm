@@ -21,6 +21,11 @@ object AppColors {
     // Card Arka Planı (Koyu tonlar)
     val cardBackground = Color(0xFF204865) // Kartlar için koyu mavi-yeşil tonları.
 
+    val nightGradientReversed = listOf(
+        Color(0xFF1F3A5C), // Daha yumuşatılmış koyu renk
+        Color(0xFF204865), // Orta
+        Color(0xFF283E51)  // Açık taraf
+    )
     // Border Rengi
     val border = Color(0xFF37474F) // Daha koyu gri tonlarında bir border.
 

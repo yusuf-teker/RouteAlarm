@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import org.yusufteker.routealarm.core.presentation.UiText
+import org.yusufteker.routealarm.core.presentation.brush.rememberShimmerBrush
 import org.yusufteker.routealarm.core.presentation.modifier.activeAlarmBorderColors
 import org.yusufteker.routealarm.core.presentation.modifier.rainbowColors
 import org.yusufteker.routealarm.core.presentation.modifier.rgbBorder
@@ -111,28 +112,6 @@ fun StopCard(
     }
 }
 
-@Composable
-fun rememberShimmerBrush(): Brush {
-    val transition = rememberInfiniteTransition(label = "shimmer")
-    val shimmerTranslate by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 3000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "shimmerTranslate"
-    )
-
-    return Brush.linearGradient(
-        colors = listOf(
-            AppColors.darkGreen,
-            AppColors.green.copy(alpha = 0.5f)
-        ),
-        start = Offset.Zero,
-        end = Offset(x = shimmerTranslate, y = shimmerTranslate)
-    )
-}
 
 
 enum class StopStatus {
