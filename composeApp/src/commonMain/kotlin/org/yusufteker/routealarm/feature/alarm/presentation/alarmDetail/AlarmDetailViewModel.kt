@@ -184,6 +184,7 @@ class AlarmDetailViewModel(
                 val alarm = _state.value.alarm
 
                 val currentLocation = locationService.getCurrentLocation()
+                Napier.d("Current location: ${currentLocation?.lat} ${currentLocation?.lng} ", tag = "Yusuf")
 
                 if (alarm != null && currentLocation != null) {
                     val nextStop = alarm.stops.firstOrNull { !it.isPassed }
@@ -220,16 +221,19 @@ class AlarmDetailViewModel(
                         }
                     }
 
-                    _state.update { it.copy(isLoading = false) }
                 } else {
                     if (alarm == null) Napier.d("Alarm is null in location update loop", tag = "Yusuf")
                     if (currentLocation == null) Napier.d("currentLocation is null in location update loop", tag = "Yusuf")
                 }
+
                 Napier.d("*******************************************************************************************")
 
                 updateProgress()
-                delay(1000L)
+                _state.update { it.copy(isLoading = false) }
+
             }
+
+            _state.update { it.copy(isLoading = false) }
 
         }
     }

@@ -15,6 +15,10 @@
 		20B23DF72DE09DA5007A26E8 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B23DF62DE09DA5007A26E8 /* MapViewModel.swift */; };
 		20B23DFE2DE1DCC0007A26E8 /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 20B23DFD2DE1DCC0007A26E8 /* GooglePlaces */; };
 		20B23E002DE1DCC0007A26E8 /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 20B23DFF2DE1DCC0007A26E8 /* GooglePlacesSwift */; };
+		20EC1E8A2E1BFD7C00B44A99 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A582DE059BA00C511B3 /* KMPNativeCoroutinesAsync */; };
+		20EC1E8B2E1BFD7C00B44A99 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A5A2DE059BA00C511B3 /* KMPNativeCoroutinesCombine */; };
+		20EC1E8C2E1BFD7C00B44A99 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A5C2DE059BA00C511B3 /* KMPNativeCoroutinesCore */; };
+		20EC1E8D2E1BFD7C00B44A99 /* KMPNativeCoroutinesRxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 20F62A5E2DE059BA00C511B3 /* KMPNativeCoroutinesRxSwift */; };
 		20F2E0212DEEEF2100221B00 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F2E0202DEEEF2100221B00 /* UserNotifications.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
@@ -40,6 +44,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20EC1E8D2E1BFD7C00B44A99 /* KMPNativeCoroutinesRxSwift in Frameworks */,
+				20EC1E8C2E1BFD7C00B44A99 /* KMPNativeCoroutinesCore in Frameworks */,
+				20EC1E8B2E1BFD7C00B44A99 /* KMPNativeCoroutinesCombine in Frameworks */,
+				20EC1E8A2E1BFD7C00B44A99 /* KMPNativeCoroutinesAsync in Frameworks */,
 				20F2E0212DEEEF2100221B00 /* UserNotifications.framework in Frameworks */,
 				20B23E002DE1DCC0007A26E8 /* GooglePlacesSwift in Frameworks */,
 				20B23DFE2DE1DCC0007A26E8 /* GooglePlaces in Frameworks */,
@@ -364,7 +372,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 79VHQQ27A9;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -391,7 +399,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				DEVELOPMENT_TEAM = 79VHQQ27A9;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -166,8 +166,8 @@ class LocationTrackingService() : Service() {
             Log.d("LocationTrackingService", " onLocationAchieved Achieved stop id: $lastStopId")
 
         }
-        val currentStopIndex = alarm.stops.indexOfFirst { it.id == lastStopId } + 1
-        notificationManager.updateForegroundNotification(alarm.id, alarm.stops.size, currentStopIndex )
+        val currentStopIndex = alarm.stops.indexOfFirst { it.id == lastStopId }
+        notificationManager.updateForegroundNotification(alarm.id, alarm.stops.size, currentStopIndex + 1 )
 
         if (alarm.stops.last().id == lastStopId) { // SON DURAK
 

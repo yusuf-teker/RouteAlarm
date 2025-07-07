@@ -28,7 +28,7 @@
     <string name="confirm">Confirm</string>
     <string name="no_popup_manager">No PopupManager provided</string>
     <string name="never_miss_stop">Never miss your stop again.</string>
-    <string name="get_started">Get started.</string>
+    <string name="get_started">Get started</string>
     <string name="add_stop_button">+ Add Stop</string>
     <string name="stop_with_index">Stop %1$d</string>
     <string name="alarm_title">Alarm Title</string>

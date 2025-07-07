@@ -30,7 +30,7 @@
     <string name="confirm">Onayla</string>
     <string name="no_popup_manager">PopupYöneticisi sağlanmadı</string>
     <string name="never_miss_stop">Durağını bir daha asla kaçırma.</string>
-    <string name="get_started">Hadi başlayalım.</string>
+    <string name="get_started">Hadi başlayalım</string>
     <string name="add_stop_button">+ Durak Ekle</string>
     <string name="stop_with_index">Durak %1$d</string>
     <string name="alarm_title">Alarm Başlığı</string>
