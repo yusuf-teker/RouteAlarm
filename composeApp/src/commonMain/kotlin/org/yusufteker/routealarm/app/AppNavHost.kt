@@ -1,15 +1,20 @@
 package org.yusufteker.routealarm.app
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -24,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import io.github.aakira.napier.Napier
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.feature.alarm.presentation.SharedAlarmViewModel
@@ -35,6 +41,7 @@ import org.yusufteker.routealarm.feature.alarm.presentation.alarmDetail.AlarmDet
 import org.yusufteker.routealarm.feature.onboarding.presentation.welcome.WelcomeScreen
 import org.yusufteker.routealarm.feature.alarm.presentation.home.HomeScreenRoot
 import org.yusufteker.routealarm.feature.alarm.presentation.home.components.BottomNavigationBar
+import org.yusufteker.routealarm.settings.SettingsManager
 import org.yusufteker.routealarm.settings.SettingsScreenRoot
 
 
@@ -42,7 +49,7 @@ import org.yusufteker.routealarm.settings.SettingsScreenRoot
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    startDestination: Routes.OnboardingGraph = Routes.OnboardingGraph
+    settingsManager: SettingsManager = koinInject<SettingsManager>()
 ) {
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -62,6 +69,21 @@ fun AppNavHost(
            Napier.d("-- Navigated to: $route --", tag = "ScreenNavigation" )
         }
     }
+
+    val onboardingDone by produceState<Boolean?>(initialValue = null) {
+        value = settingsManager.isOnboardingCompleted()
+    }
+
+    if (onboardingDone == null) {
+        Box(
+            Modifier.fillMaxSize().background(AppColors.background),
+            contentAlignment = Alignment.Center
+        ) { CircularProgressIndicator() }
+        return
+    }
+
+    val startDestination =
+        if (onboardingDone == true) Routes.MainGraph else Routes.OnboardingGraph
 
     Scaffold(
         modifier = Modifier.background(AppColors.cardBackground),
@@ -96,7 +118,12 @@ fun AppNavHost(
                             popUpTo(Routes.OnboardingGraph) { inclusive = true }
                             launchSingleTop = true
                         }
+
+
                     })
+                    LaunchedEffect(Unit) {
+                        settingsManager.setOnboardingCompleted(true)
+                    }
                 }
 
                 // Eğer AuthScreen eklenirse buraya gelecek

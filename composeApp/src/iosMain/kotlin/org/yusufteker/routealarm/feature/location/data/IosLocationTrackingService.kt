@@ -105,8 +105,8 @@ class IosLocationTrackingService {
         val alarmId = activeAlarmId ?: return
 
         CoroutineScope(Dispatchers.IO).launch {
+
             val alarm = alarmRepository.getAlarmByIdWithStops(alarmId)
-            println(alarm?.id)
             alarm?.let {
                 val lastStop = alarm.stops.first { it ->
                     !it.isPassed
@@ -124,10 +124,13 @@ class IosLocationTrackingService {
 
                     alreadyTriggeredStops.add(lastStop.id)
                     alarmSoundPlayer.play()
+
                     showLocationReachedNotification()
                     showLocationReachedPopup()
+
                     val isLastStop =  alarm.stops.last().id == lastStop.id
                     alarmRepository.setStopIsPassed(lastStop.id, true)
+                    alarmRepository.triggerAlarmUpdate(alarm.id)
 
                     onStopReached?.invoke(lastStop, isLastStop)
 

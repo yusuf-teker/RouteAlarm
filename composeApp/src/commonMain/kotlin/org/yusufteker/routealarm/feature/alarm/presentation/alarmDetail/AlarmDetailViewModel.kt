@@ -36,7 +36,7 @@ class AlarmDetailViewModel(
     private val _state = MutableStateFlow(AlarmDetailState())
     val state: StateFlow<AlarmDetailState> = _state
 
-    private var observeJob: Job? = null
+    private var observeAlarmsJob: Job? = null
 
     fun onAction(action: AlarmDetailAction) {
         when (action) {
@@ -51,7 +51,7 @@ class AlarmDetailViewModel(
                 alarmActivationHandler.handleAlarmToggle(
                     alarm = action.alarm,
                     isChecked = action.isChecked,
-                    currentAlarms = listOf(action.alarm),
+                    currentAlarms = state.value.alarms,
                     permissionBridge = permissionBridge,
                     scope = viewModelScope,
                     onAlarmActivationSuccess = {
@@ -78,22 +78,26 @@ class AlarmDetailViewModel(
     }
 
     fun observeAlarm(id: Int) {
-        Napier.d("observeAlarm started for id=$id", tag = "Yusuf")
-        observeJob?.cancel()
-        observeJob = viewModelScope.launch {
-            alarmRepository.getAlarmWithStopsByIdFlow(id).collect { alarm ->
-                Napier.d("observeAlarm collected new alarm: $alarm", tag = "Yusuf")
-                val startLocationSM = settingsManager.startLocation
+        Napier.d("observeAlarms started", tag = "Yusuf")
 
-                _state.value = _state.value.copy(
-                    alarm = alarm,
-                    isAlarmActive = alarm?.isActive == true,
-                    startLocation = Location(
-                        name = startLocationSM.first()?.first ?: "",
-                        lat = startLocationSM.first()?.second ?: -1.0,
-                        lng = startLocationSM.first()?.third ?: -1.0
-                    ),
-                )
+        observeAlarmsJob?.cancel()
+        observeAlarmsJob = viewModelScope.launch {
+
+            alarmRepository.getAlarmsWithStops2().collect { alarms ->
+                _state.update {
+                    val alarm = alarms.find { it.id == id }
+                    val startLocationSM = settingsManager.startLocation
+                    it.copy(
+                        alarms = alarms,
+                        alarm =  alarm,
+                        isAlarmActive = alarm?.isActive ?: false,
+                        startLocation = Location(
+                            name = startLocationSM.first()?.first ?: "",
+                            lat = startLocationSM.first()?.second ?: -1.0,
+                            lng = startLocationSM.first()?.third ?: -1.0
+                        )
+                    )
+                }
                 updateProgress()
                 if (state.value.isAlarmActive){
                     startLocationUpdates()

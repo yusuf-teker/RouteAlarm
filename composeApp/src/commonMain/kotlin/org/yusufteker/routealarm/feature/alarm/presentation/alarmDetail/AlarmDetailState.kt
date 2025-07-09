@@ -6,6 +6,7 @@ import org.yusufteker.routealarm.feature.location.domain.Location
 
 data class AlarmDetailState(
     val alarm: Alarm? = null,
+    val alarms: List<Alarm> = emptyList(),
     val activeStop: Stop? = null,
     val startLocation: Location? = null,
     val currentDistanceToNextStop: Double? = null,

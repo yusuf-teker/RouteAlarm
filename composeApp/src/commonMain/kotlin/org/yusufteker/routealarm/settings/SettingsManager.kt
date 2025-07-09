@@ -3,11 +3,13 @@ package org.yusufteker.routealarm.settings
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class SettingsManager(private val dataStore: DataStore<Preferences>) {
@@ -17,8 +19,25 @@ class SettingsManager(private val dataStore: DataStore<Preferences>) {
         private val START_LATITUDE = doublePreferencesKey("start_location_latitude")
 
         private val START_NAME = stringPreferencesKey("start_location_name")
-        private val START_LONGITUDE = doublePreferencesKey("start_location_longitude")
+            private val START_LONGITUDE = doublePreferencesKey("start_location_longitude")
+
+        private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed") // 0 = false, 1 = true
+
     }
+
+    val isOnboardingCompleted: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[ONBOARDING_COMPLETED] ?: false
+    }
+
+    suspend fun isOnboardingCompleted(): Boolean =
+        dataStore.data.first()[ONBOARDING_COMPLETED] ?: false
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[ONBOARDING_COMPLETED] = completed
+        }
+    }
+
 
     val stopProximityThresholdMeters: Flow<Int> = dataStore.data.map { preferences ->
         preferences[STOP_PROXIMITY_THRESHOLD_METERS] ?: 250
