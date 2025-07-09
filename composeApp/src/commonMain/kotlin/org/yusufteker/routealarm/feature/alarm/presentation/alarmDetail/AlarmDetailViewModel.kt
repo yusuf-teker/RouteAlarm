@@ -185,6 +185,7 @@ class AlarmDetailViewModel(
         locationJob = viewModelScope.launch {
 
             while (isActive) {
+                delay(1000)
                 val alarm = _state.value.alarm
 
                 val currentLocation = locationService.getCurrentLocation()

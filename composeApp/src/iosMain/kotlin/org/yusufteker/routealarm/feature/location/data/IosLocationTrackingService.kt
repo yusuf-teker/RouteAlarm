@@ -1,18 +1,15 @@
 package org.yusufteker.routealarm.feature.location.data
 
 import org.yusufteker.routealarm.feature.location.domain.Location
-
-
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.CoreLocation.*
 import platform.darwin.NSObject
 import platform.Foundation.NSError
 import kotlinx.cinterop.useContents
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.mp.KoinPlatform.getKoin
 import org.yusufteker.routealarm.core.presentation.popup.GoalReachedPopup
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
@@ -24,41 +21,47 @@ import org.yusufteker.routealarm.feature.location.domain.formatDistance
 import org.yusufteker.routealarm.notification.NotificationManager
 import org.yusufteker.routealarm.settings.SettingsManager
 
-
 class IosLocationTrackingService {
     private val locationManager = CLLocationManager()
     private var onStopReached: ((Stop, Boolean) -> Unit)? = null
-
-    private var delegate: CLLocationManagerDelegateProtocol? = null // <- EKLENDİ
+    private var delegate: CLLocationManagerDelegateProtocol? = null
 
     private var alarmRepository: AlarmRepository = getKoin().get<AlarmRepository>()
-
     private var alarmSoundPlayer: AlarmSoundPlayer = getKoin().get<AlarmSoundPlayer>()
-
     private var popupManager: PopupManager = getKoin().get<PopupManager>()
-
     private var settingsManager: SettingsManager = getKoin().get<SettingsManager>()
 
     private val alreadyTriggeredStops = mutableSetOf<Int>()
-
-    val  not = NotificationManager()
-
-
+    private val not = NotificationManager()
     private var activeAlarmId: Int? = null
+
+    // Add these to prevent race conditions
+    private val locationUpdateMutex = Mutex()
+    private var isProcessingLocation = false
+    private var cachedThreshold: Double? = null
 
     @OptIn(ExperimentalForeignApi::class)
     fun startLocationUpdates(
         alarmId: Int,
-        onStopReached: (Stop,Boolean) -> Unit
-
+        onStopReached: (Stop, Boolean) -> Unit
     ) {
         this.onStopReached = onStopReached
         this.activeAlarmId = alarmId
 
+        // Cache the threshold value once at start
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                cachedThreshold = settingsManager.stopProximityThresholdMeters.first().toDouble()
+            } catch (e: Exception) {
+                println("Error getting threshold: ${e.message}")
+                cachedThreshold = 100.0 // Default fallback
+            }
+        }
+
         val newDelegate = object : NSObject(), CLLocationManagerDelegateProtocol {
             override fun locationManager(manager: CLLocationManager, didUpdateLocations: List<*>) {
                 val loc = (didUpdateLocations.firstOrNull() as? CLLocation)
-                if (loc != null){
+                if (loc != null) {
                     val (lat, lng) = loc.coordinate.useContents {
                         latitude to longitude
                     }
@@ -66,16 +69,13 @@ class IosLocationTrackingService {
                         name = "",
                         lat = lat,
                         lng = lng
-
                     )
 
                     handleLocationUpdate(currentLocation)
                 }
-
             }
 
             override fun locationManager(manager: CLLocationManager, didFailWithError: NSError) {
-
                 when (didFailWithError.code.toInt()) {
                     0 -> println("Konum bilinmiyor, geçici bir durum.")
                     1 -> println("Kullanıcı konum izni vermedi.")
@@ -98,53 +98,85 @@ class IosLocationTrackingService {
 
     fun stopLocationUpdates() {
         locationManager.stopUpdatingLocation()
+        cachedThreshold = null
+        activeAlarmId = null
+        alreadyTriggeredStops.clear()
     }
 
     private fun handleLocationUpdate(currentLocation: Location) {
-
         val alarmId = activeAlarmId ?: return
+        val threshold = cachedThreshold ?: return
+
+        // Prevent multiple simultaneous processing
+        if (isProcessingLocation) return
 
         CoroutineScope(Dispatchers.IO).launch {
-
-            val alarm = alarmRepository.getAlarmByIdWithStops(alarmId)
-            alarm?.let {
-                val lastStop = alarm.stops.first { it ->
-                    !it.isPassed
-                }
-                val distance = calculateDistance(
-                    currentLocation.lat,
-                    currentLocation.lng,
-                    lastStop.latitude,
-                    lastStop.longitude
-                )
-                println("Last Stop: ${lastStop.name} -> Mesafe: ${formatDistance(distance)}")
-
-                if (distance <= settingsManager.stopProximityThresholdMeters.first()) {
-
-
-                    alreadyTriggeredStops.add(lastStop.id)
-                    alarmSoundPlayer.play()
-
-                    showLocationReachedNotification()
-                    showLocationReachedPopup()
-
-                    val isLastStop =  alarm.stops.last().id == lastStop.id
-                    alarmRepository.setStopIsPassed(lastStop.id, true)
-                    alarmRepository.triggerAlarmUpdate(alarm.id)
-
-                    onStopReached?.invoke(lastStop, isLastStop)
-
-                    if (isLastStop){
-                        alarmRepository.setAlarmActive(alarmId, false)
-                        alarmRepository.setAllStopIsPassed(false)
-                    }
-
-
+            locationUpdateMutex.withLock {
+                try {
+                    isProcessingLocation = true
+                    processLocationUpdate(currentLocation, alarmId, threshold)
+                } catch (e: Exception) {
+                    println("Error processing location update: ${e.message}")
+                } finally {
+                    isProcessingLocation = false
                 }
             }
+        }
+    }
 
+    private suspend fun processLocationUpdate(
+        currentLocation: Location,
+        alarmId: Int,
+        threshold: Double
+    ) {
+        val alarm = alarmRepository.getAlarmByIdWithStops(alarmId) ?: return
+
+        // Find the next stop that hasn't been passed and hasn't been triggered
+        val nextStop = alarm.stops.firstOrNull { stop ->
+            !stop.isPassed && !alreadyTriggeredStops.contains(stop.id)
+        } ?: return
+
+        val distance = calculateDistance(
+            currentLocation.lat,
+            currentLocation.lng,
+            nextStop.latitude,
+            nextStop.longitude
+        )
+
+        println("Next Stop: ${nextStop.name} -> Distance: ${formatDistance(distance)}")
+
+        if (distance <= threshold) {
+            handleStopReached(nextStop, alarm, alarmId)
+        }
+    }
+
+    private suspend fun handleStopReached(stop: Stop, alarm: org.yusufteker.routealarm.feature.alarm.domain.Alarm, alarmId: Int) {
+        // Mark as triggered immediately to prevent double processing
+        alreadyTriggeredStops.add(stop.id)
+
+        // Play alarm and show notifications on Main thread
+        withContext(Dispatchers.Main) {
+            alarmSoundPlayer.play()
+            showLocationReachedNotification()
+            showLocationReachedPopup()
         }
 
+        // Update database
+        alarmRepository.setStopIsPassed(stop.id, true)
+        alarmRepository.triggerAlarmUpdate(alarm.id)
+
+        val isLastStop = alarm.stops.last().id == stop.id
+
+        // Invoke callback on Main thread
+        withContext(Dispatchers.Main) {
+            onStopReached?.invoke(stop, isLastStop)
+        }
+
+        if (isLastStop) {
+            alarmRepository.setAlarmActive(alarmId, false)
+            alarmRepository.setAllStopIsPassed(false)
+            activeAlarmId = null
+        }
     }
 
     private fun showLocationReachedPopup() {
@@ -157,11 +189,12 @@ class IosLocationTrackingService {
                 }
             },
             onDismiss = {
-
+                // Handle dismiss if needed
             }
         )
     }
-    private fun showLocationReachedNotification(){
+
+    private fun showLocationReachedNotification() {
         not.showNotification(
             "Hedefe ulaşıldı.",
             "Konuma Yaklaştın 3",
@@ -173,5 +206,4 @@ class IosLocationTrackingService {
             }
         )
     }
-
 }

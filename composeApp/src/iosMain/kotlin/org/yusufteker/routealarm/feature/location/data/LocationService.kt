@@ -18,19 +18,19 @@ actual class LocationService {
         val delegate = object : NSObject(), CLLocationManagerDelegateProtocol {
             override fun locationManager(manager: CLLocationManager, didUpdateLocations: List<*>) {
                 val location = (didUpdateLocations.firstOrNull() as? CLLocation)
-                if (location != null) {
+                if (location != null && !cont.isCompleted) {
                     val (lat, lng) = location.coordinate.useContents {
                         latitude to longitude
                     }
-                    cont.resume(Location(name= "current location",lat = lat, lng = lng))
+                    cont.resume(Location(name = "current location", lat = lat, lng = lng))
                     manager.stopUpdatingLocation()
-                } else {
-                    cont.resume(null)
                 }
             }
 
             override fun locationManager(manager: CLLocationManager, didFailWithError: NSError) {
-                cont.resume(null)
+                if (!cont.isCompleted) {
+                    cont.resume(null)
+                }
             }
         }
 
