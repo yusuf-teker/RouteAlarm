@@ -11,30 +11,27 @@ import org.yusufteker.routealarm.di.initKoin
 import org.yusufteker.routealarm.permissions.IOSLocationPermissionsHandler
 import org.yusufteker.routealarm.permissions.PermissionBridge
 
-
 val LocalNativeViewFactory = staticCompositionLocalOf<NativeViewFactory> {
     error("NativeViewFactory not provided")
 }
 
+fun notifyAppResumed() {
+    runCatching {
+        getKoin().get<PermissionBridge>().notifyAppResumed()
+    }
+}
+
 fun MainViewController(
     nativeViewFactory: NativeViewFactory
-) =
-    ComposeUIViewController(
-        configure = {
-
-            Napier.base(DebugAntilog()) // init logger
-
-            //Koin
-            initKoin()
-
-            //Permission Handler
-            val permissionBridge = getKoin().get<PermissionBridge>()
-            permissionBridge.setListener(IOSLocationPermissionsHandler())
-        }
-    ) {
-        CompositionLocalProvider(LocalNativeViewFactory provides nativeViewFactory){
-            App()
-        }
-
-
+) = ComposeUIViewController(
+    configure = {
+        Napier.base(DebugAntilog())
+        initKoin()
+        val permissionBridge = getKoin().get<PermissionBridge>()
+        permissionBridge.setListener(IOSLocationPermissionsHandler())
     }
+) {
+    CompositionLocalProvider(LocalNativeViewFactory provides nativeViewFactory) {
+        App()
+    }
+}

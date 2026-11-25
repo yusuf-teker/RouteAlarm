@@ -109,41 +109,23 @@ class InMemoryAlarmRepository(
     override suspend fun getAlarmByIdWithStops(id: Int): Alarm? {
         val alarm = localAlarmDataSource.getAlarmById(id)
         val stops: List<StopEntity> = localAlarmDataSource.getStopsForAlarm(id)
-        return if (alarm != null) {
-            Alarm(
-                id = alarm.id,
-                title = alarm.title,
-                isActive = alarm.isActive,
-                timeInMillis = alarm.timeInMillis,
-                soundUri = alarm.soundUri,
-                isVibration = alarm.isVibration,
-                stops = stops.map {
-                    Stop(
-                        id = it.id,
-                        alarmId = it.alarmId,
-                        name = it.name,
-                        latitude = it.latitude,
-                        longitude = it.longitude,
-                        isPassed = it.isPassed
-                    )
-                })
-        } else {
-            null
-        }
+        return alarm?.toDomain(stops = stops.map { it.toDomain() })
     }
 
     override fun getAlarmWithStopsByIdFlow(id: Int): Flow<Alarm?> {
-        return localAlarmDataSource.getAlarmWithStopsByIdFlow(id).map {  it?.toDomain()  }
+        return localAlarmDataSource.getAlarmWithStopsByIdFlow(id).map { it?.toDomain() }
     }
 
-
     override suspend fun setStopIsPassed(stopId: Int, isPassed: Boolean) {
-        println("setStopIsPassed called for stopId: $stopId $isPassed")
         localAlarmDataSource.setStopIsPassed(stopId, isPassed)
     }
 
     override suspend fun setAllStopIsPassed(isPassed: Boolean) {
-        localAlarmDataSource.setAllStopIsPassed(false)
+        localAlarmDataSource.setAllStopIsPassed(isPassed)
+    }
+
+    override suspend fun setStopsPassedForAlarm(alarmId: Int, isPassed: Boolean) {
+        localAlarmDataSource.setStopsPassedForAlarm(alarmId, isPassed)
     }
 
 

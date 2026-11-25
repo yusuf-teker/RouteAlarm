@@ -6,6 +6,7 @@ import org.yusufteker.routealarm.feature.alarm.domain.Stop
 data class AddAlarmState(
     val title: String = "",
     val stops: List<Stop> = emptyList(),
+    val isVibration: Boolean = true,
     val isLocationPermissionGranted: Boolean = false,
     val isLoading: Boolean = false,
     val error: StringResource? = null

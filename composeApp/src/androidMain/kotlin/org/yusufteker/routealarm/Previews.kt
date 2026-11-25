@@ -81,10 +81,10 @@ fun StopProgressBarPreview() {
 @Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarPreview() {
-    var selectedRoute by remember { mutableStateOf(Routes.HomeScreen.toString()) }
-
     BottomNavigationBar(
-        currentRoute = selectedRoute, onItemSelected = { selectedRoute = it.toString() })
+        currentDestination = null,
+        onItemSelected = {}
+    )
 }
 
 @Preview(showBackground = true)

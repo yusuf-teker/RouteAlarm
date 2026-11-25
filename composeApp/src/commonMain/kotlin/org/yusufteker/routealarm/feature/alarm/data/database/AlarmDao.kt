@@ -1,16 +1,15 @@
 package org.yusufteker.routealarm.feature.alarm.data.database
 
 import androidx.room.Dao
-import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopEntity
 
 @Dao
 interface AlarmDao {
-
 
     @Query("SELECT * FROM alarms")
     fun getAlarms(): Flow<List<AlarmEntity>>
@@ -30,7 +29,6 @@ interface AlarmDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlarms(alarms: List<AlarmEntity>)
 
-
     @Transaction
     @Query("SELECT * FROM alarms")
     fun getAlarmsWithStops(): Flow<List<AlarmWithStops>>
@@ -39,8 +37,7 @@ interface AlarmDao {
     @Query("SELECT * FROM alarms WHERE id = :id")
     fun getAlarmWithStopsByIdFlow(id: Int): Flow<AlarmWithStops?>
 
-
-    @Query("SELECT * FROM stops ORDER BY orderIndex")
+    @Query("SELECT * FROM stops ORDER BY orderIndex ASC")
     fun getStops(): Flow<List<StopEntity>>
 
     @Transaction
@@ -50,7 +47,7 @@ interface AlarmDao {
     @Query("UPDATE alarms SET isActive = :isActive WHERE id = :alarmId")
     suspend fun updateIsActive(alarmId: Int, isActive: Boolean)
 
-    @Query("SELECT * FROM stops WHERE alarmId = :alarmId")
+    @Query("SELECT * FROM stops WHERE alarmId = :alarmId ORDER BY orderIndex ASC")
     suspend fun getStopsForAlarm(alarmId: Int): List<StopEntity>
 
     @Query("UPDATE alarms SET id = id WHERE id = :alarmId")
@@ -62,4 +59,6 @@ interface AlarmDao {
     @Query("UPDATE stops SET isPassed = :isPassed")
     suspend fun setAllStopIsPassed(isPassed: Boolean)
 
+    @Query("UPDATE stops SET isPassed = :isPassed WHERE alarmId = :alarmId")
+    suspend fun setStopsPassedForAlarm(alarmId: Int, isPassed: Boolean)
 }

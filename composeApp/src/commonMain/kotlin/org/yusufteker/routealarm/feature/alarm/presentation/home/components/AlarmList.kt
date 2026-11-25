@@ -1,146 +1,256 @@
 package org.yusufteker.routealarm.feature.alarm.presentation.home.components
 
-
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.yusufteker.routealarm.core.presentation.AppColors
 import org.yusufteker.routealarm.core.presentation.AppTypography
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
-import androidx.compose.ui.draw.clip
-import org.jetbrains.compose.resources.stringResource
-import org.yusufteker.routealarm.core.presentation.UiText
-import org.yusufteker.routealarm.core.presentation.brush.rememberShimmerBrushAlarmList
 import routealarm.composeapp.generated.resources.Res
-import routealarm.composeapp.generated.resources.alarms
+import routealarm.composeapp.generated.resources.cancel
+import routealarm.composeapp.generated.resources.confirm
+import routealarm.composeapp.generated.resources.delete_alarm
+import routealarm.composeapp.generated.resources.delete_alarm_confirm
 import routealarm.composeapp.generated.resources.stop_count
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SwipeToDeleteAlarmItem(
-    alarm: Alarm, onCheckedChange: (Boolean) -> Unit, onDelete: () -> Unit,
-    modifier: Modifier
-) {
-    val state = rememberSwipeToDismissBoxState(
-        confirmValueChange = { dismissValue ->
-            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                onDelete()
-                true
-            } else {
-                false
-            }
-        })
-
-    SwipeToDismissBox(state = state, enableDismissFromStartToEnd = false, backgroundContent = {
-        // Silme arka planı
-        Box(
-            modifier = Modifier.fillMaxSize().background(Color.Red, shape = MaterialTheme.shapes.medium).padding(end = 24.dp),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete Alarm",
-                tint = Color.White
-            )
-        }
-    }, content = {
-        AlarmItemContent(
-            alarm = alarm,
-            onCheckedChange = onCheckedChange,
-            modifier = modifier.background(AppColors.cardBackground, shape = MaterialTheme.shapes.medium)
-        )
-    })
-}
-
-@Composable
-private fun AlarmItemContent(
-    alarm: Alarm,
-    onCheckedChange: (Boolean) -> Unit,
+fun AlarmList(
+    alarms: List<Alarm>,
+    onCheckedChange: (Alarm, Boolean) -> Unit,
+    onDeleteAlarm: (Alarm) -> Unit,
+    onAlarmClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var alarmToDelete by remember { mutableStateOf<Alarm?>(null) }
 
-    val shimmerBrush = rememberShimmerBrushAlarmList()
-
-    Box(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
-            .background(shimmerBrush)
-
-            .padding(4.dp) // İçerik ile kenar arasında boşluk
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = alarm.title,
-                    style = AppTypography.titleMedium,
-                    color = Color.White
-                )
-                Text(
-                    text = stringResource(Res.string.stop_count, alarm.stops.size),
-                    style = AppTypography.bodyRegular.copy(
-                        color = Color.White.copy(alpha = 0.7f)
-                    )
-                )
-            }
-            Switch(
-                checked = alarm.isActive,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = AppColors.green,
-                    checkedTrackColor = AppColors.background,
-                )
+        items(alarms, key = { it.id }) { alarm ->
+            AlarmCard(
+                alarm = alarm,
+                onCheckedChange = { isChecked -> onCheckedChange(alarm, isChecked) },
+                onClick = { onAlarmClicked(alarm.id) },
+                onDeleteClick = { alarmToDelete = alarm }
             )
         }
+    }
+
+    alarmToDelete?.let { target ->
+        AlertDialog(
+            onDismissRequest = { alarmToDelete = null },
+            containerColor = AppColors.cardBackground,
+            titleContentColor = AppColors.textPrimary,
+            textContentColor = AppColors.textSecondary,
+            title = { Text(stringResource(Res.string.delete_alarm)) },
+            text = { Text(stringResource(Res.string.delete_alarm_confirm)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteAlarm(target)
+                        alarmToDelete = null
+                    }
+                ) {
+                    Text(
+                        text = stringResource(Res.string.confirm),
+                        color = AppColors.danger,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { alarmToDelete = null }) {
+                    Text(
+                        text = stringResource(Res.string.cancel),
+                        color = AppColors.textSecondary
+                    )
+                }
+            }
+        )
     }
 }
 
 @Composable
-fun AlarmList(
-    modifier: Modifier = Modifier,
-    alarms: List<Alarm>,
-    onAlarmCheckedChange: (Alarm, Boolean) -> Unit,
-    onDeleteAlarm: (Alarm) -> Unit,
-    onAlarmClick: (Int) -> Unit
+fun AlarmCard(
+    alarm: Alarm,
+    onCheckedChange: (Boolean) -> Unit,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit = {}
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = UiText.StringResourceId(Res.string.alarms).asString(),
-            style = AppTypography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp).align(Alignment.CenterHorizontally)
-        )
+    val borderColor by animateColorAsState(
+        targetValue = if (alarm.isActive) AppColors.accent.copy(alpha = 0.7f) else AppColors.border,
+        label = "alarmCardBorder"
+    )
+    val sortedStops = remember(alarm.stops) { alarm.stops.sortedBy { it.orderIndex } }
+    val firstTransport = sortedStops.firstOrNull()?.transportType
+    val routePreview = remember(sortedStops) {
+        sortedStops.joinToString(" → ") { it.name }
+    }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 8.dp)
-        ) {
-            items(alarms, key = { it.id }) { alarm ->
-                SwipeToDeleteAlarmItem(
-                    alarm = alarm,
-                    onCheckedChange = { onAlarmCheckedChange(alarm, it) },
-                    onDelete = { onDeleteAlarm(alarm) },
-                    modifier = Modifier.clickable{ onAlarmClick(alarm.id)}
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = AppColors.cardBackground,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = if (alarm.isActive) {
+                            listOf(
+                                AppColors.cardBackground,
+                                AppColors.accent.copy(alpha = 0.08f)
+                            )
+                        } else {
+                            listOf(AppColors.cardBackground, AppColors.cardBackground)
+                        }
+                    )
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(
+                            if (alarm.isActive) AppColors.accent.copy(alpha = 0.16f)
+                            else AppColors.cardBackgroundSecondary
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (firstTransport != null) {
+                        Image(
+                            painter = painterResource(firstTransport.iconRes),
+                            contentDescription = firstTransport.name,
+                            colorFilter = ColorFilter.tint(
+                                if (alarm.isActive) AppColors.accent else AppColors.textPrimary
+                            ),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(14.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = alarm.title,
+                        style = AppTypography.titleMedium.copy(fontSize = 18.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    if (routePreview.isNotBlank()) {
+                        Text(
+                            text = routePreview,
+                            style = AppTypography.labelSmall.copy(
+                                color = AppColors.textSecondary,
+                                fontSize = 13.sp
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.stop_count, sortedStops.size),
+                            style = AppTypography.labelSmall.copy(
+                                color = if (alarm.isActive) AppColors.accentSoft else AppColors.textSecondary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        )
+                        if (alarm.isVibration) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = null,
+                                tint = AppColors.textSecondary,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+                }
+
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(Res.string.delete_alarm),
+                        tint = AppColors.textSecondary
+                    )
+                }
+
+                Switch(
+                    checked = alarm.isActive,
+                    onCheckedChange = onCheckedChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = AppColors.onAccent,
+                        checkedTrackColor = AppColors.accent,
+                        uncheckedThumbColor = AppColors.textSecondary,
+                        uncheckedTrackColor = AppColors.cardBackgroundSecondary,
+                        uncheckedBorderColor = AppColors.border
+                    )
+                )
             }
         }
     }

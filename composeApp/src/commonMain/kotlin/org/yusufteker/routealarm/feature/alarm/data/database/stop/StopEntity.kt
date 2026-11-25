@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import org.yusufteker.routealarm.feature.alarm.data.database.AlarmEntity
+import org.yusufteker.routealarm.feature.alarm.domain.TransportType
 
-// Stop.kt
 @Entity(
     tableName = "stops",
     foreignKeys = [ForeignKey(
@@ -18,13 +18,13 @@ import org.yusufteker.routealarm.feature.alarm.data.database.AlarmEntity
 data class StopEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val alarmId: Int, // Hangi alarm'a ait olduğu
+    val alarmId: Int,
     val name: String,
     val latitude: Double,
     val longitude: Double,
     val address: String? = null,
     val orderIndex: Int = -1,
     val radius: Int = 100,
-    val isPassed: Boolean = false
-
+    val isPassed: Boolean = false,
+    val transportType: String = TransportType.DEFAULT.name
 )

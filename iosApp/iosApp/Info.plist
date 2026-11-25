@@ -25,11 +25,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Lokasyn izni verir misin lütfen</string>
+	<string>RouteAlarm needs background location access to monitor your route and ring the alarm before you reach your stop, even when the screen is locked.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Arka plandada konumun lazım.</string>
+	<string>RouteAlarm needs background location access to monitor your route and ring the alarm before you reach your stop.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Lokasyon izni lazım durak eklemek için</string>
+	<string>RouteAlarm needs your location to show nearby stops on the map and track your distance to your destination.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -38,7 +38,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
-		<string>remote-notification</string>
+		<string>audio</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict/>

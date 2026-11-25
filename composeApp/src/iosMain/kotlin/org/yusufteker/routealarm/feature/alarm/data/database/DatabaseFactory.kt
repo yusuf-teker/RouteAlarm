@@ -9,7 +9,7 @@ import platform.Foundation.NSUserDomainMask
 
 actual class DatabaseFactory {
     actual fun create(): RoomDatabase.Builder<AlarmDatabase> {
-        val dbFile = documentDirectory() + "/${AlarmDatabase.DATABASE_NAME}}"
+        val dbFile = documentDirectory() + "/${AlarmDatabase.DATABASE_NAME}"
         return Room.databaseBuilder<AlarmDatabase>(
             name = dbFile
         )

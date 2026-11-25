@@ -1,8 +1,6 @@
 package org.yusufteker.routealarm.permissions
 
-
 import kotlinx.cinterop.ExperimentalForeignApi
-import platform.CoreLocation.CLAuthorizationStatus
 import platform.CoreLocation.CLLocationManager
 import platform.CoreLocation.CLLocationManagerDelegateProtocol
 import platform.CoreLocation.kCLAuthorizationStatusAuthorizedAlways
@@ -10,14 +8,25 @@ import platform.CoreLocation.kCLAuthorizationStatusAuthorizedWhenInUse
 import platform.CoreLocation.kCLAuthorizationStatusDenied
 import platform.CoreLocation.kCLAuthorizationStatusNotDetermined
 import platform.CoreLocation.kCLAuthorizationStatusRestricted
+import platform.UserNotifications.UNAuthorizationOptionAlert
+import platform.UserNotifications.UNAuthorizationOptionBadge
+import platform.UserNotifications.UNAuthorizationOptionSound
+import platform.UserNotifications.UNAuthorizationStatusAuthorized
+import platform.UserNotifications.UNAuthorizationStatusDenied
+import platform.UserNotifications.UNAuthorizationStatusNotDetermined
+import platform.UserNotifications.UNAuthorizationStatusProvisional
+import platform.UserNotifications.UNUserNotificationCenter
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class)
-
 class IOSLocationPermissionsHandler : PermissionsBridgeListener {
     private val locationManager = CLLocationManager()
     private var pendingCallback: PermissionResultCallback? = null
     private var requestingBackgroundPermission = false
+    private var hasRequestedAlwaysUpgrade = false
+    private var cachedNotificationGranted: Boolean = false
 
     private val locationDelegate = object : NSObject(), CLLocationManagerDelegateProtocol {
         override fun locationManagerDidChangeAuthorization(manager: CLLocationManager) {
@@ -25,94 +34,103 @@ class IOSLocationPermissionsHandler : PermissionsBridgeListener {
 
             when (manager.authorizationStatus) {
                 kCLAuthorizationStatusAuthorizedAlways -> {
-                    // Her zaman (background dahil) izin var
+                    pendingCallback = null
+                    requestingBackgroundPermission = false
                     callback.onPermissionGranted()
                 }
                 kCLAuthorizationStatusAuthorizedWhenInUse -> {
-                    // Sadece uygulama kullanımdayken izin var
                     if (requestingBackgroundPermission) {
-                        // Arkaplan izni istendi ama sadece foreground izni verilmiş
-                        callback.onPermissionDenied(isPermanentDenied = false)
+                        if (!hasRequestedAlwaysUpgrade) {
+                            hasRequestedAlwaysUpgrade = true
+                            manager.requestAlwaysAuthorization()
+                        } else {
+                            pendingCallback = null
+                            requestingBackgroundPermission = false
+                            callback.onPermissionDenied(isPermanentDenied = false)
+                        }
                     } else {
-                        // Foreground izni istendi ve verilmiş
+                        pendingCallback = null
                         callback.onPermissionGranted()
                     }
                 }
                 kCLAuthorizationStatusDenied,
                 kCLAuthorizationStatusRestricted -> {
+                    pendingCallback = null
+                    requestingBackgroundPermission = false
                     callback.onPermissionDenied(isPermanentDenied = true)
                 }
-                else -> callback.onPermissionDenied(isPermanentDenied = false)
+                kCLAuthorizationStatusNotDetermined -> {
+                    // Still waiting for user selection
+                }
+                else -> {
+                    pendingCallback = null
+                    requestingBackgroundPermission = false
+                    callback.onPermissionDenied(isPermanentDenied = false)
+                }
             }
-
-            pendingCallback = null
-            requestingBackgroundPermission = false
         }
     }
 
     init {
         locationManager.delegate = locationDelegate
+        checkNotificationPermission { }
     }
 
-    // Foreground (uygulama açıkken) konum izni iste
     override fun requestLocationPermission(callback: PermissionResultCallback) {
-        pendingCallback = callback
-        requestingBackgroundPermission = false
-
         when (locationManager.authorizationStatus) {
             kCLAuthorizationStatusAuthorizedWhenInUse,
             kCLAuthorizationStatusAuthorizedAlways -> {
                 callback.onPermissionGranted()
-                pendingCallback = null
             }
             kCLAuthorizationStatusDenied,
             kCLAuthorizationStatusRestricted -> {
                 callback.onPermissionDenied(isPermanentDenied = true)
-                pendingCallback = null
             }
             kCLAuthorizationStatusNotDetermined -> {
+                pendingCallback = callback
+                requestingBackgroundPermission = false
                 locationManager.requestWhenInUseAuthorization()
             }
             else -> {
                 callback.onPermissionDenied(isPermanentDenied = false)
-                pendingCallback = null
             }
         }
     }
 
-    // Yeni metod: Background konum izni iste
     override fun requestBackgroundLocationPermission(callback: PermissionResultCallback) {
-        val currentStatus = locationManager.authorizationStatus
-
-        if (currentStatus == kCLAuthorizationStatusAuthorizedAlways) {
-            callback.onPermissionGranted()
-            return
+        when (locationManager.authorizationStatus) {
+            kCLAuthorizationStatusAuthorizedAlways -> {
+                callback.onPermissionGranted()
+            }
+            kCLAuthorizationStatusDenied,
+            kCLAuthorizationStatusRestricted -> {
+                callback.onPermissionDenied(isPermanentDenied = true)
+            }
+            kCLAuthorizationStatusAuthorizedWhenInUse -> {
+                if (!hasRequestedAlwaysUpgrade) {
+                    hasRequestedAlwaysUpgrade = true
+                    pendingCallback = callback
+                    requestingBackgroundPermission = true
+                    locationManager.requestAlwaysAuthorization()
+                } else {
+                    callback.onPermissionDenied(isPermanentDenied = true)
+                }
+            }
+            kCLAuthorizationStatusNotDetermined -> {
+                pendingCallback = callback
+                requestingBackgroundPermission = true
+                locationManager.requestWhenInUseAuthorization()
+            }
+            else -> {
+                callback.onPermissionDenied(isPermanentDenied = false)
+            }
         }
-
-        if (currentStatus == kCLAuthorizationStatusDenied || currentStatus == kCLAuthorizationStatusRestricted) {
-            callback.onPermissionDenied(isPermanentDenied = true)
-            return
-        }
-
-        // Eğer halihazırda foreground izni varsa ve tekrar Always istersek, iOS bir şey yapmaz
-        if (currentStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
-            // 👇 Kullanıcıya bir şekilde el ile izin vermesi gerektiğini bildir
-            callback.onPermissionDenied(isPermanentDenied = true)
-            return
-        }
-
-        // Not Determined durumunda Always iste
-        pendingCallback = callback
-        requestingBackgroundPermission = true
-        locationManager.requestAlwaysAuthorization()
     }
 
-    // Background izni verilip verilmediğini kontrol et
-    fun isBackgroundLocationPermissionGranted(): Boolean {
+    override fun isBackgroundLocationPermissionGranted(): Boolean {
         return locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways
     }
 
-    // Foreground izni verilip verilmediğini kontrol et
     override fun isLocationPermissionGranted(): Boolean {
         return when (locationManager.authorizationStatus) {
             kCLAuthorizationStatusAuthorizedAlways,
@@ -122,11 +140,60 @@ class IOSLocationPermissionsHandler : PermissionsBridgeListener {
     }
 
     override fun requestNotificationPermission(callback: PermissionResultCallback) {
-        //TODO IMPLEMENTATION
+        val center = UNUserNotificationCenter.currentNotificationCenter()
+        center.getNotificationSettingsWithCompletionHandler { settings ->
+            val status = settings?.authorizationStatus
+            when (status) {
+                UNAuthorizationStatusAuthorized,
+                UNAuthorizationStatusProvisional -> {
+                    cachedNotificationGranted = true
+                    dispatch_async(dispatch_get_main_queue()) {
+                        callback.onPermissionGranted()
+                    }
+                }
+                UNAuthorizationStatusDenied -> {
+                    cachedNotificationGranted = false
+                    dispatch_async(dispatch_get_main_queue()) {
+                        callback.onPermissionDenied(isPermanentDenied = true)
+                    }
+                }
+                UNAuthorizationStatusNotDetermined, null -> {
+                    val options = UNAuthorizationOptionAlert or
+                        UNAuthorizationOptionSound or
+                        UNAuthorizationOptionBadge
+                    center.requestAuthorizationWithOptions(options) { granted, _ ->
+                        cachedNotificationGranted = granted
+                        dispatch_async(dispatch_get_main_queue()) {
+                            if (granted) {
+                                callback.onPermissionGranted()
+                            } else {
+                                callback.onPermissionDenied(isPermanentDenied = true)
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    cachedNotificationGranted = false
+                    dispatch_async(dispatch_get_main_queue()) {
+                        callback.onPermissionDenied(isPermanentDenied = false)
+                    }
+                }
+            }
+        }
     }
 
     override fun isNotificationPermissionGranted(): Boolean {
-        //TODO IMPLEMENTATION
-        return true
+        return cachedNotificationGranted
+    }
+
+    override fun checkNotificationPermission(callback: (Boolean) -> Unit) {
+        UNUserNotificationCenter.currentNotificationCenter().getNotificationSettingsWithCompletionHandler { settings ->
+            val granted = settings?.authorizationStatus == UNAuthorizationStatusAuthorized ||
+                settings?.authorizationStatus == UNAuthorizationStatusProvisional
+            cachedNotificationGranted = granted
+            dispatch_async(dispatch_get_main_queue()) {
+                callback(granted)
+            }
+        }
     }
 }

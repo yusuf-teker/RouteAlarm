@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,31 +27,47 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.yusufteker.routealarm.PlatformType
+import org.yusufteker.routealarm.core.presentation.AppColors
+import org.yusufteker.routealarm.getPlatform
 import routealarm.composeapp.generated.resources.Res
 import routealarm.composeapp.generated.resources.bus
+import routealarm.composeapp.generated.resources.close
+import routealarm.composeapp.generated.resources.continue_text
+import routealarm.composeapp.generated.resources.location_dialog_bg_desc_android
+import routealarm.composeapp.generated.resources.location_dialog_bg_desc_ios
+import routealarm.composeapp.generated.resources.location_dialog_bg_title_android
+import routealarm.composeapp.generated.resources.location_dialog_bg_title_ios
+import routealarm.composeapp.generated.resources.location_dialog_fg_desc
+import routealarm.composeapp.generated.resources.location_dialog_fg_title
 import routealarm.composeapp.generated.resources.map_pin
-
+import routealarm.composeapp.generated.resources.open_settings
 
 @Composable
 fun LocationPermissionDialog(
+    canContinueAnyway: Boolean = false,
     onDismiss: () -> Unit,
-    onContinueClicked: () -> Unit
+    onContinueClicked: () -> Unit,
+    onSkipClicked: () -> Unit = onDismiss
 ) {
-    val pagerState = rememberPagerState { 2 }
+    val isAndroid = getPlatform().type == PlatformType.ANDROID
+    val initialPage = if (canContinueAnyway) 1 else 0
+    val pagerState = rememberPagerState(initialPage = initialPage) { 2 }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = Color.White,
+            shape = RoundedCornerShape(24.dp),
+            color = AppColors.cardBackground,
             tonalElevation = 8.dp,
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier
@@ -59,42 +76,59 @@ fun LocationPermissionDialog(
                     .wrapContentHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                HorizontalPager(state = pagerState, modifier = Modifier.height(240.dp)) { page ->
+                HorizontalPager(state = pagerState, modifier = Modifier.height(230.dp)) { page ->
                     when (page) {
                         0 -> PermissionPageContent(
-                            title = "Konum Erişimi Gerekli",
-                            description = "Bu uygulama, rotanı takip edip sana zamanında uyarı verebilmek için konumuna erişmeli.",
-                            imageRes = Res.drawable.map_pin // daha sonra değiştirirsin
+                            title = stringResource(Res.string.location_dialog_fg_title),
+                            description = stringResource(Res.string.location_dialog_fg_desc),
+                            imageRes = Res.drawable.map_pin
                         )
                         1 -> PermissionPageContent(
-                            title = "Arka Planda Konum",
-                            description = "Duraktan uzaklaşırsan ya da ekran kapalıyken bile seni bilgilendirmemiz için arka planda konum gerekir.",
+                            title = stringResource(
+                                if (isAndroid) Res.string.location_dialog_bg_title_android
+                                else Res.string.location_dialog_bg_title_ios
+                            ),
+                            description = stringResource(
+                                if (isAndroid) Res.string.location_dialog_bg_desc_android
+                                else Res.string.location_dialog_bg_desc_ios
+                            ),
                             imageRes = Res.drawable.bus
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 DotsIndicator(
                     totalDots = 2,
                     selectedIndex = pagerState.currentPage
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Kapat")
+                    TextButton(onClick = if (canContinueAnyway) onSkipClicked else onDismiss) {
+                        Text(
+                            text = stringResource(
+                                if (canContinueAnyway) Res.string.continue_text else Res.string.close
+                            ),
+                            color = AppColors.textSecondary
+                        )
                     }
 
                     Button(
-                        onClick = onContinueClicked
+                        onClick = onContinueClicked,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AppColors.accent,
+                            contentColor = AppColors.onAccent
+                        ),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Devam Et")
+                        Text(stringResource(Res.string.open_settings))
                     }
                 }
             }
@@ -113,18 +147,28 @@ fun PermissionPageContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(resource = imageRes),
-            contentDescription = null,
+        Box(
             modifier = Modifier
-                .height(120.dp)
-                .padding(bottom = 16.dp),
-            contentScale = ContentScale.Fit
-        )
+                .size(84.dp)
+                .clip(CircleShape)
+                .background(AppColors.accent.copy(alpha = 0.14f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(resource = imageRes),
+                contentDescription = null,
+                modifier = Modifier.size(44.dp),
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(AppColors.accent)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
+            color = AppColors.textPrimary,
             textAlign = TextAlign.Center
         )
 
@@ -133,6 +177,7 @@ fun PermissionPageContent(
         Text(
             text = description,
             style = MaterialTheme.typography.bodyMedium,
+            color = AppColors.textSecondary,
             textAlign = TextAlign.Center
         )
     }
@@ -148,11 +193,11 @@ fun DotsIndicator(
         verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(totalDots) { index ->
-            val color = if (index == selectedIndex) Color.Black else Color.LightGray
+            val color = if (index == selectedIndex) AppColors.accent else AppColors.border
             Box(
                 modifier = Modifier
                     .padding(4.dp)
-                    .size(8.dp)
+                    .size(width = if (index == selectedIndex) 20.dp else 8.dp, height = 8.dp)
                     .clip(CircleShape)
                     .background(color)
             )

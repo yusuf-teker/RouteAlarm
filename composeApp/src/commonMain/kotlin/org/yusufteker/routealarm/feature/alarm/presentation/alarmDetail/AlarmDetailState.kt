@@ -16,5 +16,6 @@ data class AlarmDetailState(
     val isLoading: Boolean = false,
     val remainingDistance: Float = 0f,
     val previousStops: List<Stop> = emptyList(),
-    val nextStops: List<Stop> = emptyList()
+    val nextStops: List<Stop> = emptyList(),
+    val isLocationNotFound: Boolean = false
 )

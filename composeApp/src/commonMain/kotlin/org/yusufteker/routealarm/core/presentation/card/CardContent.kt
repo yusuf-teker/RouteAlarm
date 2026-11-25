@@ -69,7 +69,7 @@ fun AdaptiveCard(
 
                 is CardContent.CombinedContent -> CombinedContent(content)
 
-                is CardContent.CustomComposable -> content.content
+                is CardContent.CustomComposable -> content.content()
             }
         }
     }

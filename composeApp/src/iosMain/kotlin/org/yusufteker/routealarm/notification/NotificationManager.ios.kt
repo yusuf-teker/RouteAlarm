@@ -1,8 +1,29 @@
 package org.yusufteker.routealarm.notification
 
 import platform.Foundation.NSUUID
-import platform.UserNotifications.*
+import platform.UserNotifications.UNAuthorizationOptionAlert
+import platform.UserNotifications.UNAuthorizationOptionBadge
+import platform.UserNotifications.UNAuthorizationOptionSound
+import platform.UserNotifications.UNMutableNotificationContent
+import platform.UserNotifications.UNNotification
+import platform.UserNotifications.UNNotificationAction
+import platform.UserNotifications.UNNotificationActionOptionForeground
+import platform.UserNotifications.UNNotificationCategory
+import platform.UserNotifications.UNNotificationCategoryOptionCustomDismissAction
+import platform.UserNotifications.UNNotificationDefaultActionIdentifier
+import platform.UserNotifications.UNNotificationPresentationOptionBanner
+import platform.UserNotifications.UNNotificationPresentationOptionList
+import platform.UserNotifications.UNNotificationPresentationOptionSound
+import platform.UserNotifications.UNNotificationPresentationOptions
+import platform.UserNotifications.UNNotificationRequest
+import platform.UserNotifications.UNNotificationResponse
+import platform.UserNotifications.UNNotificationSound
+import platform.UserNotifications.UNTimeIntervalNotificationTrigger
+import platform.UserNotifications.UNUserNotificationCenter
+import platform.UserNotifications.UNUserNotificationCenterDelegateProtocol
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 
 actual class NotificationManager {
 
@@ -15,10 +36,9 @@ actual class NotificationManager {
             withCompletionHandler: (UNNotificationPresentationOptions) -> Unit
         ) {
             withCompletionHandler(
-                UNNotificationPresentationOptionAlert or
-                        UNNotificationPresentationOptionBanner or
-                        UNNotificationPresentationOptionSound or
-                        UNNotificationPresentationOptionBadge
+                UNNotificationPresentationOptionBanner or
+                    UNNotificationPresentationOptionList or
+                    UNNotificationPresentationOptionSound
             )
         }
 
@@ -27,10 +47,11 @@ actual class NotificationManager {
             didReceiveNotificationResponse: UNNotificationResponse,
             withCompletionHandler: () -> Unit
         ) {
-            println("Action received: ${didReceiveNotificationResponse.actionIdentifier}")
-            if (didReceiveNotificationResponse.actionIdentifier == "STOP_ACTION") {
-                println("Durdur butonuna basıldı.")
-                onStopReached?.invoke()
+            val actionId = didReceiveNotificationResponse.actionIdentifier
+            if (actionId == "STOP_ACTION" || actionId == UNNotificationDefaultActionIdentifier) {
+                dispatch_async(dispatch_get_main_queue()) {
+                    onStopReached?.invoke()
+                }
             }
             withCompletionHandler()
         }
@@ -51,14 +72,14 @@ actual class NotificationManager {
 
         val stopAction = UNNotificationAction.actionWithIdentifier(
             identifier = "STOP_ACTION",
-            title = "Durdur",
+            title = "Stop",
             options = UNNotificationActionOptionForeground
         )
 
         val category = UNNotificationCategory.categoryWithIdentifier(
             identifier = "ALARM_CATEGORY",
             actions = listOf(stopAction),
-            intentIdentifiers = listOf<String>(),
+            intentIdentifiers = emptyList<String>(),
             options = UNNotificationCategoryOptionCustomDismissAction
         )
 
@@ -68,7 +89,7 @@ actual class NotificationManager {
             setTitle(title)
             setBody(description)
             setCategoryIdentifier("ALARM_CATEGORY")
-            setSound(UNNotificationSound.defaultSound())
+            setSound(UNNotificationSound.soundNamed("alarm_sound.mp3"))
         }
 
         val trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeInterval(
@@ -82,8 +103,6 @@ actual class NotificationManager {
         center.addNotificationRequest(request) { error ->
             if (error != null) {
                 println("Notification Error: $error")
-            } else {
-                println("Notification scheduled successfully")
             }
         }
     }

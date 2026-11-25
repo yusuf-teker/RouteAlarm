@@ -1,34 +1,45 @@
 package org.yusufteker.routealarm.feature.location.data
 
+import io.github.aakira.napier.Napier
+import io.ktor.client.HttpClient
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
-import org.yusufteker.routealarm.feature.location.domain.Place
-// iosMain
-import platform.MapKit.*
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.yusufteker.routealarm.feature.location.domain.Location
+import org.yusufteker.routealarm.feature.location.domain.Place
+import org.yusufteker.routealarm.feature.location.domain.emptyLocation
+import platform.CoreLocation.CLGeocoder
+import platform.CoreLocation.CLLocation
+import platform.CoreLocation.CLLocationCoordinate2DMake
+import platform.CoreLocation.CLPlacemark
+import platform.MapKit.MKCoordinateRegionMakeWithDistance
+import platform.MapKit.MKLocalSearch
+import platform.MapKit.MKLocalSearchRequest
+import platform.MapKit.MKMapItem
+import platform.MapKit.MKPlacemark
 import kotlin.coroutines.resume
 
+actual class PlaceSuggestionService(
+    httpClient: HttpClient
+) {
+    private val nominatimClient = NominatimPlaceClient(httpClient)
 
-actual class PlaceSuggestionService {
+    actual suspend fun getSuggestions(query: String, nearLocation: Location?): List<Place> {
+        val trimmed = query.trim()
+        if (trimmed.isBlank()) return emptyList()
 
-    actual suspend fun getSuggestions(query: String): List<Place> {
-        return try {
-            // Farklı arama türleriyle daha fazla sonuç alalım
-            val allResults = mutableListOf<Place>()
-
-            // 1. Point of Interest arama
-            val poiResults = searchWithType(query, MKLocalSearchResultTypePointOfInterest)
-            allResults.addAll(poiResults)
-
-            // 2. Address arama
-            val addressResults = searchWithType(query, MKLocalSearchResultTypeAddress)
-            allResults.addAll(addressResults)
-
-            // Duplikatları temizle ve sınırla
-            allResults.distinctBy { it.id }.take(6)
+        val mapKitResults = try {
+            searchMapKit(trimmed, nearLocation)
         } catch (e: Exception) {
+            Napier.w("MKLocalSearch failed: ${e.message}", tag = "PlaceSuggestion")
             emptyList()
         }
+
+        if (mapKitResults.isNotEmpty()) {
+            return mapKitResults.distinctBy { it.id }.take(8)
+        }
+
+        return nominatimClient.searchFreePlaces(trimmed, nearLocation)
     }
 
     @OptIn(ExperimentalForeignApi::class)
@@ -36,52 +47,85 @@ actual class PlaceSuggestionService {
         return null
     }
 
+    @OptIn(ExperimentalForeignApi::class)
+    actual suspend fun reverseGeocode(lat: Double, lng: Double): String? {
+        val nativeName = suspendCancellableCoroutine { continuation ->
+            val geocoder = CLGeocoder()
+            val location = CLLocation(latitude = lat, longitude = lng)
+            geocoder.reverseGeocodeLocation(location) { placemarks, error ->
+                if (!continuation.isActive) return@reverseGeocodeLocation
+                if (error != null) {
+                    continuation.resume(null)
+                    return@reverseGeocodeLocation
+                }
+                val placemark = placemarks?.firstOrNull() as? CLPlacemark
+                val primary = placemark?.thoroughfare?.takeIf { it.isNotBlank() }
+                    ?: placemark?.name?.takeIf { it.isNotBlank() }
+                val area = placemark?.subLocality?.takeIf { it.isNotBlank() && it != primary }
+                    ?: placemark?.locality?.takeIf { it.isNotBlank() && it != primary }
+                val resolved = listOfNotNull(primary, area)
+                    .joinToString(", ")
+                    .takeIf { it.isNotBlank() }
+                continuation.resume(resolved)
+            }
+        }
+
+        return nativeName ?: nominatimClient.reverseGeocode(lat, lng)
+    }
 
     @OptIn(ExperimentalForeignApi::class)
-    private suspend fun searchWithType(query: String, resultType: platform.MapKit.MKLocalSearchResultType): List<Place> =
+    private suspend fun searchMapKit(query: String, nearLocation: Location?): List<Place> =
         suspendCancellableCoroutine { continuation ->
             val request = MKLocalSearchRequest().apply {
                 naturalLanguageQuery = query
-                resultTypes = resultType
-                // Global arama için region belirtme
+                if (nearLocation != null &&
+                    (nearLocation.lat != emptyLocation.lat || nearLocation.lng != emptyLocation.lng)
+                ) {
+                    region = MKCoordinateRegionMakeWithDistance(
+                        centerCoordinate = CLLocationCoordinate2DMake(nearLocation.lat, nearLocation.lng),
+                        latitudinalMeters = 30_000.0,
+                        longitudinalMeters = 30_000.0
+                    )
+                }
             }
 
             val search = MKLocalSearch(request)
+            continuation.invokeOnCancellation {
+                search.cancel()
+            }
             search.startWithCompletionHandler { response, error ->
+                if (!continuation.isActive) return@startWithCompletionHandler
                 if (error != null) {
                     continuation.resume(emptyList())
                     return@startWithCompletionHandler
                 }
 
                 val places = response?.mapItems?.mapNotNull { mapItem ->
-                    val item = mapItem as MKMapItem
-                    val coordinate = item.placemark.coordinate
+                    val item = mapItem as? MKMapItem ?: return@mapNotNull null
+                    val lat = item.placemark.coordinate.useContents { latitude }
+                    val lng = item.placemark.coordinate.useContents { longitude }
                     Place(
-                        id = "${coordinate.useContents { latitude }},${coordinate.useContents { longitude }}",
-                        name = item.name ?: item.placemark.title ?: "Bilinmeyen Konum",
+                        id = "$lat,$lng",
+                        name = item.name ?: item.placemark.title ?: "",
                         address = formatAddress(item.placemark),
-                        latitude = coordinate.useContents { latitude },
-                        longitude = coordinate.useContents { longitude },
+                        latitude = lat,
+                        longitude = lng
                     )
-                } ?: emptyList()
+                }?.filter { it.name.isNotBlank() } ?: emptyList()
 
                 continuation.resume(places)
             }
         }
 
     private fun formatAddress(placemark: MKPlacemark): String {
-        val components = mutableListOf<String>()
+        val components = listOfNotNull(
+            placemark.thoroughfare?.takeIf { it.isNotBlank() },
+            placemark.subLocality?.takeIf { it.isNotBlank() },
+            placemark.locality?.takeIf { it.isNotBlank() },
+            placemark.administrativeArea?.takeIf { it.isNotBlank() },
+            placemark.country?.takeIf { it.isNotBlank() }
+        ).distinct()
 
-        placemark.thoroughfare?.let { components.add(it) }
-        placemark.subThoroughfare?.let { components.add(it) }
-        placemark.locality?.let { components.add(it) }
-        placemark.administrativeArea?.let { components.add(it) }
-        placemark.country?.let { components.add(it) }
-
-        return if (components.isNotEmpty()) {
-            components.joinToString(", ")
-        } else {
-            "Adres bilgisi yok"
-        }
+        return components.joinToString(", ")
     }
 }

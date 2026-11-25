@@ -32,6 +32,8 @@ interface AlarmRepository {
 
     suspend fun setAllStopIsPassed(isPassed: Boolean = false)
 
+    suspend fun setStopsPassedForAlarm(alarmId: Int, isPassed: Boolean = false)
+
     suspend fun triggerAlarmUpdate(alarmId: Int)
 
 

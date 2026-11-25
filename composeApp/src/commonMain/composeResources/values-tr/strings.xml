@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="search_hint">Burada ara</string>
+    <string name="clear_search">Aramayı Temizle</string>
+    <string name="search_results">Arama Sonuçları</string>
+    <string name="no_result">Sonuç Yok</string>
 
-    <string name= "search_hint">Search here </string>
-    <string name= "clear_search">Clear Search</string>
-    <string name= "search_results">Search Results</string>
-    <string name= "no_result">No Result</string>
-
-    <string name= "error_occured">An error occurred</string>
-    <!-- Local Errors -->
+    <string name="error_occured">Bir hata oluştu</string>
     <string name="error_disk_full">Disk dolu. Lütfen boş alan açın.</string>
     <string name="error_local_unknown">Bilinmeyen bir hata oluştu.</string>
 
-    <!-- Remote Errors -->
     <string name="error_request_timeout">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</string>
     <string name="error_too_many_requests">Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.</string>
     <string name="error_no_internet">İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.</string>
@@ -20,7 +17,6 @@
     <string name="error_remote_unknown">Bilinmeyen bir hata oluştu.</string>
 
     <string name="app_name">Route Alarm</string>
-
     <string name="go_back">Geri</string>
     <string name="error">Hata</string>
     <string name="destination_reached">Hedefe Ulaşıldı!</string>
@@ -30,7 +26,7 @@
     <string name="confirm">Onayla</string>
     <string name="no_popup_manager">PopupYöneticisi sağlanmadı</string>
     <string name="never_miss_stop">Durağını bir daha asla kaçırma.</string>
-    <string name="get_started">Hadi başlayalım</string>
+    <string name="get_started">Hadi Başlayalım</string>
     <string name="add_stop_button">+ Durak Ekle</string>
     <string name="stop_with_index">Durak %1$d</string>
     <string name="alarm_title">Alarm Başlığı</string>
@@ -42,34 +38,82 @@
     <string name="permission_denied">İzin reddedildi</string>
     <string name="permission_required">İzin Gerekli</string>
     <string name="location_permission_required">Durak eklemek için konum izni gereklidir. Lütfen ayarlardan izin verin.</string>
-    <string name="only_one_alarm_active">Sadece bir alarm aktif olabilir</string>
+    <string name="only_one_alarm_active">Aynı anda sadece bir alarm aktif olabilir.</string>
     <string name="stop_name_cannot_be_empty">Durak adı boş olamaz</string>
     <string name="current_location">Mevcut Konum</string>
     <string name="stop_title">Durak Başlığı</string>
     <string name="add_stop">Durak Ekle</string>
     <string name="alarm_detail">Alarm Detayı</string>
     <string name="remaining_distance">Kalan: %1$s</string>
-    <string name="stop_count">Durak sayısı: %1$d</string>
+    <string name="stop_count">%1$d durak</string>
     <string name="alarms">Alarmlar</string>
     <string name="add_alarm">Alarm Ekle</string>
     <string name="no_alarms_yet">Henüz bir alarm eklemediniz</string>
     <string name="search_location">Konum Ara...</string>
     <string name="settings">Ayarlar</string>
     <string name="alarm_distance">Alarm Mesafesi</string>
-    <string name="alarm_trigger_distance">Alarm %1$d metre kala çalacak</string>
+    <string name="alarm_trigger_distance">Alarm durağa %1$d metre kala çalacak</string>
     <string name="location_tracking_active">Konum Takibi Aktif</string>
     <string name="stops_remaining">%1$d durak kaldı.</string>
     <string name="stop">Durdur</string>
     <string name="approaching_destination">Hedefe Yaklaştınız!</string>
     <string name="stops_remaining_camel_case">%1$d durak kaldı.</string>
-
     <string name="passed_stops_title">Geçilen Duraklar</string>
     <string name="current_stop_title">Şu Anki Durak</string>
     <string name="upcoming_stops_title">Sonraki Duraklar</string>
 
-
-
-
-
-
+    <string name="start_point">Başlangıç</string>
+    <string name="nav_alarms">Alarmlar</string>
+    <string name="nav_add">Ekle</string>
+    <string name="nav_settings">Ayarlar</string>
+    <string name="empty_home_subtitle">Durağınıza yaklaşmadan uyarı almak için bir rota alarmı oluşturun.</string>
+    <string name="vibration">Titreşim</string>
+    <string name="vibration_desc">Durağa yaklaşırken titreşim ver</string>
+    <string name="test_alarm_sound">Alarm Sesini Test Et</string>
+    <string name="stop_test_sound">Testi Durdur</string>
+    <string name="sound_and_alerts">Ses ve Uyarılar</string>
+    <string name="permissions_title">İzinler</string>
+    <string name="location_permission">Konum İzni</string>
+    <string name="background_location_permission">Arka Plan Konumu</string>
+    <string name="notification_permission">Bildirimler</string>
+    <string name="permission_granted">Verildi</string>
+    <string name="permission_missing">Gerekli</string>
+    <string name="grant_permission">İzin Ver</string>
+    <string name="open_settings">Ayarlar</string>
+    <string name="delete_alarm">Alarmı Sil</string>
+    <string name="delete_alarm_confirm">Bu alarmı silmek istediğinize emin misiniz?</string>
+    <string name="route_stops">Rota Durakları</string>
+    <string name="start_alarm">Alarmı Başlat</string>
+    <string name="stop_alarm">Alarmı Durdur</string>
+    <string name="active">Aktif</string>
+    <string name="inactive">Pasif</string>
+    <string name="alarm_active_banner">Takip Aktif</string>
+    <string name="tap_for_details">Canlı takip için dokun</string>
+    <string name="stop_reached_message">%1$s durağına yaklaşıyorsunuz!</string>
+    <string name="welcome_feature_1">Çoklu duraklı toplu taşıma rotaları</string>
+    <string name="welcome_feature_2">Güvenilir arka plan konum takibi</string>
+    <string name="welcome_feature_3">Sesli ve titreşimli uyandırma uyarısı</string>
+    <string name="notification_permission_title">Bildirim İzni Gerekli</string>
+    <string name="notification_permission_message">RouteAlarm, durağınıza yaklaştığınızda sizi uyarmak ve aktif rota takibini göstermek için bildirim iznine ihtiyaç duyar.</string>
+    <string name="location_dialog_fg_title">Konum Erişimi Gerekli</string>
+    <string name="location_dialog_fg_desc">RouteAlarm'ın rotanızı takip edip durağınızdan önce sizi uyarabilmesi için konum erişimine izin verin.</string>
+    <string name="location_dialog_bg_title_android">Arka Plan Konumu</string>
+    <string name="location_dialog_bg_desc_android">Ekran kilitliyken veya başka bir uygulamaya geçtiğinizde alarmın kesintisiz çalışması için konum ayarlarından "Her zaman izin ver" seçeneğini seçin.</string>
+    <string name="location_dialog_bg_title_ios">Her Zaman Konum İzni</string>
+    <string name="location_dialog_bg_desc_ios">Uygulama arka plandayken veya iPhone'unuz kilitliyken alarmın güvenilir çalışması için konum ayarlarından "Her Zaman" seçeneğini seçin.</string>
+    <string name="continue_text">Devam Et</string>
+    <string name="no_stops_added">Henüz durak eklenmedi</string>
+    <string name="add_first_stop">Haritadan durak seçmek için "+ Durak Ekle"ye dokunun.</string>
+    <string name="selected_location">Seçilen Konum</string>
+    <string name="waiting_for_gps">GPS sinyali bekleniyor...</string>
+    <string name="searching_locations">Aranıyor...</string>
+    <string name="no_locations_found">Sonuç bulunamadı. Farklı bir arama deneyin veya haritaya dokunun.</string>
+    <string name="transport_bus">Otobüs</string>
+    <string name="transport_metro">Metro</string>
+    <string name="transport_minibus">Minibüs</string>
+    <string name="transport_metrobus">Metrobüs</string>
+    <string name="transport_car">Araba</string>
+    <string name="transport_taxi">Taksi</string>
+    <string name="transport_train">Tren</string>
+    <string name="transport_type_label">Ulaşım Türü</string>
 </resources>

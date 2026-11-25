@@ -15,10 +15,14 @@ struct ComposeView: UIViewControllerRepresentable {
 struct ContentView: View {
     var body: some View {
         ComposeView()
-                .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
-                .ignoresSafeArea(.container)
+            .ignoresSafeArea(.keyboard)
+            .ignoresSafeArea(.container)
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: UIApplication.didBecomeActiveNotification
+                )
+            ) { _ in
+                MainViewControllerKt.notifyAppResumed()
+            }
     }
 }
-
-
-

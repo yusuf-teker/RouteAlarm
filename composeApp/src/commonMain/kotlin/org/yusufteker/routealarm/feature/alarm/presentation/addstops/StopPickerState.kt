@@ -16,4 +16,6 @@ data class StopPickerState(
     val currentLocation: Location = emptyLocation,
     val centerToCurrentLocation: Boolean = false,
     val showBottom: Boolean = false,
+    val isSearching: Boolean = false,
+    val hasSearched: Boolean = false,
     )

@@ -21,7 +21,7 @@ actual val platformModule: Module
     get() = module {
         single<HttpClientEngine> { OkHttp.create() } // Platform spesifik dependency
         single { DatabaseFactory(androidApplication()) }
-        single { PlaceSuggestionService(get()) }
+        single { PlaceSuggestionService(get(), get()) }
         single { LocationService(get()) }
         single { LocationTracker(get(), get()) }
         single { AlarmSoundPlayer(get()) }
@@ -29,6 +29,5 @@ actual val platformModule: Module
         single<DataStore<Preferences>> {
             createDataStore(androidApplication())
         }
-        single { SettingsManager(get()) }
         single { LocationTrackingService() }
     }

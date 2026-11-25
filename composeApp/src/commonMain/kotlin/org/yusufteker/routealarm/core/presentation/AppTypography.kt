@@ -6,27 +6,34 @@ import androidx.compose.ui.unit.sp
 
 object AppTypography {
 
+    val headlineLarge = TextStyle(
+        fontSize = 28.sp,
+        fontWeight = FontWeight.Bold,
+        color = AppColors.textPrimary,
+        letterSpacing = (-0.5).sp
+    )
+
     val titleLarge = TextStyle(
-        fontSize = 24.sp,
+        fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
         color = AppColors.textPrimary
     )
 
     val titleMedium = TextStyle(
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Medium,
+        fontSize = 17.sp,
+        fontWeight = FontWeight.SemiBold,
         color = AppColors.textPrimary
     )
 
     val bodyRegular = TextStyle(
-        fontSize = 16.sp,
+        fontSize = 15.sp,
         fontWeight = FontWeight.Normal,
         color = AppColors.textPrimary
     )
 
     val labelSmall = TextStyle(
         fontSize = 12.sp,
-        fontWeight = FontWeight.Light,
-        color = AppColors.textPrimary
+        fontWeight = FontWeight.Medium,
+        color = AppColors.textSecondary
     )
 }

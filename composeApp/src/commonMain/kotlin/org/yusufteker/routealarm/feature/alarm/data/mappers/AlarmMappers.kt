@@ -5,6 +5,7 @@ import org.yusufteker.routealarm.feature.alarm.data.database.AlarmWithStops
 import org.yusufteker.routealarm.feature.alarm.data.database.stop.StopEntity
 import org.yusufteker.routealarm.feature.alarm.domain.Alarm
 import org.yusufteker.routealarm.feature.alarm.domain.Stop
+import org.yusufteker.routealarm.feature.alarm.domain.TransportType
 import org.yusufteker.routealarm.feature.location.domain.Location
 
 fun AlarmEntity.toDomain(stops: List<Stop> = emptyList()): Alarm {
@@ -15,7 +16,7 @@ fun AlarmEntity.toDomain(stops: List<Stop> = emptyList()): Alarm {
         timeInMillis = this.timeInMillis,
         soundUri = this.soundUri,
         isVibration = this.isVibration,
-        stops = stops
+        stops = stops.sortedBy { it.orderIndex }
     )
 }
 
@@ -30,8 +31,9 @@ fun Alarm.toEntity(): AlarmEntity {
     )
 }
 
-// feature/alarm/data/mapper/StopMapper.kt
 fun StopEntity.toDomain(): Stop {
+    val parsedTransport = TransportType.entries.find { it.name == this.transportType }
+        ?: TransportType.DEFAULT
     return Stop(
         id = this.id,
         alarmId = this.alarmId,
@@ -41,7 +43,8 @@ fun StopEntity.toDomain(): Stop {
         longitude = this.longitude,
         address = this.address,
         orderIndex = this.orderIndex,
-        radius = this.radius
+        radius = this.radius,
+        transportType = parsedTransport
     )
 }
 
@@ -55,7 +58,8 @@ fun Stop.toEntity(): StopEntity {
         address = this.address,
         orderIndex = this.orderIndex,
         radius = this.radius,
-        isPassed = this.isPassed
+        isPassed = this.isPassed,
+        transportType = this.transportType.name
     )
 }
 
@@ -68,10 +72,5 @@ fun Stop.toLocation(): Location {
 }
 
 fun AlarmWithStops.toDomain(): Alarm {
-    return Alarm(
-        id = alarm.id,
-        title = alarm.title,
-        isActive = alarm.isActive,
-        stops = stops.map { it.toDomain() }
-    )
+    return alarm.toDomain(stops = stops.map { it.toDomain() })
 }
